@@ -1,3 +1,5 @@
 # Ignore all MATLAB files
 *.asv
 *.mat
+*.csv
+*.txt
