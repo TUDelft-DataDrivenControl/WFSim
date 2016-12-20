@@ -1,5 +1,5 @@
-# Ignore all MATLAB files
-*.asv
-*.mat
-*.csv
-*.txt
+# Ignore all files in this directory besides:
+
+*
+!.gitignore
+!*.url
