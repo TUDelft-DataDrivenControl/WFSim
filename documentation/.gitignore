@@ -1,0 +1,6 @@
+# Ignore all files in this directory besides:
+
+*
+!.gitignore
+!.url
+!Download_files
