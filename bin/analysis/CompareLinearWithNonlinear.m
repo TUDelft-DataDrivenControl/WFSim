@@ -26,8 +26,6 @@ end
 % WFSim general initialization script
 [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] ...
     = InitWFSim(Wp,options,plotMesh);
-B2  = 2*B2;
-
 
 %% Loop to get state-space matrices linear model 
 for k=1:2

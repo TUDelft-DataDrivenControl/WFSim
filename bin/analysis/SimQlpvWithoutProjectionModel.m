@@ -27,7 +27,6 @@ end
 % WFSim general initialization script
 [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] ...
     = InitWFSim(Wp,options,plotMesh);
-B2  = 2*B2;
 
 % Initialize variables and figure specific to this script
 uk    = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);

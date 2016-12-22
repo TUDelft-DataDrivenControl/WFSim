@@ -27,6 +27,7 @@ end;
 
 % Compute boundary conditions and matrices B1, B2
 [B1,B2,bc]           = Compute_B1_B2_bc(Wp);
+B2                   = 2*B2;
 
 % Compute projection matrices Qsp and Bsp
 if Projection

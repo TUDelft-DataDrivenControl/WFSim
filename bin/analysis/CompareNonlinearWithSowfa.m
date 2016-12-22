@@ -1,6 +1,6 @@
 clear; clc; close all;
 
-%% Initialize script
+% Initialize script
 options.Projection    = 0;                      % Use projection (true/false)
 options.Linearversion = 0;                      % Provide linear variant of WFSim (true/false)
 options.exportLinearSol= 0;                     % Calculate linear solution of WFSim
@@ -26,8 +26,6 @@ end
 % WFSim general initialization script
 [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] ...
     = InitWFSim(Wp,options,plotMesh);
-
-B2  = 2*B2;
 
 % Initialize variables and figure specific to this script
 uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
@@ -209,17 +207,17 @@ title( ['VAF = ',num2str(VAF(indices(2)),3), '\% at $t$ = ', num2str(indices(2))
 subplot(2,2,3)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'r--','Linewidth',2);grid;
-xlabel('x [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
+xlabel('$x$ [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
 ylim([0 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 title( ['VAF = ',num2str(VAF(indices(3)),3), '\% at $t$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
 subplot(2,2,4)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'r--','Linewidth',2);grid;
-xlabel('x [m]','interpreter','latex');
+xlabel('$x$ [m]','interpreter','latex');
 ylim([0 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $t$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
 if Wp.turbine.N==9
-suptitle('First column')
+suptitle('First row')
 end
 mean(RMSE)
 
@@ -250,16 +248,16 @@ title( ['VAF = ',num2str(VAF(indices(2)),3), '\% at $t$ = ', num2str(indices(2))
 subplot(2,2,3)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'r--','Linewidth',2);grid;
-xlabel('x [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
+xlabel('$x$ [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
 ylim([0 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 title( ['VAF = ',num2str(VAF(indices(3)),3), '\% at $t$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
 subplot(2,2,4)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'r--','Linewidth',2);grid;
-xlabel('x [m]','interpreter','latex');
+xlabel('$x$ [m]','interpreter','latex');
 ylim([0 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]); 
 title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $t$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
-suptitle('Second column')
+suptitle('Second row')
 
 D_ind    = Wp.mesh.yline{3};
 
@@ -290,16 +288,16 @@ title( ['VAF = ',num2str(VAF(indices(2)),3), '\% at $t$ = ', num2str(indices(2))
 subplot(2,2,3)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'r--','Linewidth',2);grid;
-xlabel('x [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
+xlabel('$x$ [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
 ylim([0 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 title( ['VAF = ',num2str(VAF(indices(3)),3), '\% at $t$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
 subplot(2,2,4)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'r--','Linewidth',2);grid;
-xlabel('x [m]','interpreter','latex');
+xlabel('$x$ [m]','interpreter','latex');
 ylim([0 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]); 
 title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $t$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
-suptitle('Third column')
+suptitle('Third row')
 
 end
 
@@ -315,18 +313,6 @@ if Wp.turbine.N~=9
     plot(Powersowfa(2,1:end),'r--');
     grid;xlabel('Time [s]');ylabel('Power')
 end
-%%
-if 1
-    yaw_angles = .5*Wp.turbine.Drotor*exp(1i*input{1}.phi*pi/180);  % Yaw angles
-    
-    figure(7);clf
-    contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',SOWFAdata.uq,'Linecolor','none');  colormap(jet);
-    caxis([min(min(SOWFAdata.uq)) max(max(SOWFAdata.uq))]);  hold all; colorbar;
-    axis equal; axis tight;
-    for ll=1:Wp.turbine.N
-        Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-        Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
-        plot(Qy,Qx,'k','linewidth',1)
-    end
-    title('Simulation set-up');
-end
+
+
+

@@ -8,7 +8,7 @@
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.Bl * du_k
 % sys.Ac * \dot{x} = sys.Alc * dx + sys.Bl * u
 
-clear; clc; %close all;
+clear; clc; close all;
 
 %% Initialize script
 options.Projection     = 0;                      % Use projection (true/false)
@@ -18,7 +18,7 @@ options.Derivatives    = 0;                      % Compute derivatives
 options.startUniform   = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
 
-Wp.name       = 'SingleTurbine_50x50_lin';      % Meshing name (see "\bin\core\meshing.m")
+Wp.name       = 'NoPrecursor_2turb_60x30_lin';      % Meshing name (see "\bin\core\meshing.m")
 
 Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
@@ -33,8 +33,6 @@ end
 
 % WFSim general initialization script
 [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] = InitWFSim(Wp,options,plotMesh);
-
-B2 = 2*B2;
 
 % Initialize variables and figure specific to this script
 uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
