@@ -59,13 +59,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 1;         % Mixing length in x-direction (m)
         lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        
+        n        = 2;
+        m        = 8;
         
     case lower('YawCase3_50x50_exp')
         type     = 'exp';      % Meshing type ('lin' or 'exp')
@@ -105,12 +104,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 8;
         
     case lower('NoPrecursor_2turb_60x30_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
@@ -141,19 +140,19 @@ switch lower(Wp.name)
         forcescale  = 1.2;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 1900;      % Simulation length (s)
+        L        = 5;%1900;      % Simulation length (s)
         mu       = 0*18e-5;   % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)     
-        
+        n        = 2;
+        m        = 8;
+    
     case lower('NoPrecursor_2turb_50x25_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2232.0623;
@@ -193,7 +192,9 @@ switch lower(Wp.name)
         lmu      = 0.00;      % Mixing length in x-direction (m)
         lmv      = 0.00;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-                           
+        n        = 2;
+        m        = 8;                   
+    
     case lower('APC_3x3turb_noyaw_9turb_100x50_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2863.9514;
@@ -229,12 +230,12 @@ switch lower(Wp.name)
         u_Inf    = 12.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 3;
         
         lmu      = 1.5;      % Mixing length in x-direction (m)
         lmv      = .25;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 3;
         
         % Wind farms for which no SOWFA data is available
     case lower('SingleTurbine_50x50_lin')
@@ -263,22 +264,22 @@ switch lower(Wp.name)
         
         Drotor      = 126.4;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1.0;    % Turbine force scaling
+        forcescale  = 1;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 1;         % Simulation length (s)
-        mu       = 18e-5;     % Dynamic flow viscosity
+        mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 0;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-           
+        n        = 2;
+        m        = 0;
+        
     case lower('TwoTurbinePartialOverlap_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2481.9702;      % Domain length in x-direction (m)
@@ -319,12 +320,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 8;
                   
     case lower('SingleTurbine_Dev_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
@@ -361,13 +362,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 0;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        
+        n        = 2;
+        m        = 0;        
         
     case lower('TwoTurbine_Dev_lin')
         
@@ -405,13 +405,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        
+        n        = 2;
+        m        = 8;        
         
         % Wind farms used to do MPC
     case lower('TwoTurbine_mpc')
@@ -450,13 +449,13 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-    
+        n        = 2;
+        m        = 8;
+        
     case lower('ThreeTurbine_mpc')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2000;           % Domain length in x-direction (m)
@@ -493,12 +492,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 6;
         
         lmu      = 1;         % Mixing length in x-direction (m)
         lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 6;
         
     case lower('Reinier_2turbine_20x12')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
@@ -535,12 +534,12 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 2;
-        m        = 8;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 8;
         
     case lower('Reinier_6turbine_100x50')
         Drotor  = 100;  % Turbine rotor diameter in (m)
@@ -580,13 +579,60 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        n        = 3;
-        m        = 6;
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-               
+        n        = 3;
+        m        = 6;
+        
+    case lower('amalia')
+        load centers_Amalia
+        load V80_data
+                
+        Drotor  = 80;  % Turbine rotor diameter in (m)
+        type    = 'lin';      % Meshing type ('lin' or 'exp')
+        Lx      = 9200;       % Length of the grid in x (N-S direction)
+        Ly      = 7500;       % Length of the grid in y (O-W direction)
+        Nx      = 300;        % Number of grid points (x-direction)
+        Ny      = 200;         % Number of grid points (y-direction)
+        Crx     = 1820+Centers_turbine(:,2);             % X-coordinate of rotor (center)
+        Cry     = 1820+Centers_turbine(:,1);             % Y-coordinate of rotor (center)
+        
+        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        
+        % Correctly format inputs (temporary function)
+        for j = 1:length(loadedinput.input.t)
+            input{j}.t    = loadedinput.input.t(j);
+            input{j}.beta = [loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)'];
+            input{j}.phi  = 0*[loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)'];
+        end;
+        
+        % Calculate delta inputs
+        for j = 1:length(loadedinput.input.t)-1
+            input{j}.dbeta = [loadedinput.input.beta(j+1,:)';loadedinput.input.beta(j+1,:)';loadedinput.input.beta(j+1,:)']-...
+                [loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)'];
+            input{j}.dphi  = [loadedinput.input.phi(j+1,:)';loadedinput.input.phi(j+1,:)';loadedinput.input.phi(j+1,:)']-...
+                [loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)'];
+        end;
+        
+        powerscale  = 1.0;    % Turbine powerscaling
+        forcescale  = 1.25;    % Turbine force scaling
+        
+        h        = 1.0;       % Sampling time (s)
+        L        = 5;       % Simulation length (s)
+        mu       = 0*18e-5;     % Dynamic flow viscosity
+        Rho      = 1.20;      % Flow density (kg m-3)
+        u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
+        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
+        p_init   = 0.0;       % Initial values for pressure terms (Pa)
+        
+        lmu      = 2;         % Mixing length in x-direction (m)
+        lmv      = 0;         % Mixing length in y-direction (m)
+        turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 4;
+ 
     otherwise
         error('No valid meshing specified. Please take a look at Wp.name.');
 end;
