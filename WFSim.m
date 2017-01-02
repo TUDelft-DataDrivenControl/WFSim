@@ -8,7 +8,7 @@
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.Bl * du_k
 % sys.Ac * \dot{x} = sys.Alc * dx + sys.Bl * u
 
-clear; clc; close all;
+clear; clc; %close all;
 
 %% Initialize script
 options.Projection     = 0;                      % Use projection (true/false)
