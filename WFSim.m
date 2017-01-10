@@ -18,7 +18,7 @@ options.Derivatives    = 0;                      % Compute derivatives
 options.startUniform   = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
 
-Wp.name       = 'SingleTurbine_50x50_lin';      % Meshing name (see "\bin\core\meshing.m")
+Wp.name       = 'NoPrecursor_2turb_60x30_lin';      % Meshing name (see "\bin\core\meshing.m")
 
 Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
@@ -69,7 +69,14 @@ for k=1:Wp.sim.NN
         %display(['k ',num2str(k,'%-1000.1f'),', It ',num2str(it,'%-1000.0f'),', Nv=', num2str(Normv{k}(it),'%10.2e'), ', Nu=', num2str(Normu{k}(it),'%10.2e'), ', TN=',num2str(eps,'%10.2e'),', Np=','Mean effective=',num2str(mean(Ueffect(1,k)),'%-1000.2f')]) ;
     end
     CPUTime(k) = toc;
-
+  
+    %if k==100
+    %    Wp.site.u_Inf           = 12;
+    %    [B1,B2,bc]              = Compute_B1_B2_bc(Wp);
+    %    B2                      = 2*B2;
+    %    sol.u(1:2,1:Wp.mesh.Ny) = Wp.site.u_Inf;
+    %end
+    
     if Animate > 0
         if ~rem(k,Animate)
             Animation; 
