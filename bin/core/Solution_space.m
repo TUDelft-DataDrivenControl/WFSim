@@ -1,12 +1,13 @@
-function [Qsp, Bsp]=Solution_space(BQ,BQy,Bt)
+function [Qsp, Bsp]=Solution_space(B1,B2,bc)
 
-A = [BQ', BQy'];
+A = [B1' B2'];
 
-[SLeft SRight] = spspaces(A,2);
+[~,SRight] = spspaces(A,2);
 
 Qsp1 = SRight{1}(:,SRight{3});
 Qsp  = sparse(size(Qsp1,1),size(Qsp1,2));
-%% sparsification
+
+% Sparsification
 eps=1e-6;
 
 for i=1:size(Qsp1,2)
@@ -14,18 +15,46 @@ for i=1:size(Qsp1,2)
     Qsp(ind,i) = Qsp1(ind,i);
 end
 
-%% code from Steffen
-%Parameter.SOWFI.Q_P = SRight{1}(:,SRight{3});
- 
- %   Parameter.SOWFI.Q_P = spfun(@(M)SparcifyMatrix(M,MatrixEPS),Parameter.SOWFI.Q_P);
- 
+Bsp = A(1:end-1,:)\bc(1:end-1,:);
+
+% Check
+nnz(full(Qsp'*[B1;B2]));     % momentum eq.
+nnz(full([B1' B2']*Qsp));    % continuity eq.
+
+clear Qsp1 SRight
+
 %%
+[~,SRight] = spspaces(B1',2);
+PP         = SRight{1}(:,SRight{3});
+P1         = sparse(size(PP,1),size(PP,2));   % B1' is full rank hence P1 is empty
 
-clear Qsp1;
+% Sparsification
+for i=1:size(PP,2)
+    ind       = find(sign(abs(PP(:,i))-eps)+1);
+    P1(ind,i) = PP(ind,i);
+end
+ 
+clear PP SRight
 
-Bsp = A(1:end-1,:)\Bt(1:end-1,:);
+[~,SRight] = spspaces(B2',2);
+PP         = SRight{1}(:,SRight{3});
+P2         = sparse(size(PP,1),size(PP,2));   % B2' is not full rank
 
-%% check
+% Sparsification
+for i=1:size(PP,2)
+    ind       = find(sign(abs(PP(:,i))-eps)+1);
+    P2(ind,i) = PP(ind,i);
+end
 
-% norm(full([BQ' BQy']*Bsp-Bt))
-% norm(full([BQ' BQy']*Qsp))
+clear PP SRight
+
+P1 = sparse(size(P1,1),size(P2,2)); % This since B1' does not have a nullspace
+
+P          = [P1;P2];
+
+% Check
+nnz(full(P'*[B1;B2]));     % momentum eq.
+nnz(full([B1' B2']*P));    % continuity eq.
+
+
+%Qsp = P;

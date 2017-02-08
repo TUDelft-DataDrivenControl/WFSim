@@ -110,8 +110,8 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
-  
-    case {'Yawcase1_2turb_100x50_lin'}
+        
+    case lower('Yawcase1_2turb_100x50_lin')
         
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2481.9702;      % Domain length in x-direction (m)
@@ -153,7 +153,7 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
-
+        
     case lower('NoPrecursor_2turb_60x30_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2232.0623;
@@ -171,7 +171,7 @@ switch lower(Wp.name)
             input{j}.beta = [.5;.5];%loadedinput.input.beta(j,:)';
             input{j}.phi  = loadedinput.input.phi(j,:)';
         end;
-                
+        
         % Calculate delta inputs
         for j = 1:length(loadedinput.input.t)-1
             input{j}.dbeta = loadedinput.input.beta(j+1,:)'- loadedinput.input.beta(j,:)';
@@ -192,10 +192,10 @@ switch lower(Wp.name)
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0.25;      % Mixing length in y-direction (m)
-        turbul   = true;      % Use mixing length turbulence model (true/false)     
+        turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
-    
+        
     case lower('NoPrecursor_2turb_50x25_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2232.0623;
@@ -234,10 +234,10 @@ switch lower(Wp.name)
         
         lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0.25;      % Mixing length in y-direction (m)
-        turbul   = true;      % Use mixing length turbulence model (true/false)     
+        turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
-    
+        
     case lower('APC_3x3turb_noyaw_9turb_100x50_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2863.9514;
@@ -249,8 +249,8 @@ switch lower(Wp.name)
         
         loadedinput = load([WFSimfolder 'Data_SOWFA\APC\system_input.mat']); % load input settings
         loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
-                                    loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
-                                    loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
+            loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
+            loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
@@ -287,8 +287,8 @@ switch lower(Wp.name)
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2000;      % Domain length in x-direction (m)
         Ly     = 800;           % Domain length in y-direction (m)
-        Nx     = 100;             % Number of grid points in x-direction
-        Ny     = 50;             % Number of grid points in y-direction
+        Nx     = 15;             % Number of grid points in x-direction
+        Ny     = 15;             % Number of grid points in y-direction
         Crx    = 750;           % Turbine locations in x-direction (m)
         Cry    = 400;            % Turbine locations in y-direction (m)
         
@@ -312,7 +312,7 @@ switch lower(Wp.name)
         forcescale  = 1;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 1;         % Simulation length (s)
+        L        = 2;         % Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
@@ -371,7 +371,7 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
-                  
+        
     case lower('SingleTurbine_Dev_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 300;      % Domain length in x-direction (m)
@@ -412,7 +412,7 @@ switch lower(Wp.name)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
-        m        = 0;        
+        m        = 0;
         
     case lower('TwoTurbine_Dev_lin')
         
@@ -455,7 +455,49 @@ switch lower(Wp.name)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
-        m        = 8;        
+        m        = 8;
+        
+    case lower('WP_CPUTime')
+        type   = 'lin';          % Meshing type ('lin' or 'exp')
+        Lx     = 2232.0623;
+        Ly     = 1400;
+        Nx     = sqrt(Wp.ll)*50;
+        Ny     = sqrt(Wp.ll)*25;
+        Crx    = [400 1032.062];
+        Cry    = [700 700];
+        
+        loadedinput = load([WFSimfolder 'Data_SOWFA\NoPrecursor\system_input.mat']); % load input settings
+        
+        % Correctly format inputs (temporary function)
+        for j = 1:length(loadedinput.input.t)
+            input{j}.t    = loadedinput.input.t(j);
+            input{j}.beta = [.5;.5];%loadedinput.input.beta(j,:)';
+            input{j}.phi  = loadedinput.input.phi(j,:)';
+        end;
+        
+        % Calculate delta inputs
+        for j = 1:length(loadedinput.input.t)-1
+            input{j}.dbeta = loadedinput.input.beta(j+1,:)'- loadedinput.input.beta(j,:)';
+            input{j}.dphi  = loadedinput.input.phi(j+1,:)' - loadedinput.input.phi(j,:)' ;
+        end;
+        
+        Drotor      = 126.3992;  % Turbine rotor diameter in (m)
+        powerscale  = 1.0;    % Turbine powerscaling
+        forcescale  = 1.2;    % Turbine force scaling
+        
+        h        = 1.0;       % Sampling time (s)
+        L        = 30;      % Simulation length (s)
+        mu       = 0*18e-5;   % Dynamic flow viscosity
+        Rho      = 1.20;      % Flow density (kg m-3)
+        u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
+        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
+        p_init   = 0.0;       % Initial values for pressure terms (Pa)
+        
+        lmu      = 2;         % Mixing length in x-direction (m)
+        lmv      = 0.25;      % Mixing length in y-direction (m)
+        turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 8;
         
         % Wind farms used to do MPC
     case lower('TwoTurbine_mpc')
@@ -543,97 +585,10 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 6;
-        
-    case lower('Reinier_2turbine_20x12')
-        type   = 'lin';          % Meshing type ('lin' or 'exp')
-        Lx     = 2481.9702;      % Domain length in x-direction (m)
-        Ly     = 1400;           % Domain length in y-direction (m)
-        Nx     = 20;             % Number of grid points in x-direction
-        Ny     = 12;             % Number of grid points in y-direction
-        Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
-        Cry    = [700, 700];     % Turbine locations in y-direction (m)
-        
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
-        
-        % Correctly format inputs (temporary function)
-        for j = 1:length(loadedinput.input.t)
-            input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = loadedinput.input.beta(j,:)';
-            input{j}.phi  = 0*loadedinput.input.phi(j,:)';
-        end;
-        
-        % Calculate delta inputs
-        for j = 1:length(loadedinput.input.t)-1
-            input{j}.dbeta = loadedinput.input.beta(j+1,:)'- loadedinput.input.beta(j,:)';
-            input{j}.dphi  = loadedinput.input.phi(j+1,:)' - loadedinput.input.phi(j,:)' ;
-        end;
-        
-        Drotor      = 126.4;  % Turbine rotor diameter in (m)
-        powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1.0;    % Turbine force scaling
-        
-        h        = 1.0;       % Sampling time (s)
-        L        = 5;       % Simulation length (s)
-        mu       = 18e-5;     % Dynamic flow viscosity
-        Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
-        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
-        p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
-        lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0;         % Mixing length in y-direction (m)
-        turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 2;
-        m        = 8;
-        
-    case lower('Reinier_6turbine_100x50')
-        Drotor  = 100;  % Turbine rotor diameter in (m)
-        a       = 500;
-        type    = 'lin';      % Meshing type ('lin' or 'exp')
-        Lx      = 3000;       % Length of the grid in x (N-S direction)
-        Ly      = 2000;       % Length of the grid in y (O-W direction)
-        Nx      = 100;        % Number of grid points (x-direction)
-        Ny      = 50;         % Number of grid points (y-direction)
-        Crx     = [a; a; a+8*Drotor; a+8*Drotor; a+2*8*Drotor; a+2*8*Drotor];
-        Cry     = [500; 1500; 500; 1500; 500; 1500];
-        
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
-        
-        % Correctly format inputs (temporary function)
-        for j = 1:length(loadedinput.input.t)
-            input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = [loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)'];
-            input{j}.phi  = 0*[loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)'];
-        end;
-        
-        % Calculate delta inputs
-        for j = 1:length(loadedinput.input.t)-1
-            input{j}.dbeta = [loadedinput.input.beta(j+1,:)';loadedinput.input.beta(j+1,:)';loadedinput.input.beta(j+1,:)']-...
-                [loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)';loadedinput.input.beta(j,:)'];
-            input{j}.dphi  = [loadedinput.input.phi(j+1,:)';loadedinput.input.phi(j+1,:)';loadedinput.input.phi(j+1,:)']-...
-                [loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)';loadedinput.input.phi(j,:)'];
-        end;
-        
-        powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1.0;    % Turbine force scaling
-        
-        h        = 1.0;       % Sampling time (s)
-        L        = 5;       % Simulation length (s)
-        mu       = 18e-5;     % Dynamic flow viscosity
-        Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
-        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
-        p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
-        lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0;         % Mixing length in y-direction (m)
-        turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 3;
-        m        = 6;
-        
+                
     case lower('amalia')
         load centers_Amalia
-                
+        
         Drotor  = 80;  % Turbine rotor diameter in (m)
         type    = 'lin';      % Meshing type ('lin' or 'exp')
         Lx      = 9200;       % Length of the grid in x (N-S direction)
@@ -676,7 +631,7 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 4;
- 
+        
     otherwise
         error('No valid meshing specified. Please take a look at Wp.name.');
 end;

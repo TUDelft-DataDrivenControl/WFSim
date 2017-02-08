@@ -1,10 +1,11 @@
 function [Ax_off,Ay_off] = MakingSparseMatrixlo(Nx,Ny,dax,day)
+
+
 Ax_off = sparse((Ny-2)*(Nx-3),(Nx-2)*(Ny-3));
 Ay_off = sparse((Ny-3)*(Nx-2),(Ny-2)*(Nx-3));
 
 Bx_W   = sparse(Ny-2,Ny-3); Bx_E   = sparse(Ny-2,Ny-3);
 By_W   = sparse(Ny-3,Ny-2); By_E   = sparse(Ny-3,Ny-2);
-
 
 
 for x= 3:Nx-1;
@@ -22,7 +23,7 @@ end
 
 for y= 3:Nx-1;
     swy      = -spdiags(day.SW(y,3:Ny-1)',0,Ny-3,Ny-3);
-        nwy      = -spdiags(day.NW(y,3:Ny-1)',0,Ny-3,Ny-3); % changed JW %nwy      = -spdiags(day.NW(y,3:Ny-2)',0,Ny-3,Ny-3);
+    nwy      = -spdiags(day.NW(y,3:Ny-1)',0,Ny-3,Ny-3); % changed JW %nwy      = -spdiags(day.NW(y,3:Ny-2)',0,Ny-3,Ny-3);
     By_W     = [swy sparse(Ny-3,1)] + [sparse(Ny-3,1) nwy];
     
     sey      = -spdiags(day.SE(y-1,3:Ny-1)',0,Ny-3,Ny-3);

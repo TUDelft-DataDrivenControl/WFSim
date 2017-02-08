@@ -6,9 +6,8 @@
 % Linearversion = 1;
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.bl(du_k)
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.Bl * du_k
-% sys.Ac * \dot{x} = sys.Alc * dx + sys.Bl * u
 
-clear; clc; %close all;
+clear; clc; close all;
 
 %% Initialize script
 options.Projection     = 0;                      % Use projection (true/false)
@@ -31,6 +30,11 @@ else
     max_it = 50;
 end
 
+meanCPUTime = zeros(50,1);
+for ll=1:1
+   
+    Wp.ll = ll;
+
 % WFSim general initialization script
 [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] = InitWFSim(Wp,options,plotMesh);
 
@@ -45,8 +49,8 @@ if Animate > 0
            [0 0 1 1],'ToolBar','none','visible', 'on');
 end
 
-%% Loop
 CPUTime = zeros(Wp.sim.NN,1);
+%% Loop 
 for k=1:Wp.sim.NN
     tic
     it        = 0;
@@ -83,4 +87,7 @@ for k=1:Wp.sim.NN
         end; 
     end; 
 end;
+meanCPUTime(ll,:) = [mean(CPUTime(2:end)) size(sol.x,1)];
+
+end
 disp('Completed simulations.');
