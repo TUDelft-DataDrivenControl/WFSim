@@ -42,6 +42,13 @@ switch lower(Turbulencemodel)
         % For u-momentum equation
         ax.Tex              = zeros(Nx,Ny);
         ax.Twx              = zeros(Nx,Ny);
+        ax.Tnx              = zeros(Nx,Ny);
+        ax.Tsx              = zeros(Nx,Ny);
+        
+        ax.Tnex             = zeros(Nx,Ny);
+        ax.Tnwx             = zeros(Nx,Ny);
+        ax.Tsex             = zeros(Nx,Ny);
+        ax.Tswx             = zeros(Nx,Ny);
         
         ax.Tex(1:Nx-1,1:Ny-1)= Rho*(mixing_length(1:Nx-1,1:Ny-1).^2).*(dyy2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dxx2(1:Nx-1,1:Ny-1))).*abs(u(2:Nx,1:Ny-1)-u(1:Nx-1,1:Ny-1));
         ax.Twx(2:Nx,1:Ny-1)  = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dyy2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,2:Ny).*dxx2(1:Nx-1,1:Ny-1))).*abs(u(1:Nx-1,1:Ny-1)-u(2:Nx,1:Ny-1));
@@ -51,8 +58,15 @@ switch lower(Turbulencemodel)
         ax.aP             = ax.aP + ax.Twx + ax.Tex;
                
         % For v-momentum equation
-        ay.Tny = zeros(Nx,Ny);
-        ay.Tsy = zeros(Nx,Ny);
+        ay.Tey   = zeros(Nx,Ny);
+        ay.Twy   = zeros(Nx,Ny);
+        ay.Tny   = zeros(Nx,Ny);
+        ay.Tsy   = zeros(Nx,Ny);
+        
+        ay.Tney  = zeros(Nx,Ny);
+        ay.Tnwy  = zeros(Nx,Ny);
+        ay.Tsey  = zeros(Nx,Ny);
+        ay.Tswy  = zeros(Nx,Ny);
         
         ay.Tny(2:Nx,1:Ny-1) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1)); 
         ay.Tsy(1:Nx-1,2:Ny) = Rho*(mixing_length(2:Nx,2:Ny).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));
@@ -113,7 +127,7 @@ switch lower(Turbulencemodel)
         ax.Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
         
-        %ax.Tnx(1:Nx,2:Ny-1)   = Rho*(mixing_length(1:Nx,2:Ny-1).^2).*(dxx(1:Nx,2:Ny-1)./(dyy(1:Nx,2:Ny-1).^2)).*abs(u(1:Nx,3:Ny)-u(1:Nx,2:Ny-1));
+        %ax.Tnx(1:Nx,2:Ny-1) = Rho*(mixing_length(1:Nx,2:Ny-1).^2).*(dxx(1:Nx,2:Ny-1)./(dyy(1:Nx,2:Ny-1).^2)).*abs(u(1:Nx,3:Ny)-u(1:Nx,2:Ny-1));
         %ax.Tsx(1:Nx,1:Ny-2) = Rho*(mixing_length(1:Nx,1:Ny-2).^2).*(dxx(1:Nx,2:Ny-1)./(dyy(1:Nx,1:Ny-2).^2)).*abs(u(1:Nx,2:Ny-1)-u(1:Nx,1:Ny-2));
         
         ax.aN             = ax.aN + ax.Tnx;
