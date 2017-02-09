@@ -36,9 +36,9 @@ end
 
 
 switch lower(Turbulencemodel)
-
+    
     case lower('WFSim4')
-
+        
         % For u-momentum equation
         ax.Tex              = zeros(Nx,Ny);
         ax.Twx              = zeros(Nx,Ny);
@@ -50,13 +50,23 @@ switch lower(Turbulencemodel)
         ax.Tsex             = zeros(Nx,Ny);
         ax.Tswx             = zeros(Nx,Ny);
         
-        ax.Tex(1:Nx-1,1:Ny-1)= Rho*(mixing_length(1:Nx-1,1:Ny-1).^2).*(dyy2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dxx2(1:Nx-1,1:Ny-1))).*abs(u(2:Nx,1:Ny-1)-u(1:Nx-1,1:Ny-1));
-        ax.Twx(2:Nx,1:Ny-1)  = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dyy2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,2:Ny).*dxx2(1:Nx-1,1:Ny-1))).*abs(u(1:Nx-1,1:Ny-1)-u(2:Nx,1:Ny-1));
-  
+        %1
+        ax.Tex(1:Nx-2,1:Ny) = Rho*(mixing_length(1:Nx-2,1:Ny).^2).*(dyy2(2:Nx-1,1:Ny)./(dyy(2:Nx-1,1:Ny).*dxx2(2:Nx-1,1:Ny))).*abs(u(3:Nx,1:Ny)-u(2:Nx-1,1:Ny));
+        ax.Twx(2:Nx-1,1:Ny) = Rho*(mixing_length(2:Nx-1,1:Ny).^2).*(dyy2(2:Nx-1,1:Ny)./(dyy(2:Nx-1,1:Ny).*dxx2(2:Nx-1,1:Ny))).*abs(u(2:Nx-1,1:Ny)-u(1:Nx-2,1:Ny));
+        
         ax.aE             = ax.aE + ax.Tex;
         ax.aW             = ax.aW + ax.Twx;
         ax.aP             = ax.aP + ax.Twx + ax.Tex;
-               
+        
+        %2
+        ax.Tnx(1:Nx-1,1:Ny-1)= Rho*(mixing_length(1:Nx-1,1:Ny-1).^2).*(dxx(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).^2)).*abs(u(2:Nx,1:Ny-1)-u(1:Nx-1,1:Ny-1));
+        ax.Tsx(2:Nx,1:Ny-1)  = Rho*(mixing_length(1:Nx-1,2:Ny).^2).*(dxx(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,2:Ny).^2)).*abs(u(1:Nx-1,1:Ny-1)-u(2:Nx,1:Ny-1));
+        
+        ax.aN             = ax.aN + ax.Tnx;
+        ax.aS             = ax.aS + ax.Tsx;
+        ax.aP             = ax.aP + ax.Tnx + ax.Tsx;
+        
+        
         % For v-momentum equation
         ay.Tey   = zeros(Nx,Ny);
         ay.Twy   = zeros(Nx,Ny);
@@ -68,16 +78,43 @@ switch lower(Turbulencemodel)
         ay.Tsey  = zeros(Nx,Ny);
         ay.Tswy  = zeros(Nx,Ny);
         
-        ay.Tny(2:Nx,1:Ny-1) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1)); 
+        
+        
+        %3
+        
+        
+        
+        %4
+        ay.Tny(2:Nx,1:Ny-1) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
         ay.Tsy(1:Nx-1,2:Ny) = Rho*(mixing_length(2:Nx,2:Ny).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));
-                 
+        
         ay.aN             = ay.aN + ay.Tny;
         ay.aS             = ay.aS + ay.Tsy;
         ay.aP             = ay.aP + ay.Tsy + ay.Tny;
-            
+        
     case lower('WFSim3')
-    
-        % Equal to WFSim 1
+        
+        % For u-momentum equation
+        ax.Tnx              = zeros(Nx,Ny);
+        ax.Tsx              = zeros(Nx,Ny);
+        
+        ax.Tnx(2:Nx,1:Ny-1) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dxx(2:Nx,1:Ny-1)./(dyy(2:Nx,2:Ny).^2)).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
+        ax.Tsx(1:Nx-1,2:Ny) = Rho*(mixing_length(1:Nx-1,2:Ny).^2).*(dxx(2:Nx,2:Ny)./(dyy(2:Nx,2:Ny).^2)).*abs(u(2:Nx,1:Ny-1)-u(2:Nx,2:Ny));
+        
+        ax.aN             = ax.aN + ax.Tnx;
+        ax.aS             = ax.aS + ax.Tsx;
+        ax.aP             = ax.aP + ax.Tnx + ax.Tsx;
+        
+        % For v-momentum equation
+        ay.Tey            = zeros(Nx,Ny);
+        ay.Twy            = zeros(Nx,Ny);
+        
+        ay.Tey(1:Nx-1,1:Ny) = Rho*(mixing_length(1:Nx-1,1:Ny).^2).*(dyy(1:Nx-1,1:Ny)./(dxx(1:Nx-1,1:Ny).^2)).*abs(v(2:Nx,1:Ny)-v(1:Nx-1,1:Ny));
+        ay.Twy(2:Nx,1:Ny)   = Rho*(mixing_length(2:Nx,1:Ny).^2).*(dyy(2:Nx,1:Ny)./(dxx(2:Nx,1:Ny).^2)).*abs(v(1:Nx-1,1:Ny)-v(2:Nx,1:Ny));
+        
+        ay.aE             = ay.aE + ay.Tey;
+        ay.aW             = ay.aW + ay.Twy;
+        ay.aP             = ay.aP + ay.Tey + ay.Twy;
         
         
     case lower('WFSim2')
@@ -97,8 +134,8 @@ switch lower(Turbulencemodel)
         ay.Tey = zeros(Nx,Ny);
         ay.Twy = zeros(Nx,Ny);
         
-        ay.Tey(1:Nx-1,2:Ny)   = Rho*(mixing_length(1:Nx-1,2:Ny).^2)./dyy(1:Nx-1,2:Ny).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1)); 
-        ay.Twy(2:Nx,2:Ny)     = Rho*(mixing_length(2:Nx,2:Ny).^2)./dyy(1:Nx-1,2:Ny).*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1)); 
+        ay.Tey(1:Nx-1,2:Ny)   = Rho*(mixing_length(1:Nx-1,2:Ny).^2)./dyy(1:Nx-1,2:Ny).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
+        ay.Twy(2:Nx,2:Ny)     = Rho*(mixing_length(2:Nx,2:Ny).^2)./dyy(1:Nx-1,2:Ny).*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));
         
         % Define here Ayo
         Ayo    = sparse((Ny-3)*(Nx-2),(Ny-2)*(Nx-3));
@@ -117,18 +154,15 @@ switch lower(Turbulencemodel)
         end
         
         output.Ayo = Ayo;
-                
+        
     case lower('WFSim1')
         
         % For u-momentum equation
         ax.Tnx              = zeros(Nx,Ny);
         ax.Tsx              = zeros(Nx,Ny);
-
+        
         ax.Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-        
-        %ax.Tnx(1:Nx,2:Ny-1) = Rho*(mixing_length(1:Nx,2:Ny-1).^2).*(dxx(1:Nx,2:Ny-1)./(dyy(1:Nx,2:Ny-1).^2)).*abs(u(1:Nx,3:Ny)-u(1:Nx,2:Ny-1));
-        %ax.Tsx(1:Nx,1:Ny-2) = Rho*(mixing_length(1:Nx,1:Ny-2).^2).*(dxx(1:Nx,2:Ny-1)./(dyy(1:Nx,1:Ny-2).^2)).*abs(u(1:Nx,2:Ny-1)-u(1:Nx,1:Ny-2));
         
         ax.aN             = ax.aN + ax.Tnx;
         ax.aS             = ax.aS + ax.Tsx;
@@ -137,16 +171,16 @@ switch lower(Turbulencemodel)
         % For v-momentum equation
         ay.Tey            = zeros(Nx,Ny);
         ay.Twy            = zeros(Nx,Ny);
-                
+        
         ay.Tey(1:Nx-1,1:Ny) = Rho*(mixing_length(1:Nx-1,1:Ny).^2).*(dyy(1:Nx-1,1:Ny)./(dxx(1:Nx-1,1:Ny).^2)).*abs(v(2:Nx,1:Ny)-v(1:Nx-1,1:Ny));
         ay.Twy(2:Nx,1:Ny)   = Rho*(mixing_length(2:Nx,1:Ny).^2).*(dyy(2:Nx,1:Ny)./(dxx(2:Nx,1:Ny).^2)).*abs(v(1:Nx-1,1:Ny)-v(2:Nx,1:Ny));
-                 
+        
         ay.aE             = ay.aE + ay.Tey;
         ay.aW             = ay.aW + ay.Twy;
         ay.aP             = ay.aP + ay.Tey + ay.Twy;
         
         if Linearversion
-                       
+            
             % For u-momentum equation
             %dTsxd1           = zeros(Nx,Ny);
             %dTsxd2           = zeros(Nx,Ny);
