@@ -46,26 +46,50 @@ switch lower(Turbulencemodel)
         ax.Tsx              = zeros(Nx,Ny);
         
         ax.Tnex             = zeros(Nx,Ny);
-        ax.Tnwx             = zeros(Nx,Ny);
         ax.Tsex             = zeros(Nx,Ny);
-        ax.Tswx             = zeros(Nx,Ny);
         
         %1
-        ax.Tex(1:Nx-1,2:Ny-1) = Rho*(mixing_length(1:Nx-1,2:Ny-1).^2).*(dyy2(1:Nx-1,2:Ny-1)./(dyy(1:Nx-1,2:Ny-1).*dxx2(1:Nx-1,2:Ny-1))).*abs(u(1:Nx-1,3:Ny)-u(1:Nx-1,2:Ny-1));
-        ax.Twx(2:Nx,2:Ny-1)   = Rho*(mixing_length(2:Nx,2:Ny-1).^2).*(dyy2(1:Nx-1,2:Ny-1)./(dyy(2:Nx,2:Ny-1).*dxx2(2:Nx,2:Ny-1))).*abs(u(1:Nx-1,2:Ny-1)-u(1:Nx-1,1:Ny-2));
+        ax.Tex(1:Nx-1,2:Ny-1) = Rho*(mixing_length(1:Nx-1,2:Ny-1).^2).*(dyy2(1:Nx-1,2:Ny-1)./(dyy(1:Nx-1,2:Ny-1).*dxx2(1:Nx-1,2:Ny-1)))...
+            .*abs(u(1:Nx-1,2:Ny-1)-u(1:Nx-1,1:Ny-2));
+        ax.Twx(2:Nx,2:Ny-1)   = Rho*(mixing_length(2:Nx,2:Ny-1).^2).*(dyy2(1:Nx-1,2:Ny-1)./(dyy(2:Nx,2:Ny-1).*dxx2(2:Nx,2:Ny-1)))...
+            .*abs(u(1:Nx-1,1:Ny-2)-u(1:Nx-1,2:Ny-1));
         
         ax.aE             = ax.aE + ax.Tex;
         ax.aW             = ax.aW + ax.Twx;
         ax.aP             = ax.aP + ax.Twx + ax.Tex;
         
         %2
-        %ax.Tnx(1:Nx-1,1:Ny-1)= Rho*(mixing_length(1:Nx-1,1:Ny-1).^2).*(dxx(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).^2)).*abs(u(2:Nx,1:Ny-1)-u(1:Nx-1,1:Ny-1));
-        %ax.Tsx(2:Nx,1:Ny-1)  = Rho*(mixing_length(1:Nx-1,2:Ny).^2).*(dxx(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,2:Ny).^2)).*abs(u(1:Nx-1,1:Ny-1)-u(2:Nx,1:Ny-1));
+        ax.Tnx(1:Nx,1:Ny-1)= Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,1:Ny-1).^2))...
+        .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
+        ax.Tsx(1:Nx,2:Ny)  = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2))...
+        .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
         
         ax.aN             = ax.aN + ax.Tnx;
         ax.aS             = ax.aS + ax.Tsx;
         ax.aP             = ax.aP + ax.Tnx + ax.Tsx;
         
+        ax.Tnex(1:Nx,1:Ny-1)= .5*Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(1./(dyy(1:Nx,1:Ny-1)))...
+            .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
+        ax.Tsex(1:Nx,2:Ny)  = .5*Rho*(mixing_length(1:Nx,2:Ny).^2).*(1./(dyy(1:Nx,2:Ny)))...
+            .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
+        
+        Axo  = sparse((Ny-2)*(Nx-3),(Nx-2)*(Ny-3));
+        Bx_W = sparse(Ny-2,Ny-3); Bx_E   = sparse(Ny-2,Ny-3);
+        
+        for x= 3:Nx-1;
+            swx      = spdiags(ax.Tsex(x,3:Ny-1)',0,Ny-3,Ny-3);    %v_{I-1,j}
+            nwx      = -spdiags(ax.Tnex(x,2:Ny-2)',0,Ny-3,Ny-3);    %v_{I-1,j+1}
+            
+            Bx_W     = [sparse(1,Ny-3); swx] + [nwx; sparse(1,Ny-3)];
+            
+            sex      = -spdiags(ax.Tsex(x,3:Ny-1)',0,Ny-3,Ny-3);    %v_{I,j}
+            nex      = spdiags(ax.Tnex(x,2:Ny-2)',0,Ny-3,Ny-3);    %v_{I,j+1}
+            Bx_E     = [sparse(1,Ny-3); sex] + [nex; sparse(1,Ny-3)];
+            
+            Axo((x-3)*(Ny-2)+1:(x-2)*(Ny-2) ,(x-3)*(Ny-3)+1:(x-1)*(Ny-3)) = [Bx_W Bx_E];
+        end
+        output.Axo = Axo;
+
         
         % For v-momentum equation
         ay.Tey   = zeros(Nx,Ny);
@@ -74,19 +98,46 @@ switch lower(Turbulencemodel)
         ay.Tsy   = zeros(Nx,Ny);
         
         ay.Tney  = zeros(Nx,Ny);
-        ay.Tnwy  = zeros(Nx,Ny);
-        ay.Tsey  = zeros(Nx,Ny);
-        ay.Tswy  = zeros(Nx,Ny);
-        
-        
-        
+        ay.Tnwy  = zeros(Nx,Ny);       
+       
         %3
+        ay.Tey(2:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx-1,1:Ny-1).^2).*(1./(dxx(1:Nx-1,1:Ny-1)))...
+            .*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
+        ay.Twy(1:Nx-1,2:Ny) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(1./(dxx(1:Nx-1,1:Ny-1)))...
+            .*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1)); 
         
+        ay.aE             = ay.aE + ay.Tey;
+        ay.aW             = ay.aW + ay.Twy;
+        ay.aP             = ay.aP + ay.Tey + ay.Twy;
+        
+        ay.Tney(1:Nx-1,2:Ny) = 0.5*Rho*(mixing_length(1:Nx-1,1:Ny-1).^2).*(1./(dyy(2:Nx,1:Ny-1)))...
+            .*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
+        ay.Tnwy(2:Nx,2:Ny) = 0.5*Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(1./(dyy(2:Nx,1:Ny-1)))...
+            .*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));         
+   
+        Ayo    = sparse((Ny-3)*(Nx-2),(Ny-2)*(Nx-3));
+        By_W   = sparse(Ny-3,Ny-2); By_E   = sparse(Ny-3,Ny-2);
+        
+        for y= 3:Nx-1;
+            swy      = spdiags(ay.Tnwy(y,3:Ny-1)',0,Ny-3,Ny-3);      %u_{i,J-1}
+            nwy      = -spdiags(ay.Tnwy(y,3:Ny-1)',0,Ny-3,Ny-3);     %u_{i,J}
+            By_W     = [swy sparse(Ny-3,1)] + [sparse(Ny-3,1) nwy];
+            
+            sey      = -spdiags(ay.Tney(y-1,3:Ny-1)',0,Ny-3,Ny-3);   %u_{i+1,J-1}
+            ney      = spdiags(ay.Tney(y-1,3:Ny-1)',0,Ny-3,Ny-3);    %u_{i+1,J}
+            By_E     = [sey sparse(Ny-3,1)] + [sparse(Ny-3,1) ney];
+            
+            Ayo((y-3)*(Ny-3)+1:(y-1)*(Ny-3) ,(y-3)*(Ny-2)+1:(y-2)*(Ny-2)) = [By_E; By_W];
+        end
+        output.Ayo = Ayo;
         
         
         %4
-        %ay.Tny(2:Nx,1:Ny-1) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
-        %ay.Tsy(1:Nx-1,2:Ny) = Rho*(mixing_length(2:Nx,2:Ny).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1))).*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));
+        ay.Tny(2:Nx,1:Ny-1) = Rho*(mixing_length(2:Nx,1:Ny-1).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1)))...
+            .*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
+        ay.Tsy(1:Nx-1,2:Ny) = Rho*(mixing_length(2:Nx,2:Ny).^2).*(dxx2(1:Nx-1,1:Ny-1)./(dyy(1:Nx-1,1:Ny-1).*dyy2(1:Nx-1,1:Ny-1)))...
+            .*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));
+       
         
         ay.aN             = ay.aN + ay.Tny;
         ay.aS             = ay.aS + ay.Tsy;
@@ -137,7 +188,7 @@ switch lower(Turbulencemodel)
         ay.Tey(1:Nx-1,2:Ny)   = Rho*(mixing_length(1:Nx-1,2:Ny).^2)./dyy(1:Nx-1,2:Ny).*abs(u(2:Nx,2:Ny)-u(2:Nx,1:Ny-1));
         ay.Twy(2:Nx,2:Ny)     = Rho*(mixing_length(2:Nx,2:Ny).^2)./dyy(1:Nx-1,2:Ny).*abs(u(1:Nx-1,2:Ny)-u(1:Nx-1,1:Ny-1));
         
-        % Define here Ayo
+        % Define Ayo
         Ayo    = sparse((Ny-3)*(Nx-2),(Ny-2)*(Nx-3));
         By_W   = sparse(Ny-3,Ny-2); By_E   = sparse(Ny-3,Ny-2);
         
@@ -161,8 +212,13 @@ switch lower(Turbulencemodel)
         ax.Tnx              = zeros(Nx,Ny);
         ax.Tsx              = zeros(Nx,Ny);
         
-        ax.Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
-        ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
+        ax.Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2))...
+            .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
+        ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2))...
+            .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
+        
+        ax.Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2))...
+            .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         
         ax.aN             = ax.aN + ax.Tnx;
         ax.aS             = ax.aS + ax.Tsx;
@@ -172,8 +228,10 @@ switch lower(Turbulencemodel)
         ay.Tey            = zeros(Nx,Ny);
         ay.Twy            = zeros(Nx,Ny);
         
-        ay.Tey(1:Nx-1,1:Ny) = Rho*(mixing_length(1:Nx-1,1:Ny).^2).*(dyy(1:Nx-1,1:Ny)./(dxx(1:Nx-1,1:Ny).^2)).*abs(v(2:Nx,1:Ny)-v(1:Nx-1,1:Ny));
-        ay.Twy(2:Nx,1:Ny)   = Rho*(mixing_length(2:Nx,1:Ny).^2).*(dyy(2:Nx,1:Ny)./(dxx(2:Nx,1:Ny).^2)).*abs(v(1:Nx-1,1:Ny)-v(2:Nx,1:Ny));
+        ay.Tey(1:Nx-1,1:Ny) = Rho*(mixing_length(1:Nx-1,1:Ny).^2).*(dyy(1:Nx-1,1:Ny)./(dxx(1:Nx-1,1:Ny).^2))...
+            .*abs(v(2:Nx,1:Ny)-v(1:Nx-1,1:Ny));
+        ay.Twy(2:Nx,1:Ny)   = Rho*(mixing_length(2:Nx,1:Ny).^2).*(dyy(2:Nx,1:Ny)./(dxx(2:Nx,1:Ny).^2))...
+            .*abs(v(1:Nx-1,1:Ny)-v(2:Nx,1:Ny));
         
         ay.aE             = ay.aE + ay.Tey;
         ay.aW             = ay.aW + ay.Twy;

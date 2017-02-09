@@ -17,12 +17,12 @@ end;
 % Setup A matrix
 Ay    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ay,2,3,1);
 Ax    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ax,3,2,1);
-% WFSim1
-sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; 
+% WFSim1 and WFSim3
+%sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; 
 % WFSim2
-%sys.A = [Ax zeros(Wp.Nu,Wp.Nv) B1;StrucDiscretization.Ayo Ay B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; % This one for turbulence model original
+%sys.A = [Ax sparse(Wp.Nu,Wp.Nv) B1;StrucDiscretization.Ayo Ay B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; % This one for turbulence model original
 % WFSim4
-%sys.A = [Ax StrucDiscretization.Axo B1;StrucDiscretization.Ayo Ay B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; % This one for turbulence model original
+sys.A = [Ax StrucDiscretization.Axo B1;StrucDiscretization.Ayo Ay B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; % This one for turbulence model original
 
 sys.M = blkdiag(...
     spdiags(StrucDynamical.ccx,0,Wp.Nu,Wp.Nu),...
