@@ -18,7 +18,7 @@ for x= 3:Nx-1;
     nex      = -spdiags(dax.NE(x,2:Ny-2)',0,Ny-3,Ny-3);
     Bx_E     = [sparse(1,Ny-3); sex] + [nex; sparse(1,Ny-3)];
     
-    Ax_off((x-3)*(Ny-2)+1:(x-2)*(Ny-2) ,(x-3)*(Ny-3)+1:(x-1)*(Ny-3)) = [Bx_W full(Bx_E)];
+    Ax_off((x-3)*(Ny-2)+1:(x-2)*(Ny-2) ,(x-3)*(Ny-3)+1:(x-1)*(Ny-3)) = [Bx_W Bx_E];
 end
 
 for y= 3:Nx-1;

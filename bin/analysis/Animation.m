@@ -119,8 +119,8 @@ for kk=1:N
 end
 if N==1
     hline(u_Inf,'k--','u_b');
-    hline(u_Inf*(1-1/3),'k--','u_b(1-a)');
-    hline(u_Inf*(1-2*1/3),'k--','u_b(1-2a)');
+    hline(u_Inf*(1-1/3),'k--','u_b(1-a*)');
+    hline(u_Inf*(1-2*1/3),'k--','u_b(1-2a*)');
 end
 hold off;
 drawnow;

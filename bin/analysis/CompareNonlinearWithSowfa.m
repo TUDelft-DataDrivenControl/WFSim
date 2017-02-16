@@ -12,6 +12,8 @@ Wp.name       = 'APC_3x3turb_noyaw_9turb_100x50_lin';    % Meshing name (see "\b
 %Wp.name       = 'NoPrecursor_2turb_60x30_lin';         % Meshing name (see "\bin\core\meshing.m")
 %Wp.name       = 'YawCase3_50x50_lin';                  % Meshing name (see "\bin\core\meshing.m")
 %Wp.name       = 'Yawcase1_2turb_100x50_lin';
+Wp.Turbulencemodel  = 'WFSim5';
+
 
 Animate       = 0;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations

@@ -7,7 +7,7 @@
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.bl(du_k)
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.Bl * du_k
 
-clear; clc; close all;
+clear; clc; %close all;
 
 %% Initialize script
 options.Projection     = 0;                      % Use projection (true/false)
@@ -16,8 +16,11 @@ options.exportLinearSol= 0;                      % Calculate linear solution of 
 options.Derivatives    = 0;                      % Compute derivatives
 options.startUniform   = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
-
-Wp.name       = 'NoPrecursor_2turb_60x30_lin';      % Meshing name (see "\bin\core\meshing.m")
+  
+%Wp.name             = 'WP_CPUTime';      % Meshing name (see "\bin\core\meshing.m")
+Wp.name             = 'NoPrecursor_2turb_60x30_lin';
+%Wp.name             = 'SingleTurbine_50x50_lin';
+Wp.Turbulencemodel  = 'WFSim5';
 
 Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
@@ -30,8 +33,11 @@ else
     max_it = 50;
 end
 
-meanCPUTime = zeros(50,1);
-for ll=1:1
+%profile on
+
+inc         = 1;
+meanCPUTime = zeros(inc,2);
+for ll=1:inc
    
     Wp.ll = ll;
 
@@ -87,7 +93,10 @@ for k=1:Wp.sim.NN
         end; 
     end; 
 end;
-meanCPUTime(ll,:) = [mean(CPUTime(2:end)) size(sol.x,1)];
 
+meanCPUTime(ll,:) = [mean(CPUTime(2:end)) size(sol.x,1)];
+%meanCPUTimeWFSim5 = meanCPUTime; save('WFSim5.mat','meanCPUTimeWFSim5')
 end
+%profile viewer
+
 disp('Completed simulations.');

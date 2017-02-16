@@ -287,8 +287,8 @@ switch lower(Wp.name)
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2000;      % Domain length in x-direction (m)
         Ly     = 800;           % Domain length in y-direction (m)
-        Nx     = 15;             % Number of grid points in x-direction
-        Ny     = 15;             % Number of grid points in y-direction
+        Nx     = 100;             % Number of grid points in x-direction
+        Ny     = 50;             % Number of grid points in y-direction
         Crx    = 750;           % Turbine locations in x-direction (m)
         Cry    = 400;            % Turbine locations in y-direction (m)
         
@@ -297,8 +297,8 @@ switch lower(Wp.name)
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = loadedinput.input.beta(j,1)';
-            input{j}.phi  = 0*loadedinput.input.phi(j,1)'+35;
+            input{j}.beta = loadedinput.input.beta(j,1)';%+.6;
+            input{j}.phi  = 0*loadedinput.input.phi(j,1)';
         end;
         
         % Calculate delta inputs
@@ -309,7 +309,7 @@ switch lower(Wp.name)
         
         Drotor      = 126.4;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1;    % Turbine force scaling
+        forcescale  = 1.2;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 2;         % Simulation length (s)
@@ -319,10 +319,10 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 2;         % Mixing length in x-direction (m)
+        lmu      = 3;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 2;
+        n        = 5;
         m        = 0;
         
     case lower('TwoTurbinePartialOverlap_lin')
@@ -726,7 +726,7 @@ if plotMesh
 end;
 
 %% Export to Wp and input
-Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',Wp.name);
+Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',Wp.name,'Turbulencemodel',Wp.Turbulencemodel);
 Wp.sim     = struct('h',h,'time',time,'L',L,'NN',NN);
 Wp.turbine = struct('Drotor',Drotor,'powerscale',powerscale,'forcescale',forcescale, ...
     'N',length(Crx),'Crx',Crx,'Cry',Cry);
