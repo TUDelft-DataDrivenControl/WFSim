@@ -20,13 +20,13 @@ Ax    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ax,3,2,1);
 
 switch lower(Wp.Turbulencemodel)
     case lower('WFSim1')
-        sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
+        sys.A = [blkdiag(Ax,Ay) [B1;2*B2]; [B1;2*B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
         
     case lower('WFSim2')
         sys.A = [Ax sparse(Wp.Nu,Wp.Nv) B1;StrucDiscretization.Ayo Ay B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
         
     case lower('WFSim3')
-        sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
+        sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;2*B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
         
     case lower('WFSim4')
         sys.A = [Ax StrucDiscretization.Axo B1;StrucDiscretization.Ayo Ay B2;B1' 2*B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
