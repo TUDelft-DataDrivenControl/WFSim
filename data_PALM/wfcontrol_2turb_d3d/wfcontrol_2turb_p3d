@@ -1,0 +1,126 @@
+&inipar  nx = 1023, ny = 255, nz = 128,
+         dx = 10.0, dy = 10.0, dz = 10.0,
+
+         dz_stretch_level = 600.0,
+         dz_stretch_factor = 1.08,
+         dz_max = 50.0,
+
+         initializing_actions = 'cyclic_fill',
+         reference_state = 'horizontal_average',
+         turbulent_inflow = .T.,
+         recycling_width = 5120.0,
+         inflow_damping_height = 600.0,
+         recycling_yshift = .T.,
+
+         bc_lr = 'dirichlet/radiation',
+         psolver = 'multigrid',
+         mg_cycles = 4,
+         mg_switch_to_pe0_level = -1,
+         bc_pt_b = 'dirichlet',
+         
+         conserve_volume_flow = .F.,
+         rayleigh_damping_factor = 0.01,
+
+         ug_surface = 9.0, vg_surface = -2.0,
+
+         phi = 54.0,
+
+         roughness_length = 0.002,
+         
+         pt_surface                 = 283.15,
+         pt_vertical_gradient       = 8.0, 1.0,
+         pt_vertical_gradient_level = 500.0, 600.0,
+
+         surface_heatflux = 0.0, /
+         
+&d3par  end_time = 601.0, ! 10 min for test
+ 
+        npex = 16, npey = 16,
+
+        termination_time_needed = 1800.0,
+
+        create_disturbances = .F.,
+
+        dt_run_control = 0.,
+
+        dt_domask = 1.0, 300.0,
+        skip_time_domask = 0.0, 300.0, ! first five minutes for averaging are skipped
+        
+        data_output_masks(1,:) = 'u', 'v', 'w',
+        data_output_masks(2,:) = 'u_av', 'v_av', 'w_av',
+
+        mask_x_loop(1,:) = 5500.0, 7700.0, 10.0,
+        mask_y_loop(1,:) = 900.0, 1660.0, 10.0,
+        mask_z(1,:) =   90.0,
+        
+        mask_x_loop(2,:) = 5500.0, 7700.0, 10.0,
+        mask_y_loop(2,:) = 900.0, 1660.0, 10.0,
+        mask_z_loop(2,:) =   0.0,  300.0,  10.0,
+
+        dt_data_output_av = 300.0,
+        dt_averaging_input = 0.0,
+        averaging_interval = 300.0,
+        skip_time_data_output_av = 300.0,
+
+        dt_dopr = 600.0,
+        averaging_interval_pr = 600.0,
+        data_output_pr = 'pt', '#u', '#v', 'w', 'e', 'e*', 'u*2', 'v*2', 'w*2', 'l', 'km', 'kh','w"u"', 'w*u*', 'wu', 'w"v"', 'w*v*', 'wv', 'w"pt"', 'w*pt*', 'wpt', /
+
+ &wind_turbine_par  time_turbine_on  = 1.0,
+ 
+            turb_mod = 'adm',
+
+!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+!            nturbines = 1,
+!            
+!            rcx = 6000.0, 
+!            rcy = 1280.0,            
+!            rcz =  90.0,
+!            rr  = 63.0,
+!
+!            rnac  =  1.5,
+!            dtow  =  4.0, 
+!
+!            turb_cd_nacelle = 0.85,
+!            turb_cd_tower   = 1.2,
+!            
+!            phi_yaw = 0.0,    
+!            tilt = 0.0, / 
+
+!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            nturbines = 2,
+            
+            rcx = 6000.0, 6504.0, 
+            rcy = 1280.0, 1280.0,            
+            rcz =  90.0,  90.0,
+            rr  = 63.0, 63.0,
+
+            rnac  =  1.5,  1.5,
+            dtow  =  4.0,  4.0, 
+
+            turb_cd_nacelle = 0.85, 0.85,
+            turb_cd_tower   = 1.2, 1.2,
+            
+            phi_yaw = 0.0, 0.0,    
+            tilt = 0.0, / 
+
+!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+!            nturbines = 3,
+!            
+!            rcx = 6000.0, 6504.0, 7008.0, 
+!            rcy = 1280.0, 1280.0, 1280.0,           
+!            rcz =  90.0,  90.0, 90.0,
+!            rr  = 63.0, 63.0, 63.0,
+!
+!            rnac  =  1.5,  1.5,  1.5,
+!            dtow  =  4.0,  4.0,  4.0,
+!
+!            turb_cd_nacelle = 0.85, 0.85, 0.85,
+!            turb_cd_tower   = 1.2, 1.2, 1.2,
+!            
+!            phi_yaw = 0.0, 0.0, 0.0,
+!            tilt = 0.0, / 
+
+! The following is the command to start the run on the HPC of Oldenburg University
+! mrun -d wfcontrol_2turb -v -c .mrun.config.flow -h lcflow -m 1000 -K parallel -X 256 -t 14400 -r "d3# rec ts# pr# ma#"  
+            

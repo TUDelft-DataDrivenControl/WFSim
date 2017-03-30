@@ -18,11 +18,13 @@ options.startUniform   = 0;                      % Start from a uniform flowfiel
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
   
 %Wp.name             = 'WP_CPUTime';      % Meshing name (see "\bin\core\meshing.m")
+%Wp.name             = 'wfcontrol_2turb';
 Wp.name             = 'NoPrecursor_2turb_60x30_lin';
-%Wp.name             = 'SingleTurbine_50x50_lin';
-Wp.Turbulencemodel  = 'WFSim5';
+%Wp.name             = 'WakeControl_5deg_Steps_URef_8';
 
-Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
+Wp.Turbulencemodel  = 'WFSim3';
+
+Animate       = 10;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -34,6 +36,9 @@ else
 end
 
 %profile on
+
+%vid = VideoWriter('flow.avi');
+%open(vid);
 
 inc         = 1;
 meanCPUTime = zeros(inc,2);
@@ -80,11 +85,13 @@ for k=1:Wp.sim.NN
     end
     CPUTime(k) = toc;
   
-    %if k==100
-    %    Wp.site.u_Inf           = 12;
-    %    [B1,B2,bc]              = Compute_B1_B2_bc(Wp);
-    %    B2                      = 2*B2;
-    %    sol.u(1:2,1:Wp.mesh.Ny) = Wp.site.u_Inf;
+    %if k==50
+        %Wp.site.u_Inf           = 12;
+        %[B1,B2,bc]              = Compute_B1_B2_bc(Wp);
+        %sol.u(1:2,1:Wp.mesh.Ny) = Wp.site.u_Inf;
+        %Wp.site.v_Inf           = 2;    
+        %sol.v(1:2,1:Wp.mesh.Ny) = Wp.site.v_Inf;
+
     %end
     
     if Animate > 0
@@ -92,10 +99,18 @@ for k=1:Wp.sim.NN
             Animation; 
         end; 
     end; 
-end;
+    
+    %fname = sprintf('D:/sboersma3/My Documents/MATLAB/WFSim/data_WFSim/Change axial induction/%d',k);
+    %fname = sprintf('D:/sboersma3/My Documents/MATLAB/WFSim/data_WFSim/Change yaw/%d',k);
+    %save(fname,'sol','Wp','k','input')
+    
+    %frame = getframe(gcf);
+    %writeVideo(vid,frame);
+end
+%close(vid);
 
 meanCPUTime(ll,:) = [mean(CPUTime(2:end)) size(sol.x,1)];
-%meanCPUTimeWFSim5 = meanCPUTime; save('WFSim5.mat','meanCPUTimeWFSim5')
+%meanCPUTimeWFSim3 = meanCPUTime; save('WFSim3.mat','meanCPUTimeWFSim3')
 end
 %profile viewer
 

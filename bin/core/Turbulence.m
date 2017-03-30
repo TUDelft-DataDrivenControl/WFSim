@@ -4,13 +4,19 @@ if N==1
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 elseif N==2
-    %x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-m)]';
-    %x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(2)-n)'];
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
     x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-    %y                = [zeros(1,yline{1}(1)-2) ones(1,length(yline{1})+2) zeros(1,Ny-yline{1}(end)-1)] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    
+    % The following lines for PALM data
+    if strcmp(Wp.name,'wfcontrol_2turb')
+        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
+        x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
+        y                = [zeros(1,yline{1}(1)-1) ones(1,length(unique([yline{1} yline{2}]))) zeros(1,Ny-yline{2}(end))] ;
+        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    end
+    
 elseif N==3 || N==6
     xline            = sort(unique(xline));
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
@@ -341,10 +347,7 @@ switch lower(Wp.Turbulencemodel)
             .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2))...
             .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-        
-        ax.Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2))...
-            .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
-        
+                
         ax.aN             = ax.aN + ax.Tnx;
         ax.aS             = ax.aS + ax.Tsx;
         ax.aP             = ax.aP + ax.Tnx + ax.Tsx;
