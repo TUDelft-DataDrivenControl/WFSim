@@ -311,7 +311,7 @@ switch lower(Wp.name)
         
         Drotor      = 126.3992;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 2;%1.75    % Turbine force scaling
+        forcescale  = 2.5;%1.75    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 999;       % Simulation length (s)
@@ -321,7 +321,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 1.5;      % Mixing length in x-direction (m)
+        lmu      = 1.75;%1.5;      % Mixing length in x-direction (m)
         lmv      = .25;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -354,20 +354,20 @@ switch lower(Wp.name)
         
         Drotor      = 126.4;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1.2;    % Turbine force scaling
+        forcescale  = .5;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 2;         % Simulation length (s)
+        L        = 1;         % Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 3;         % Mixing length in x-direction (m)
+        lmu      = 2;         % Mixing length in x-direction (m)
         lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 5;
+        n        = 2;
         m        = 0;
         
     case lower('TwoTurbinePartialOverlap_lin')
