@@ -73,7 +73,7 @@ for kk=1:N
     
     Ueffect(kk)           = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     
-    if a(kk)> 0.4
+    if a(kk)> 0.9
         CT(kk)      = 8/9+(4*F-40/9)*a(kk)+(50/9-4*F)*a(kk)^2;
         diff1       = 1/(input.beta(kk)+1).^2;
         diff2       = 2*input.beta(kk)/(input.beta(kk)+1)^3;
@@ -85,7 +85,7 @@ for kk=1:N
     end
     
     
-    %% Thrust force
+    %% Thrust force      
     Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
     Fx              = Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180+0*phi{kk});
@@ -93,7 +93,8 @@ for kk=1:N
     %%
     %CP(kk)        = 4*a(kk)*(1-a(kk))^2*0.768*cos(input.phi(kk)*pi/180)^(1.88);
     %Power(kk)     = CP(kk)*mean( sol.u(xline(kk,:)+5,yline{kk}) ).^3 ;
-    Power(kk)       = 1/F*powerscale*2*Rho*Ar*input.beta(kk)*meanUe{kk}.^3;
+    %Power(kk)       = 1.5*powerscale*2*Rho*Ar*input.beta(kk)*(meanUe{kk}*1).^3;
+    Power(kk)       = mean(.5*Rho*Ar*(Ue{kk}*1).^3*0.5*CT(kk));
     
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear

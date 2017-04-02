@@ -1,5 +1,8 @@
 clear; clc; close all;
 
+[WFSimFolder, ~, ~] = fileparts(which([mfilename '.m']));   % Get WFSim directory
+addpath(genpath('..\..\Data_PALM\'));                       % Add PALM data
+
 % Initialize script
 options.Projection    = 0;                      % Use projection (true/false)
 options.Linearversion = 0;                      % Provide linear variant of WFSim (true/false)
