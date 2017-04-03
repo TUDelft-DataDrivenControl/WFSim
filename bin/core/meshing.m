@@ -374,8 +374,8 @@ switch lower(Wp.name)
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2481.9702;      % Domain length in x-direction (m)
         Ly     = 1400;           % Domain length in y-direction (m)
-        Nx     = 50;             % Number of grid points in x-direction
-        Ny     = 25;             % Number of grid points in y-direction
+        Nx     = 100;             % Number of grid points in x-direction
+        Ny     = 50;             % Number of grid points in y-direction
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700-.25*126, 700+.25*126]; % Turbine locations in y-direction (m)
         
@@ -405,7 +405,7 @@ switch lower(Wp.name)
         
         h        = 1.0;       % Sampling time (s)
         L        = 500;       % Simulation length (s)
-        mu       = 18e-5;     % Dynamic flow viscosity
+        mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)

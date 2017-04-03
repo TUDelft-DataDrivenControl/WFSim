@@ -94,7 +94,7 @@ for kk=1:N
     %CP(kk)        = 4*a(kk)*(1-a(kk))^2*0.768*cos(input.phi(kk)*pi/180)^(1.88);
     %Power(kk)     = CP(kk)*mean( sol.u(xline(kk,:)+5,yline{kk}) ).^3 ;
     %Power(kk)       = 1.5*powerscale*2*Rho*Ar*input.beta(kk)*(meanUe{kk}*1).^3;
-    Power(kk)       = mean(.5*Rho*Ar*(Ue{kk}*1).^3*0.5*CT(kk));
+    Power(kk)       = mean(.5*Rho*Ar*(Ue{kk}).^3*0.5*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
     
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear
