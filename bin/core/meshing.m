@@ -289,8 +289,8 @@ switch lower(Wp.name)
         Ly     = 2158.4055;
         Nx     = 100;
         Ny     = 50;
-        Crx    = [400;1031.976;399.98;399.99;1031.956;1031.966;1663.931;1663.941;1663.951];
-        Cry    = [700;700;1458.405;1079.203;1458.405;1079.203;1458.405;1079.203;700];
+        Crx    = [400, 1031.976, 399.98, 399.99, 1031.956, 1031.966, 1663.931, 1663.941, 1663.951];
+        Cry    = [700, 700, 1458.405, 1079.203, 1458.405, 1079.203, 1458.405, 1079.203, 700];
         
         loadedinput = load([WFSimfolder 'Data_SOWFA\APC\system_input.mat']); % load input settings
         loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
