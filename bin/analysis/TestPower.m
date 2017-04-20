@@ -3,7 +3,7 @@
 % 1) Single turbine, power as a function of axial induction
 % 2) Single turbine, power as a function of yaw angle
 % 3) Two turbines partial overlap, power as a function of changing yaw angle turbine 1 
-% 4) Comparison with SOWFA simulation (not done yet)
+% 4) Comparison with SOWFA simulation 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear; clc; close all;
 
@@ -82,7 +82,7 @@ disp('Completed simulations.');
 
 figure(2);clf
 plot(ak,Power_ak/max(Power_ak));grid
-ylabel('Power');xlabel('a')
+ylabel('$\overline{P}_1$','interpreter','latex');xlabel('$a$','interpreter','latex')
 
 disp(' ')
 disp('Hit a key for following test')
@@ -106,7 +106,7 @@ Wp.name       = 'SingleTurbine_50x50_lin';   % Meshing name (see "\bin\core\mesh
 Wp.Turbulencemodel  = 'WFSim3';
 
 
-Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 0;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -196,7 +196,7 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 Wp.name       = 'TwoTurbinePartialOverlap_lin';   % Meshing name (see "\bin\core\meshing.m")
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 20;                     % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 50;                     % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -279,7 +279,7 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 Wp.name       = 'YawCase3_50x50_lin';   % Meshing name (see "\bin\core\meshing.m")
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 20;                     % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 0;                     % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1

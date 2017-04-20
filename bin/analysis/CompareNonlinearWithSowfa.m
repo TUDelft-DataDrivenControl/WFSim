@@ -416,8 +416,8 @@ if isfield(SOWFAdata,'power')
         plot(Powersowfa(2,1:end),'r--');
         grid;xlabel('Time [s]');ylabel('Power')
     else
-        Power       = Power/max(max(Powersowfa));
-        Powersowfa  = Powersowfa/max(max(Powersowfa));
+        %Power       = Power/max(max(Powersowfa));
+        %Powersowfa  = Powersowfa/max(max(Powersowfa));
         clear VAF
         for k=1:9
         e(k,:)   = Power(k,:)-Powersowfa(k,:);
@@ -427,42 +427,54 @@ if isfield(SOWFAdata,'power')
         
         figure(10);clf;
         subplot(3,3,1)
-        plot(Power(1,1:end));hold on;
-        plot(Powersowfa(1,1:end),'r--');
-        grid;ylabel('Power');
-        subplot(3,3,2)
-        plot(Power(2,1:end));hold on;
-        plot(Powersowfa(2,1:end),'r--');
-        grid;
-        subplot(3,3,3)
         plot(Power(3,1:end));hold on;
-        plot(Powersowfa(3,1:end),'r--');
-        grid;
-        subplot(3,3,4)
-        plot(Power(4,1:end));hold on;
-        plot(Powersowfa(4,1:end),'r--');
-        grid;ylabel('Power');
-        subplot(3,3,5)
-        plot(Power(5,1:end));hold on;
-        plot(Powersowfa(5,1:end),'r--');
-        grid;
-        subplot(3,3,6)
+        plot(Powersowfa(3,1:end),'r');
+        set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
+        grid;ylabel('$P_1$','interpreter','latex');ylim([0 4*10^6])
+        subplot(3,3,2)
         plot(Power(6,1:end));hold on;
-        plot(Powersowfa(3,1:end),'r--');
-        grid;
+        plot(Powersowfa(6,1:end),'r');
+        set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
+        set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
+        grid;ylim([0 4*10^6]);ylabel('$P_2$','interpreter','latex')
+        subplot(3,3,3)
+        plot(Power(1,1:end));hold on;
+        plot(Powersowfa(1,1:end),'r');
+        set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
+        set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
+        grid;ylim([0 4*10^6]);ylabel('$P_3$','interpreter','latex')
+        subplot(3,3,4)
+        plot(Power(2,1:end));hold on;
+        plot(Powersowfa(2,1:end),'r');
+        set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
+        grid;ylabel('Power');ylim([0 4*10^6]);ylabel('$P_4$','interpreter','latex')
+        subplot(3,3,5)
+        plot(Power(4,1:end));hold on;
+        plot(Powersowfa(4,1:end),'r');
+        grid;ylim([0 4*10^6]);ylabel('$P_5$','interpreter','latex')
+        set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
+        set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
+        subplot(3,3,6)
+        plot(Power(5,1:end));hold on;
+        plot(Powersowfa(5,1:end),'r');
+        grid;ylim([0 4*10^6]);ylabel('$P_6$','interpreter','latex')
+        set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
+        set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         subplot(3,3,7)
         plot(Power(7,1:end));hold on;
-        plot(Powersowfa(7,1:end),'r--');
-        grid;xlabel('Time [s]');ylabel('Power');
+        plot(Powersowfa(7,1:end),'r');
+        grid;xlabel('$k [s]$','interpreter','latex');ylabel('Power');ylim([0 4*10^6]);ylabel('$P_7$','interpreter','latex')
         subplot(3,3,8)
         plot(Power(8,1:end));hold on;
-        plot(Powersowfa(8,1:end),'r--');
-        grid;xlabel('Time [s]');
+        plot(Powersowfa(8,1:end),'r');
+        grid;xlabel('$k [s]$','interpreter','latex');ylim([0 4*10^6]);ylabel('$P_8$','interpreter','latex')
+        set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         subplot(3,3,9)
         plot(Power(9,1:end));hold on;
-        plot(Powersowfa(9,1:end),'r--');
-        grid;xlabel('Time [s]');
-        suptitle('SOWFA (red) and WFSim (blue)')
+        plot(Powersowfa(9,1:end),'r');
+        grid;xlabel('$k [s]$','interpreter','latex');ylim([0 4*10^6]);ylabel('$P_9$','interpreter','latex')
+        set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
+        %suptitle('SOWFA (red) and WFSim (blue)')
     end
     
 end
