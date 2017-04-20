@@ -214,10 +214,8 @@ if Linearversion
 end;
 
 %% Turbulence model
-if Turb==1
-    
-    Turbulence
-    
+if Turb==1    
+    Turbulence    
 end
 
 output.ax = ax;

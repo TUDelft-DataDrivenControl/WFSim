@@ -73,7 +73,7 @@ for kk=1:N
     
     Ueffect(kk)           = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     
-    if a(kk)> 0.9
+    if a(kk)> 0.4
         CT(kk)      = 8/9+(4*F-40/9)*a(kk)+(50/9-4*F)*a(kk)^2;
         diff1       = 1/(input.beta(kk)+1).^2;
         diff2       = 2*input.beta(kk)/(input.beta(kk)+1)^3;

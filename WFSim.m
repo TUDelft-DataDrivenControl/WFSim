@@ -9,6 +9,8 @@
 
 clear; clc; %close all;
 
+WFSim_addpaths
+
 %% Initialize script
 options.Projection     = 0;                      % Use projection (true/false)
 options.Linearversion  = 0;                      % Provide linear variant of WFSim (true/false)
@@ -19,12 +21,12 @@ options.exportPressures= ~options.Projection;    % Calculate pressure fields
   
 %Wp.name             = 'WP_CPUTime';      % Meshing name (see "\bin\core\meshing.m")
 %Wp.name             = 'wfcontrol_2turb';
-Wp.name             = 'NoPrecursor_2turb_60x30_lin';
+Wp.name             = 'ThreeTurbine_Ampc';
 %Wp.name             = 'WakeControl_5deg_Steps_URef_8';
 
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 10;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -110,7 +112,7 @@ end
 %close(vid);
 
 meanCPUTime(ll,:) = [mean(CPUTime(2:end)) size(sol.x,1)];
-%meanCPUTimeWFSim3 = meanCPUTime; save('WFSim3.mat','meanCPUTimeWFSim3')
+%meanCPUTimeWFSim3 = meanCPUTime; save('WFSim3extended.mat','meanCPUTimeWFSim3extended')
 end
 %profile viewer
 

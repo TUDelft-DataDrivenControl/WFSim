@@ -11,8 +11,8 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-Wp.name             = 'NoPrecursor_2turb_60x30_lin';   % Meshing name (see "\bin\core\meshing.m")
-Wp.Turbulencemodel  = 'WFSim5';
+Wp.name             = 'Andreas';   % Meshing name (see "\bin\core\meshing.m")
+Wp.Turbulencemodel  = 'WFSim3';
 
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
@@ -97,12 +97,12 @@ z       = zeros(Wp.turbine.N,NN);   % Normalised rotor velocities nonlinear mode
 w       = zeros(nw,NN);             % Input
 
 % Define perturbations
-deltabeta   = 0.1*ones(1,NN);
+deltabeta   = 0.2*ones(1,NN);
 deltayaw    = 0*ones(1,NN);
 %for kk=1:NN;if sin(2*pi*5/L*time(kk))>=0;deltabeta(kk) = .1;else deltabeta(kk) = -.1;end;end;
 
 w(1,:)      = deltabeta;
-w(2,:)      = 0*-deltabeta;
+w(2,:)      = -deltabeta;
 w(3,:)      = deltayaw;
 w(4,:)      = -deltayaw;
 
