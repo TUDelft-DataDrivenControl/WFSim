@@ -56,7 +56,7 @@ end;
 
 %% Simulate linear and nonlinear model with same delta perturbation
 Linearversion = 0;
-Animate       = 5;
+Animate       = 10;
 
 L       = 250;
 h       = Wp.sim.h;
