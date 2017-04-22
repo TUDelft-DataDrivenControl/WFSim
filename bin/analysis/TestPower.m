@@ -17,6 +17,8 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
 Wp.name       = 'SingleTurbine_50x50_lin';   % Meshing name (see "\bin\core\meshing.m")
 
+Wp.Turbulencemodel  = 'WFSim3';
+
 Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold

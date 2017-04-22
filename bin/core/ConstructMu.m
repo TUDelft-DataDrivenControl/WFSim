@@ -1,3 +1,13 @@
+function mu = ConstructMu(Wp)
+
+m      = Wp.site.m;
+xline  = Wp.mesh.xline;
+yline  = Wp.mesh.yline;
+Nx     = Wp.mesh.Nx;
+Ny     = Wp.mesh.Ny;
+lmu    = Wp.site.lmu;
+Drotor = Wp.turbine.Drotor;
+
 if mod(m,2); m = m+1; end
 
 xxline = sort(unique(xline));

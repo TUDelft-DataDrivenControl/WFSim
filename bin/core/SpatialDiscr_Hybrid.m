@@ -20,7 +20,6 @@ yline  = Wp.mesh.yline;
 Rho    = Wp.site.Rho;
 mu     = Wp.site.mu;
 lmu    = Wp.site.lmu;
-lmv    = Wp.site.lmv;
 Turb   = Wp.site.turbul;
 m      = Wp.site.m;
 n      = Wp.site.n;
@@ -60,7 +59,6 @@ dFsx(2:Nx,1:Ny)   = Rho*0.5*dxx(2:Nx,1:Ny);
 Fsx(2:Nx,1:Ny)    = dFsx(2:Nx,1:Ny).*( v(2:Nx,1:Ny) + v(1:Nx-1,1:Ny)); % Waarom deze een andere size dan de andere drie?
 
 ax.aE             = max(max(-Fex,Dxe-0.5*Fex),zeros(Nx,Ny));
-% dDxe = 0?
 ax.aW             = max(max(Fwx,Dxw+0.5.*Fwx),zeros(Nx,Ny));
 ax.aN             = max(max(-Fnx,Dxn-0.5*Fnx),zeros(Nx,Ny));
 ax.aS             = max(max(Fsx,Dxs+0.5*Fsx),zeros(Nx,Ny));
@@ -215,102 +213,8 @@ if Linearversion
 end;
 
 %% Turbulence model
-if Turb==1
-    
-    % For u-momentum equation
-    Tsx              = zeros(Nx,Ny);
-    Tnx              = zeros(Nx,Ny);
-    
-    if N==1
-        x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
-        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    elseif N==2
-        %x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-m)]';
-        %x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(2)-n)'];
-        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
-        x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
-        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-        %y                = [zeros(1,yline{1}(1)-2) ones(1,length(yline{1})+2) zeros(1,Ny-yline{1}(end)-1)] ;
-        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    elseif N==3 || N==6
-        xline            = sort(unique(xline));
-        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
-        x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
-        x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
-        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-        %mixing_length    = repmat(x,1,Ny)*0.5*Drotor;
-        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;    
-    elseif N==9        
-        xline            = sort(unique(xline));
-        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
-        x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
-        x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];        
-        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{4}(1)-yline{1}(end)-1) ...
-                                ones(1,length(yline{4})) zeros(1,yline{3}(1)-yline{4}(end)-1) ...
-                                ones(1,length(yline{3})) zeros(1,Ny-yline{3}(end))];
-        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    else
-        mixing_length    = lmu*0.5*Drotor;
-    end
-    
-    Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx2(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-    Tnx(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx2(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
-    
-    ax.aS             = ax.aS + Tsx;
-    ax.aN             = ax.aN + Tnx;
-    ax.aP             = ax.aP + Tnx + Tsx;
-    
-    % For v-momentum equation
-    Tsy            = zeros(Nx,Ny);
-    Tny            = zeros(Nx,Ny);
-    %Tey            = zeros(Nx,Ny);
-    %Twy            = zeros(Nx,Ny);
-       
-    Tsy(1:Nx,2:Ny)     = Rho*((lmv*0.5*Drotor)^2).*(dxx(1:Nx,2:Ny)./(dyy2(1:Nx,2:Ny).^2)).*abs(v(1:Nx,2:Ny)-v(1:Nx,1:Ny-1));
-    Tny(1:Nx,1:Ny-1)   = Rho*((lmv*0.5*Drotor)^2).*(dxx(1:Nx,1:Ny-1)./(dyy2(1:Nx,2:Ny).^2)).*abs(v(1:Nx,2:Ny)-v(1:Nx,1:Ny-1));
-    
-    %Tey(1:end-1,1:end) = Rho*(mixing_length^2)*(dxx(2:Nx,1:Ny)./(dyy2(2:Nx,1:Ny).^2)).*abs(v(2:Nx,1:Ny)-v(1:Nx-1,1:Ny));
-    %Twy(1:end-1,1:end) = Rho*(mixing_length^2)*(dxx(2:Nx,1:Ny)./(dyy2(2:Nx,1:Ny).^2)).*abs(v(2:Nx,1:Ny)-v(1:Nx-1,1:Ny));
-    
-    %ay.aE             = ay.aE + Tey;
-    %ay.aW             = ay.aW + Twy;
-    ay.aS             = ay.aS + Tsy;
-    ay.aN             = ay.aN + Tny;
-    ay.aP             = ay.aP + Tny + Tsy;
-  
-    if Linearversion
-        
-        % For u-momentum equation                       
-        dTsxd1           = zeros(Nx,Ny);
-        dTsxd2           = zeros(Nx,Ny);
-        dTnxd1           = zeros(Nx,Ny);
-        dTnxd2           = zeros(Nx,Ny);
-        
-        % dTsx/du_(i,J)
-        dTsxd1(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx2(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2)).*sign((u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny)));
-        % dTsx/du_(i,J-1)
-        dTsxd2(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx2(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2)).*-sign((u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny)));
-        % dTnx/du_(i,J)
-        dTnxd1(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx2(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*-sign((u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1)));
-        % dTnx/du_(i,J+1)
-        dTnxd2(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx2(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*sign((u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1)));
-        
-        dax.S(1:Nx,2:Ny)   = dax.S(1:Nx,2:Ny)   + Tsx(1:Nx,2:Ny) ;
-        dax.N(1:Nx,1:Ny-1) = dax.N(1:Nx,1:Ny-1) + Tnx(1:Nx,1:Ny-1);
-        dax.P(1:Nx,1:Ny-1) = dax.P(1:Nx,1:Ny-1) + Tnx(1:Nx,1:Ny-1) + Tsx(1:Nx,1:Ny-1) ;
-        
-        %dax.S(1:Nx,2:Ny)   = dax.S(1:Nx,2:Ny)+dTsxd2(1:Nx,2:Ny).*u(1:Nx,2:Ny)-dTsxd2(1:Nx,2:Ny).*u(1:Nx,1:Ny-1);
-        %dax.N(1:Nx,1:Ny-1) = dax.N(1:Nx,1:Ny-1)-dTnxd2(1:Nx,1:Ny-1).*u(1:Nx,1:Ny-1)+dTnxd2(1:Nx,1:Ny-1).*u(1:Nx,2:Ny);
-        %dax.P(1:Nx,1:Ny-1) = dax.P(1:Nx,1:Ny-1)+dTnxd1(1:Nx,1:Ny-1).*u(1:Nx,1:Ny-1)+dTsxd1(1:Nx,1:Ny-1).*u(1:Nx,1:Ny-1) ...
-                                %-dTnxd1(1:Nx,1:Ny-1).*u(1:Nx,2:Ny)-dTsxd1(1:Nx,1:Ny-1).*u(1:Nx,2:Ny);
-        
-        % For v-momentum equation                       
-        day.S(1:Nx,2:Ny)   = day.S(1:Nx,2:Ny)   + Tsy(1:Nx,2:Ny) ;
-        day.N(1:Nx,1:Ny-1) = day.N(1:Nx,1:Ny-1) + Tny(1:Nx,1:Ny-1);
-        day.P(1:Nx,1:Ny-1) = day.P(1:Nx,1:Ny-1) + Tny(1:Nx,1:Ny-1) + Tsy(1:Nx,1:Ny-1) ;
-    end;
-    
+if Turb==1    
+    Turbulence    
 end
 
 output.ax = ax;

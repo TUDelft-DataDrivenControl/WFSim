@@ -15,7 +15,6 @@ yline  = Wp.mesh.yline;
 Rho    = Wp.site.Rho;
 mu     = Wp.site.mu;
 lmu    = Wp.site.lmu;
-lmv    = Wp.site.lmv;
 Turb   = Wp.site.turbul;
 u_Inf  = Wp.site.u_Inf;
 v_Inf  = Wp.site.v_Inf;

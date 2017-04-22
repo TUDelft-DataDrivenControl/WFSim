@@ -13,6 +13,9 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
 Wp.name       = 'NoPrecursor_2turb_60x30_lin';   % Meshing name (see "\bin\core\meshing.m")
 
+Wp.Turbulencemodel  = 'WFSim3';
+
+
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1

@@ -63,7 +63,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 4;
@@ -106,7 +105,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 1;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -151,7 +149,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -194,7 +191,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 1;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -236,7 +232,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -278,7 +273,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -322,7 +316,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 1.75;%1.5;      % Mixing length in x-direction (m)
-        lmv      = .25;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 3;
@@ -365,7 +358,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 0;
@@ -412,7 +404,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = false;     % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -454,7 +445,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -502,7 +492,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2.5;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -548,7 +537,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2.5;         % Mixing length in x-direction (m)
-        lmv      = 0;      % Mixing length in y-direction (m)
         turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -592,7 +580,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 2;         % Mixing length in x-direction (m)
-        lmv      = 0;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
@@ -635,7 +622,6 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = 1.75;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 6;
@@ -677,8 +663,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 2.5;         % Mixing length in x-direction (m)
-        lmv      = 0.25;      % Mixing length in y-direction (m)
+        lmu      = 2.75;         % Mixing length in x-direction (m)
         turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 2;
@@ -776,16 +761,19 @@ if plotMesh
     drawnow;
 end;
 
-if turbul==0; ConstructMu; end
-
 %% Export to Wp and input
 Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',Wp.name,'Turbulencemodel',Wp.Turbulencemodel);
 Wp.sim     = struct('h',h,'time',time,'L',L,'NN',NN);
 Wp.turbine = struct('Drotor',Drotor,'powerscale',powerscale,'forcescale',forcescale, ...
     'N',length(Crx),'Crx',Crx,'Cry',Cry);
 Wp.site    = struct('mu',mu,'Rho',Rho,'u_Inf',u_Inf,'v_Inf',v_Inf,'p_init',p_init, ...
-    'lmu',lmu, 'lmv',lmv,'turbul',turbul,'m',m,'n',n);
+    'lmu',lmu,'turbul',turbul,'m',m,'n',n);
 Wp.mesh    = struct('Lx',Lx,'Ly',Ly,'Nx',Nx,'Ny',Ny,'ldxx',ldxx,'ldyy',ldyy,'ldxx2',...
     ldxx2,'ldyy2',ldyy2,'dxx',dxx,'dyy',dyy,'dxx2',dxx2,'dyy2',dyy2,...
     'xline',xline,'type',type);Wp.mesh.yline = yline; Wp.mesh.ylinev = ylinev; % Do not support struct command
+
+
+%% Construct mu if no turbulence
+if turbul==0; mu = ConstructMu(Wp); Wp.site(:).mu = mu; end
+
 end
