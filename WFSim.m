@@ -21,6 +21,7 @@ options.startUniform   = 0;                      % Start from a uniform flowfiel
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
 
 Wp.name             = 'ThreeTurbine_Ampc';      % Meshing name (see "\bin\core\meshing.m")
+
 Wp.Turbulencemodel  = 'WFSim3';
 
 
