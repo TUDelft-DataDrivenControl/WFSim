@@ -24,7 +24,7 @@ Wp.name             = 'ThreeTurbine_Ampc';      % Meshing name (see "\bin\core\m
 Wp.Turbulencemodel  = 'WFSim3';
 
 
-Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 20;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
