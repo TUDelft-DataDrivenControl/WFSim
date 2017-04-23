@@ -653,9 +653,9 @@ switch lower(Wp.name)
         
         Drotor      = 90;     % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1;    % Turbine force scaling
+        forcescale  = 1;      % Turbine force scaling
         
-        h        = 2.0;       % Sampling time (s)
+        h        = 1.0;       % Sampling time (s)
         L        = 200;       % Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
@@ -663,10 +663,10 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 2.75;         % Mixing length in x-direction (m)
+        lmu      = 5;         % Mixing length in x-direction (m)
         turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
-        m        = 2;
+        m        = 4;
         
     otherwise
         error('No valid meshing specified. Please take a look at Wp.name.');
