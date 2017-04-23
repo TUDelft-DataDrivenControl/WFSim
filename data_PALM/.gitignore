@@ -1,8 +1,6 @@
 # Ignore all files in this directory and recursively any subdirectories
-*.*
+*/*
 
 # Add exclusions for:
 !*/
 !.gitignore
-!Download_extra_tools.url
-!*/Download_files.url
