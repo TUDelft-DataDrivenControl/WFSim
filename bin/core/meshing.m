@@ -655,8 +655,6 @@ switch lower(Wp.name)
             input{j}.dbeta = input{j+1}.beta- input{j}.beta;
             input{j}.dphi  = input{j+1}.phi - input{j}.phi ;
         end;
-        input{j+1}.dbeta   = input{j}.dbeta;
-        input{j+1}.dphi    = input{j}.dphi;
         
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
