@@ -635,28 +635,27 @@ switch lower(Wp.name)
         Cry    =   [Ly/2; Ly/2; Ly/2];            % X-coordinate of rotor (center)
         Crx    =   [500; 500+5*90;  500+2*5*90];         % Y-coordinate of rotor (center)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
-        loadedinput.input.phi = 0*loadedinput.input.phi;
-        
-        % Correctly format inputs (temporary function)
-        for j = 1:length(loadedinput.input.t)
-            input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = [loadedinput.input.beta(j,:)';.3]+.2;
-            input{j}.phi  = [loadedinput.input.phi(j,:)';0];
-        end;
-        
-        % Calculate delta inputs
-        for j = 1:length(loadedinput.input.t)-1
-            input{j}.dbeta = [loadedinput.input.beta(j+1,:)'- loadedinput.input.beta(j,:)';0];
-            input{j}.dphi  = [loadedinput.input.phi(j+1,:)' - loadedinput.input.phi(j,:)';0] ;
-        end;
-        
         Drotor      = 90;     % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
         forcescale  = 1;      % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 200;       % Simulation length (s)
+        time     = 0:h:L;
+        
+        % Correctly format inputs (temporary function)
+        for j = 1:length(time)
+            input{j}.t    = time(j);
+            input{j}.beta = [.4;.4;.4];
+            input{j}.phi  = [0;0;0];
+        end;
+        
+        % Calculate delta inputs
+        for j = 1:length(time)-1
+            input{j}.dbeta = input{j+1}.beta- input{j}.beta;
+            input{j}.dphi  = input{j+1}.phi - input{j}.phi ;
+        end;
+     
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 9.0;       % Freestream flow velocity x-direction (m/s)
