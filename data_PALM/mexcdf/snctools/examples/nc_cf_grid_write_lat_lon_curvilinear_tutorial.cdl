@@ -1,0 +1,55 @@
+NetCDF-3 Classic D:\sboersma3\My Documents\PALM data\mexcdf\snctools\examples\nc_cf_grid_write_lat_lon_curvilinear_tutorial.nc {
+dimensions:
+	Xtrack = 5 ;
+	Track = 3 ;
+
+variables:
+	// Preference 'PRESERVE_FVD':  false,
+	// dimensions consistent with ncBrowse, not with native MATLAB netcdf package.
+	single lon(Xtrack,Track), shape = [5 3]
+		lon:long_name = "longitude" ;
+		lon:units = "degrees_east" ;
+		lon:standard_name = "longitude" ;
+		lon:actual_range = 2.70711 9 ;
+		lon:coordinates = "lat lon" ;
+		lon:grid_mapping = "wgs84" ;
+	single lat(Xtrack,Track), shape = [5 3]
+		lat:long_name = "latitude" ;
+		lat:units = "degrees_north" ;
+		lat:standard_name = "latitude" ;
+		lat:actual_range = 49.2235 56.1213 ;
+		lat:coordinates = "lat lon" ;
+		lat:grid_mapping = "wgs84" ;
+	int32 wgs84([]), shape = [1]
+		wgs84:name = "WGS 84" ;
+		wgs84:epsg = 4326 ;
+		wgs84:grid_mapping_name = "latitude_longitude" ;
+		wgs84:semi_major_axis = 6.37814e+06 ;
+		wgs84:semi_minor_axis = 6.35675e+06 ;
+		wgs84:inverse_flattening = 298.257 ;
+		wgs84:comment = "value is equal to EPSG code" ;
+	single depth(Xtrack,Track), shape = [5 3]
+		depth:long_name = "bottom depth" ;
+		depth:units = "m" ;
+		depth:_FillValue = -9999.000000 f;
+		depth:actual_range = 1 15 ;
+		depth:coordinates = "lat lon" ;
+		depth:grid_mapping = "wgs84" ;
+		depth:standard_name = "sea_floor_depth_below_geoid" ;
+
+//global attributes:
+		:title = "Example of curvilinear grid conforming to CF conventions." ;
+		:institution = "TU Delpht" ;
+		:source = "example data" ;
+		:history = "tranformation to netCDF: $HeadURL: https://repos.deltares.nl/repos/OpenEarthTools/trunk/matlab/io/netcdf/nctools/nc_cf_grid_write_lat_lon_curvilinear_tutorial.m $" ;
+		:references = "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html" ;
+		:email = "john.g.evans.ne@gmail.com" ;
+		:comment = "Adapted from example provided by Gerben de Boer." ;
+		:version = "1.0" ;
+		:Conventions = "CF-1.4" ;
+		:CF:featureType = "Grid" ;
+		:terms_for_use = "These data can be used freely for research purposes provided that the following source is acknowledged: TU Delpht" ;
+		:disclaimer = "This data is made available in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." ;
+
+
+}
