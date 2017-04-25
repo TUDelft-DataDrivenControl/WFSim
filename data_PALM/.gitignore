@@ -1,6 +1,8 @@
 # Ignore all files in this directory and recursively any subdirectories
 */*
 
+
+
 # Add exclusions for:
 !*/
 !.gitignore
