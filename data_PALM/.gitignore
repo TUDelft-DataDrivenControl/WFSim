@@ -4,5 +4,4 @@
 
 
 # Add exclusions for:
-!*/
 !.gitignore
