@@ -11,7 +11,7 @@ end;
 
 [StrucDiscretization]                = SpatialDiscr_Hybrid(Wp,sol.u,sol.v,options.Linearversion); % Spatial discretization
 [StrucDiscretization,StrucDynamical] = Dynamical(Wp,StrucDiscretization,sol.u,sol.v,dt,options.Linearversion); % Dynamical term
-[StrucActuator,Ueffect,a,Power,CT]   = Actuator(Wp,input,sol,options); % Actuator
+[StrucActuator,Ueffect,a,Power,CT]   = Actuator_Joeri(Wp,input,sol,options); % Actuator
 [StrucDiscretization,StrucBCs]       = BoundaryConditions(Nx,Ny,StrucDiscretization,sol.u,sol.v,options.Linearversion); % Zero gradient boundary conditions momentum equations
 
 % Setup A matrix
