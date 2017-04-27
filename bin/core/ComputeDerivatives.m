@@ -63,7 +63,7 @@ derivatives.A            = A;
 
 
 %% Before all is in
-dSmdPower_in                                  = sparse(Nu+Nv+Np+2,N);
+dSmdPower_in            = sparse(Nu+Nv+Np+2,N);
 dSmdPower_in(1:Nu+Nv,:) = dSm.dbeta.*dSm.dPower_in;
 
 dSmdPower_in(Nu+Nv+Np+2-(Ny-2)+1,:) = [];
