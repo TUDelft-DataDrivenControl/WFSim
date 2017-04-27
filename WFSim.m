@@ -13,9 +13,9 @@ WFSim_addpaths
 
 %% Initialize script
 options.Projection     = 0;                      % Use projection (true/false)
-options.Linearversion  = 0;                      % Provide linear variant of WFSim (true/false)
-options.exportLinearSol= 0;                      % Calculate linear solution of WFSim
-options.Derivatives    = 0;                      % Compute derivatives
+options.Linearversion  = 1;                      % Provide linear variant of WFSim (true/false)
+options.exportLinearSol= 1;                      % Calculate linear solution of WFSim
+options.Derivatives    = 1;                      % Compute derivatives
 options.startUniform   = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
   
