@@ -187,8 +187,22 @@ for kk=1:N
     dSm.dJdx  = [vec(JXXu');vec(JXXv');vec(JXXp')];
     dSm.dJdbeta(kk)   = -1/F*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue(kk,:)).^3;
     dSm.dJdPhi(kk)  = -1/F*6*Rho*pi*(0.5*Drotor)^2*beta(kk)*mean(Ue(kk,:)).^2.*mean(dUedPhi(kk,:));
+
+    dSmxdbetakk = sparse(Nx-3,Ny-2);
+    dSmydbetakk = sparse(Nx-2,Ny-3);
+    dSmxdphikk  = sparse(Nx-3,Ny-2);
+    dSmydphikk  = sparse(Nx-2,Ny-3);
     
+    dSmxdbetakk(xline(kk,:)-2,yline{kk}-1)        =  -(dFxdbeta.*dyy2(1,yline{kk}))';  %JW changed definition of force and location (need correction for yaw
+    dSmydbetakk(xline(kk,:)-1,yline{kk}(2:end)-2) = scale*(dFydbeta(2:end).*dyy2(1,yline{kk}(2:end)))'; %% JW made this 0
+    dSm.dbeta(:,kk)                               = [vec(dSmxdbetakk');vec(dSmydbetakk')];
     
+    dSmxdphikk(xline(kk,:)-2,yline{kk}-1)         = -dFxdPhi'.*dyy2(1,yline{kk})';
+    dSmydphikk(xline(kk,:)-1,yline{kk}(2:end)-2)  = scale*dFydPhi(2:end)'.*dyy2(1,yline{kk}(2:end))';
+    dSm.dphi(:,kk)                                = [vec(dSmxdphikk');vec(dSmydphikk')];
+    
+    dSm.dPower_in(:,kk)                           = [vec(dSmxdbetakk');vec(dSmydbetakk')].*dSm.dbetadPower_in(kk);
+
     
     %% Input to Ax=b
     Sm.x(xline(kk,:)-2,yline{kk}-1)      = -Fx'.*dyy2(1,yline{kk})'*beta(kk)/beta(kk);
