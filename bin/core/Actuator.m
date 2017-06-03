@@ -70,9 +70,7 @@ for kk=1:N
     else
         a(kk)             = input.beta(kk)/(input.beta(kk)+1);
     end
-    
-    Ueffect(kk)           = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
-    
+        
     if a(kk)> 0.4
         CT(kk)      = 8/9+(4*F-40/9)*a(kk)+(50/9-4*F)*a(kk)^2;
         diff1       = 1/(input.beta(kk)+1).^2;
@@ -86,16 +84,36 @@ for kk=1:N
     
     
     %% Thrust force      
-    Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
+    %Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
+    % With the following, we only take middle velocity component
+    m = size(Ue{kk},2);
+    if rem(m,2)
+       ind  = ceil(m/2); 
+       temp = Ue{kk};
+       Ur   = repmat(temp(ind),1,m);
+    else
+       ind  = [m/2 m/2+1]; 
+       temp = Ue{kk};
+       Ur   = repmat(mean(temp(ind)),1,m);
+    end    
+    Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
+
     Fx              = Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180+0*phi{kk});
     
+    %Ueffect(kk)     = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
+    Ueffect(kk)     = mean(Ur)/(1-a(kk));     % Estimation effective wind speed
+
     %%
     %CP(kk)        = 4*a(kk)*(1-a(kk))^2*0.768*cos(input.phi(kk)*pi/180)^(1.88);
     %Power(kk)     = CP(kk)*mean( sol.u(xline(kk,:)+5,yline{kk}) ).^3 ;
     %Power(kk)       = 1.5*powerscale*2*Rho*Ar*input.beta(kk)*(meanUe{kk}*1).^3;
-    Power(kk)       = mean(.5*Rho*Ar*(Ue{kk}).^3*0.5*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
     
+    % Following works well
+    %Power(kk)       = mean(0.55*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
+    % Following how it should be    
+    Power(kk)       = mean(.75*.5*Rho*Ar*(Ur).^3*CT(kk)*(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
+
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear
     %Sm.y(x,y(2:end)-2)      = scale*Fy(2:end)'.*dyy2(1,y(2:end))';

@@ -296,6 +296,13 @@ switch lower(Wp.name)
         loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
             loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
             loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
+        
+        % Filter the input signals      
+        for j = 1:size(loadedinput.input.beta,2)
+            loadedinput.input.beta(:,j)= lsim(ss(tf(1,[20 1])),loadedinput.input.beta(:,j),...
+                loadedinput.input.t,loadedinput.input.beta(1,j));
+        end
+         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
@@ -311,7 +318,7 @@ switch lower(Wp.name)
         
         Drotor      = 126.3992;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 2.5;%1.75    % Turbine force scaling
+        forcescale  = 2.0;%1.75    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 999;       % Simulation length (s)
