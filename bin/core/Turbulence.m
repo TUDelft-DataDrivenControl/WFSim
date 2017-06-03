@@ -33,6 +33,11 @@ elseif N==9
         ones(1,length(yline{4})) zeros(1,yline{3}(1)-yline{4}(end)-1) ...
         ones(1,length(yline{3})) zeros(1,Ny-yline{3}(end))];
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+
+    H                = fspecial('gaussian',[Nx Ny],.5);
+    mixing_length    = filter2(H,mixing_length);
+    
+    
 else
     mixing_length    = lmu*0.5*Drotor;
 end
