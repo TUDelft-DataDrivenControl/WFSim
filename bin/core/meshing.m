@@ -240,12 +240,12 @@ switch lower(Wp.name)
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2232.0623;
         Ly     = 1400;
-        Nx     = 300;
-        Ny     = 150;
+        Nx     = 50;
+        Ny     = 25;
         Crx    = [400 1032.062];
         Cry    = [700 700];
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\NoPrecursor\system_input_optimized.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA\WithPrecursor\system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -272,6 +272,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
+        Wp.Turbulencemodel  = 'WFSim3';
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
