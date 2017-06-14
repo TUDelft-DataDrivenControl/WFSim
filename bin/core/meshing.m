@@ -68,6 +68,48 @@ switch lower(Wp.name)
         m        = 4;
         
         % Wind farms for which SOWFA data is available
+    case lower('YawCase3_50x50_lin_OBS')
+        type   = 'lin';          % Meshing type ('lin' or 'exp')
+        Lx     = 2481.9702;      % Domain length in x-direction (m)
+        Ly     = 1400;           % Domain length in y-direction (m)
+        Nx     = 50;             % Number of grid points in x-direction
+        Ny     = 25;             % Number of grid points in y-direction
+        Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
+        Cry    = [700, 700];     % Turbine locations in y-direction (m)
+        
+        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        Wp.Turbulencemodel  = 'WFSim3';
+        
+        % Correctly format inputs (temporary function)
+        for j = 1:length(loadedinput.input.t)
+            input{j}.t    = loadedinput.input.t(j);
+            input{j}.beta = loadedinput.input.beta(j,:)';
+            input{j}.phi  = loadedinput.input.phi(j,:)';
+        end;
+        
+        % Calculate delta inputs
+        for j = 1:length(loadedinput.input.t)-1
+            input{j}.dbeta = loadedinput.input.beta(j+1,:)'- loadedinput.input.beta(j,:)';
+            input{j}.dphi  = loadedinput.input.phi(j+1,:)' - loadedinput.input.phi(j,:)' ;
+        end;
+        
+        Drotor      = 126.4;  % Turbine rotor diameter in (m)
+        powerscale  = 1.0;    % Turbine powerscaling
+        forcescale  = 1.2;    % Turbine force scaling
+        
+        h        = 1.0;       % Sampling time (s)
+        L        = 999;       % Simulation length (s)
+        mu       = 0*18e-5;     % Dynamic flow viscosity
+        Rho      = 1.20;      % Flow density (kg m-3)
+        u_Inf    = 6.0;       % Freestream flow velocity x-direction (m/s)
+        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
+        p_init   = 0.0;       % Initial values for pressure terms (Pa)
+        
+        lmu      = 1;         % Mixing length in x-direction (m)
+        turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 8;
+		
     case lower('YawCase3_50x50_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2481.9702;      % Domain length in x-direction (m)
