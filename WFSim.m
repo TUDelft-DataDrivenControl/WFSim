@@ -7,7 +7,7 @@
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.bl(du_k)
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.Bl * du_k
 
-clear; clc; %close all;
+clear; clc; close all;
 
 WFSim_addpaths
 
@@ -20,9 +20,8 @@ options.startUniform   = 0;                      % Start from a uniform flowfiel
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
   
 %Wp.name             = 'WP_CPUTime';      % Meshing name (see "\bin\core\meshing.m")
-%Wp.name             = 'wfcontrol_2turb';
-Wp.name             = 'ThreeTurbine_Ampc';
-%Wp.name             = 'WakeControl_5deg_Steps_URef_8';
+Wp.name             = 'WP_CPUTime';
+%Wp.name             = 'ThreeTurbine_Ampc';
 
 Wp.Turbulencemodel  = 'WFSim3';
 

@@ -46,7 +46,7 @@ for l=1:length(Beta)
     
     input{1}.beta = Beta(l);
         
-    %% Loop
+    % Loop
     for k=1:Wp.sim.NN
         tic
         it        = 0;
@@ -81,7 +81,7 @@ end
 disp('Completed simulations.');
 
 figure(2);clf
-plot(ak,Power_ak/max(Power_ak));grid
+plot(ak,Power_ak/max(Power_ak),'linewidth',2);grid
 ylabel('$\overline{P}_1$','interpreter','latex');xlabel('$a$','interpreter','latex')
 
 disp(' ')
