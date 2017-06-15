@@ -84,7 +84,7 @@ switch lower(Wp.name)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
             input{j}.beta = loadedinput.input.beta(j,:)';
-            input{j}.phi  = loadedinput.input.phi(j,:)';
+            input{j}.phi  = 0*loadedinput.input.phi(j,:)';
         end;
         
         % Calculate delta inputs
@@ -172,7 +172,7 @@ switch lower(Wp.name)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
             input{j}.beta = loadedinput.input.beta(j,:)';
-            input{j}.phi  = loadedinput.input.phi(j,:)';
+            input{j}.phi  = 0*loadedinput.input.phi(j,:)';
         end;
         
         % Calculate delta inputs
@@ -210,10 +210,14 @@ switch lower(Wp.name)
         
         loadedinput = load([WFSimfolder 'Data_SOWFA\NoPrecursor\system_input.mat']); % load input settings
         
+        % Filter the input signals      
+        loadedinput.input.beta(:,1)= lsim(ss(tf(1,[2 1])),loadedinput.input.beta(:,1),...
+            loadedinput.input.t,loadedinput.input.beta(1,1));
+        
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = [.5;.5];%loadedinput.input.beta(j,:)';
+            input{j}.beta = loadedinput.input.beta(j,:)';
             input{j}.phi  = loadedinput.input.phi(j,:)';
         end;
         
@@ -224,11 +228,11 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126.3992;  % Turbine rotor diameter in (m)
-        powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1.4;%1.2;    % Turbine force scaling
+        powerscale  = 1.1;    % Turbine powerscaling
+        forcescale  = 1.3;%1.2;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 500;      % Simulation length (s)
+        L        = 999;      % Simulation length (s)
         mu       = 0*18e-5;   % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
@@ -299,7 +303,7 @@ switch lower(Wp.name)
         
         % Filter the input signals      
         for j = 1:size(loadedinput.input.beta,2)
-            loadedinput.input.beta(:,j)= lsim(ss(tf(1,[20 1])),loadedinput.input.beta(:,j),...
+            loadedinput.input.beta(:,j)= lsim(ss(tf(1,[15 1])),loadedinput.input.beta(:,j),...
                 loadedinput.input.t,loadedinput.input.beta(1,j));
         end
          
@@ -316,9 +320,9 @@ switch lower(Wp.name)
             input{j}.dphi  = loadedinput.input.phi(j+1,:)' - loadedinput.input.phi(j,:)' ;
         end;
         
-        Drotor      = 126.3992;  % Turbine rotor diameter in (m)
-        powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 2.0;%1.75    % Turbine force scaling
+        Drotor      = 126.3992;     % Turbine rotor diameter in (m)
+        powerscale  = Wp.Pp;%.55        % Turbine powerscaling
+        forcescale  = Wp.Ff;%1.75    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 999;       % Simulation length (s)
@@ -328,11 +332,11 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 1.75;%1.5;      % Mixing length in x-direction (m)
+        lmu      = Wp.lmuu;%1.5;      % Mixing length in x-direction (m)
         lmv      = .25;         % Mixing length in y-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 2;
-        m        = 3;
+        n        = Wp.nn;
+        m        = Wp.mm;
         
         % Wind farms for which no SOWFA data is available
     case lower('SingleTurbine_50x50_lin')
@@ -349,7 +353,7 @@ switch lower(Wp.name)
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = loadedinput.input.beta(j,1)';%+.6;
+            input{j}.beta = loadedinput.input.beta(j,1)'+.2;
             input{j}.phi  = 0*loadedinput.input.phi(j,1)';
         end;
         
@@ -361,7 +365,7 @@ switch lower(Wp.name)
         
         Drotor      = 126.4;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = .5;    % Turbine force scaling
+        forcescale  = .45;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 1;         % Simulation length (s)
