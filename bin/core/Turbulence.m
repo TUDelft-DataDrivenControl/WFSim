@@ -37,6 +37,10 @@ else
     mixing_length    = lmu*0.5*Drotor;
 end
 
+if size(mixing_length,1)>1
+    H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
+    mixing_length    = filter2(H,mixing_length);
+end
 
 switch lower(Wp.Turbulencemodel)
     
