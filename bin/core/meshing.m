@@ -333,6 +333,8 @@ switch lower(Wp.name)
         loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
             loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
             loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
+        
+        
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
