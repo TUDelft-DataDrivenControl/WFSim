@@ -17,7 +17,7 @@ end;
 % Setup A matrix
 Ay    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ay,2,3,1);
 Ax    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ax,3,2,1);
-sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; 
+sys.A = [blkdiag(Ax,Ay) [B1;B2]; [B1;2*B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; 
 sys.M = blkdiag(...
     spdiags(StrucDynamical.ccx,0,Wp.Nu,Wp.Nu),...
     spdiags(StrucDynamical.ccy,0,Wp.Nv,Wp.Nv),...
@@ -38,7 +38,7 @@ if  options.Projection
         Ayl         = MakingSparseMatrixl( Nx,Ny,StrucDiscretization.day,2,3,1);
         Axl         = MakingSparseMatrixl( Nx,Ny,StrucDiscretization.dax,3,2,1);
         [Axlo,Aylo] = MakingSparseMatrixlo(Nx,Ny,StrucDiscretization.dax,StrucDiscretization.day);
-        sys.Al      = [Axl Axlo B1;Aylo Ayl B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]-sys.A;
+        sys.Al      = [Axl Axlo B1;Aylo Ayl B2;B1' 2*B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]-sys.A;
         
         sys.Atl = StrucDynamical.dcdx+StrucBCs.dbcdx+StrucActuator.dSm.dx-sys.Al;
         sys.Atl = sys.Qsp'*sys.Atl(1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3),1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3))*sys.Qsp;
@@ -60,7 +60,7 @@ else
         Ayl         = MakingSparseMatrixl(Nx,Ny,StrucDiscretization.day,2,3,1);
         Axl         = MakingSparseMatrixl(Nx,Ny,StrucDiscretization.dax,3,2,1);
         [Axlo,Aylo] = MakingSparseMatrixlo(Nx,Ny,StrucDiscretization.dax,StrucDiscretization.day);
-        Al          = [Axl Axlo B1;Aylo Ayl B2;B1' B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]-sys.A;
+        Al          = [Axl Axlo B1;Aylo Ayl B2;B1' 2*B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]-sys.A;
         
         sys.Al = (StrucDynamical.dcdx+StrucBCs.dbcdx+StrucActuator.dSm.dx-Al);
         sys.Bl = [StrucActuator.Sm.dxx;StrucActuator.Sm.dyy;zeros(length(bc),size(input.beta,1)+size(input.phi,1))];
