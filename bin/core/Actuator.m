@@ -14,7 +14,6 @@ powerscale = Wp.turbine.powerscale;
 N          = Wp.turbine.N;
 F          = Wp.turbine.forcescale; % http://www.nrel.gov/docs/fy05osti/36834.pdf
 
-
 Projection    = options.Projection;
 Linearversion = options.Linearversion;
 Derivatives   = options.Derivatives;
@@ -53,7 +52,6 @@ for kk=1:N
     y  = yline{kk};    % Turbine y-pos in field
     yv = ylinev{kk};   % Corrected turbine y-pos in field
     
-    %%
     vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); % Bart: this can be fixed!
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
@@ -62,16 +60,10 @@ for kk=1:N
     meanUe{kk}    = mean(Ue{kk});
     
     dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
+ 
+    a(kk)         = input.beta(kk)/(input.beta(kk)+1);
     
-    if nargin==8;
-        input.beta(kk)    = Power_in(kk)/(1/F*powerscale*2*Rho*Ar*meanUe{kk}^3);
-        input.beta(kk)    = min(max(0.05,input.beta(kk)),0.5);
-        a(kk)             = input.beta(kk)/(input.beta(kk)+1);        % beta = a/(1-a)
-    else
-        a(kk)             = input.beta(kk)/(input.beta(kk)+1);
-    end
-    
-    Ueffect(kk)           = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
+    Ueffect(kk)   = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     
     if a(kk)> 0.4
         CT(kk)      = 8/9+(4*F-40/9)*a(kk)+(50/9-4*F)*a(kk)^2;
@@ -83,21 +75,17 @@ for kk=1:N
         diff1       = -(input.beta(kk)-1)/(input.beta(kk)+1)^3;
         dCTdbeta(kk)=  4*diff1*F;
     end
-    
-    
+       
     %% Thrust force
     Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
     Fx              = Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180+0*phi{kk});
     
     %%
-    %CP(kk)        = 4*a(kk)*(1-a(kk))^2*0.768*cos(input.phi(kk)*pi/180)^(1.88);
     Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
 
     %% Input to Ax=b
-    Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear
-    %Sm.y(x,y(2:end)-2)      = scale*Fy(2:end)'.*dyy2(1,y(2:end))';
-    %Sm.y(x-2,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';
+    Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           
     Sm.y(x-1,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';                                               % Input y-mom nonlinear
     
     if Linearversion
@@ -114,8 +102,6 @@ for kk=1:N
         dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
         
         Sm.dx(x-2,y-1)          = -(dFxdbeta'*input.dbeta(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
-        %Sm.dy(x,y(2:end)-2)     = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';
-        %Sm.dy(x-2,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';
         Sm.dy(x-1,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
         
         tempdx(x-2,y-1) = -dFxdbeta'.*dyy2(1,y)';
@@ -123,12 +109,8 @@ for kk=1:N
         tempdx(x-2,y-1) = -dFxdPhi'.*dyy2(1,y)';
         Sm.dxx(:,N+kk)  =  vec(tempdx');           % Input matrix (yaw) x-mom linear
         
-        %tempdy(x,y(2:end)-2)    = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
-        %tempdy(x-2,y(2:end)-2)  = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
         tempdy(x-1,y(2:end)-2)  = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
         Sm.dyy(:,kk)            = scale*vec(tempdy');                   % Input (beta) y-mom linear qlpv
-        %tempdy(x,y(2:end)-2)    = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
-        %tempdy(x-2,y(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
         tempdy(x-1,y(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
         Sm.dyy(:,N+kk)          = scale*vec(tempdy');                   % Input (yaw) y-mom linear qlpv
     end;
@@ -144,8 +126,6 @@ for kk=1:N
         end
         
         tempy(x-1,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';
-        %tempy(x,y(2:end)-2)     = Fy(2:end)'.*dyy2(1,y(2:end))';
-        %tempy(x-2,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';
         Sm.yy(:,kk)             = scale*vec(tempy')/input.beta(kk);
         Sm.yy(:,N+kk)           = scale*vec(tempy');
         if input.phi(kk)~=0
