@@ -109,7 +109,7 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
-		
+        
     case lower('YawCase3_50x50_lin')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2481.9702;      % Domain length in x-direction (m)
@@ -354,7 +354,7 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126.3992;  % Turbine rotor diameter in (m)
-        powerscale  = 1.0;    % Turbine powerscaling
+        powerscale  = .55;    % Turbine powerscaling
         forcescale  = 2.5;%1.75    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
@@ -365,7 +365,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 1.75;%1.5;      % Mixing length in x-direction (m)
+        lmu      = 1.5;      % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 3;
