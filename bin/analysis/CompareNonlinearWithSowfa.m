@@ -20,17 +20,17 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-%Wp.name       = 'APC_3x3turb_noyaw_9turb_100x50_lin';    % Meshing name (see "\bin\core\meshing.m")
-Wp.name       = 'NoPrecursor_2turb_60x30_lin';         % Meshing name (see "\bin\core\meshing.m")
+Wp.name       = 'APC_3x3turb_noyaw_9turb_100x50_lin';    % Meshing name (see "\bin\core\meshing.m")
+%Wp.name       = 'NoPrecursor_2turb_60x30_lin';         % Meshing name (see "\bin\core\meshing.m")
 %Wp.name       = 'YawCase3_50x50_lin';                  % Meshing name (see "\bin\core\meshing.m")
 %Wp.name       = 'Yawcase1_2turb_100x50_lin';
 Wp.Turbulencemodel  = 'WFSim3';
 
-%Wp.lmuu  = 2;
-%Wp.mm    = 3;
-%Wp.nn    = 2;
-%Wp.Ff    = 2.5;
-%Wp.Pp    = 1;
+Wp.lmuu  = 1.5;
+Wp.mm    = 3;
+Wp.nn    = 2;
+Wp.Ff    = 2.5;
+Wp.Pp    = .55;
 
 %clear lmu m n F P
 
@@ -203,7 +203,15 @@ ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
 %% Wake centreline
-D_ind    = Wp.mesh.yline{1};
+yline    = Wp.mesh.yline{1};
+m        = size(yline,2);
+if rem(m,2)
+    ind  = ceil(m/2);
+else
+    ind  = [m/2 m/2+1];
+end
+yline    = yline(ind);
+D_ind    = yline;%Wp.mesh.yline{1};
 indices  = [250 500 750 999];
 
 for k=indices
@@ -335,7 +343,15 @@ end
 %% Mean wake centrelines
 if Wp.turbine.N==9
     
-    D_ind    = Wp.mesh.yline{4};
+    yline    = Wp.mesh.yline{4};
+    m        = size(yline,2);
+    if rem(m,2)
+        ind  = ceil(m/2);
+    else
+        ind  = [m/2 m/2+1];
+    end
+    yline    = yline(ind);
+    D_ind    = yline;%Wp.mesh.yline{4};
     
     clear up upsowfa
     for k=indices
@@ -376,7 +392,15 @@ if Wp.turbine.N==9
     text( -2500, 26, 'Second row: WFSim (black) and SOWFA (blue)','interpreter','latex') ;
     %suptitle('Second row: WFSim (black) and SOWFA (blue)')
     
-    D_ind    = Wp.mesh.yline{3};
+    yline    = Wp.mesh.yline{3};
+    m        = size(yline,2);
+    if rem(m,2)
+        ind  = ceil(m/2);
+    else
+        ind  = [m/2 m/2+1];
+    end
+    yline    = yline(ind);
+    D_ind    = yline;%Wp.mesh.yline{3};
     
     clear up upsowfa
     for k=indices
