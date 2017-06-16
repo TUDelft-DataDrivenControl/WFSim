@@ -2,16 +2,6 @@ clear; clc; close all;
 
 run('..\..\WFSim_addpaths');
 
-%load(strcat('..\..\data_WFSim\Gridsearch\Run_',num2str(2378)))
-
-%lmu = Wp.site.lmu;
-%m   = Wp.site.m;
-%n   = Wp.site.n;
-%F   = Wp.turbine.forcescale;
-%P   = Wp.turbine.powerscale;
-
-%clear Wp
-
 % Initialize script
 options.Projection    = 0;                      % Use projection (true/false)
 options.Linearversion = 0;                      % Provide linear variant of WFSim (true/false)
@@ -25,14 +15,6 @@ Wp.name       = 'APC_3x3turb_noyaw_9turb_100x50_lin';    % Meshing name (see "\b
 %Wp.name       = 'YawCase3_50x50_lin';                  % Meshing name (see "\bin\core\meshing.m")
 %Wp.name       = 'Yawcase1_2turb_100x50_lin';
 Wp.Turbulencemodel  = 'WFSim3';
-
-Wp.lmuu  = 1.5;
-Wp.mm    = 3;
-Wp.nn    = 2;
-Wp.Ff    = 2.5;
-Wp.Pp    = .55;
-
-%clear lmu m n F P
 
 Animate       = 0;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations

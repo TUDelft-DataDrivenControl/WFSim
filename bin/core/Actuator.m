@@ -89,13 +89,14 @@ for kk=1:N
        temp = Ue{kk};
        Ur   = repmat(mean(temp(ind)),1,m);
     end    
-    Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
-    %Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
+    %Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
+    Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
     
     Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
     
     %%
+    %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
     Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
 
     %% Input to Ax=b
