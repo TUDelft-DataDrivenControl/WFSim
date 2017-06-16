@@ -334,6 +334,11 @@ switch lower(Wp.name)
             loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
             loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
         
+        % Filter the input signals
+        for j = 1:size(loadedinput.input.beta,2)
+            loadedinput.input.beta(:,j)= lsim(ss(tf(1,[15 1])),loadedinput.input.beta(:,j),...
+                loadedinput.input.t,loadedinput.input.beta(1,j));
+        end
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
