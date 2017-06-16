@@ -76,10 +76,24 @@ for kk=1:N
         dCTdbeta(kk)=  4*diff1*F;
     end
        
-    %% Thrust force
-    Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
-    Fx              = Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
-    Fy              = Fthrust.*sin(input.phi(kk)*pi/180+0*phi{kk});
+ %% Thrust force      
+    % With the following, we only take middle velocity component and
+    % apply this on the rotor cells 
+    m = size(Ue{kk},2);
+    if rem(m,2)
+       ind  = ceil(m/2); 
+       temp = Ue{kk};
+       Ur   = repmat(temp(ind),1,m);
+    else
+       ind  = [m/2 m/2+1]; 
+       temp = Ue{kk};
+       Ur   = repmat(mean(temp(ind)),1,m);
+    end    
+    Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
+    %Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
+    
+    Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
+    Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
     
     %%
     Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
@@ -93,13 +107,13 @@ for kk=1:N
         tempdy = sparse(Nx-2,Ny-3);
         
         dFthrustdbeta   = 1/2*Rho*Ue{kk}.^2*(CT(kk)*2*(input.beta(kk)+1)+dCTdbeta(kk)*(input.beta(kk)+1).^2);
-        dFxdbeta        = dFthrustdbeta.*cos(input.phi(kk)*pi/180+0*phi{kk});
-        dFydbeta        = dFthrustdbeta.*sin(input.phi(kk)*pi/180+0*phi{kk});
+        dFxdbeta        = dFthrustdbeta.*cos(input.phi(kk)*pi/180);
+        dFydbeta        = dFthrustdbeta.*sin(input.phi(kk)*pi/180);
         
         %% Gradient of the thrust with respect to yaw angle
         dFthrustdPhi    = Rho*CT(kk)*Ue{kk}.*(input.beta(kk)+1).^2.*dUedPhi{kk};
-        dFxdPhi         = dFthrustdPhi.*cos(input.phi(kk)*pi/180+0*phi{kk}) - pi/180*Fthrust.*sin(input.phi(kk)*pi/180+0*phi{kk});
-        dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
+        dFxdPhi         = dFthrustdPhi.*cos(input.phi(kk)*pi/180+0*phi{kk}) - pi/180*Fthrust.*sin(input.phi(kk)*pi/180);
+        dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180);
         
         Sm.dx(x-2,y-1)          = -(dFxdbeta'*input.dbeta(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
         Sm.dy(x-1,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
