@@ -26,11 +26,11 @@ Wp.name       = 'APC_3x3turb_noyaw_9turb_100x50_lin';    % Meshing name (see "\b
 %Wp.name       = 'Yawcase1_2turb_100x50_lin';
 Wp.Turbulencemodel  = 'WFSim3';
 
-%Wp.lmuu  = 2;
-%Wp.mm    = 3;
-%Wp.nn    = 2;
-%Wp.Ff    = 2.5;
-%Wp.Pp    = 1;
+Wp.lmuu  = 1.5;
+Wp.mm    = 3;
+Wp.nn    = 2;
+Wp.Ff    = 2.5;
+Wp.Pp    = .55;
 
 %clear lmu m n F P
 
