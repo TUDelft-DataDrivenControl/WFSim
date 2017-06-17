@@ -112,8 +112,8 @@ for kk=1:N
     
     % Following works well
     Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
-    % Following how it should be    
-    %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ur).^3*CT(kk)*(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
+        
+    %Power(kk)       = mean(powerscale*.5*Rho*Ar*Ue{kk}.^3*CT(kk)/(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear
