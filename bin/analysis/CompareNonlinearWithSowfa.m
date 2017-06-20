@@ -2,16 +2,6 @@ clear; clc; close all;
 
 run('..\..\WFSim_addpaths');
 
-%load(strcat('..\..\data_WFSim\Gridsearch\Run_',num2str(2378)))
-
-%lmu = Wp.site.lmu;
-%m   = Wp.site.m;
-%n   = Wp.site.n;
-%F   = Wp.turbine.forcescale;
-%P   = Wp.turbine.powerscale;
-
-%clear Wp
-
 % Initialize script
 options.Projection    = 0;                      % Use projection (true/false)
 options.Linearversion = 0;                      % Provide linear variant of WFSim (true/false)
@@ -30,9 +20,7 @@ Wp.lmuu  = 1.5;
 Wp.mm    = 3;
 Wp.nn    = 2;
 Wp.Ff    = 2.5;
-Wp.Pp    = .55;
-
-%clear lmu m n F P
+Wp.Pp    = .45;%.55;
 
 Animate       = 0;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
@@ -224,38 +212,38 @@ end
 
 figure(3);clf;
 subplot(2,2,1)
-plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1);hold on;
-plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(1)),'b','Linewidth',1);grid;
+plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1.5);hold on;
+plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(1)),'b--','Linewidth',1);grid;
 ylabel('$U^c$ [m/s]','interpreter','latex');
-ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));
 if Wp.turbine.N==9; vline(Wp.turbine.Crx(7)); end
 title( ['VAF = ',num2str(VAF_1(indices(1)),3), '\% at $k$ = ', num2str(indices(1)), ' [s]'] , 'interpreter','latex')
 subplot(2,2,2)
-plot(Wp.mesh.ldxx2(:,1)',up(:,indices(2)),'k','Linewidth',1);hold on;
-plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(2)),'b','Linewidth',1);grid;
-ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+plot(Wp.mesh.ldxx2(:,1)',up(:,indices(2)),'k','Linewidth',1.5);hold on;
+plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(2)),'b--','Linewidth',1);grid;
+ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));
 if Wp.turbine.N==9; vline(Wp.turbine.Crx(7)); end
 title( ['VAF = ',num2str(VAF_1(indices(2)),3), '\% at $k$ = ', num2str(indices(2)), ' [s]'] , 'interpreter','latex')
 subplot(2,2,3)
-plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1);hold on;
-plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'b','Linewidth',1);grid;
+plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1.5);hold on;
+plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'b--','Linewidth',1);grid;
 xlabel('$x$ [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
-ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));
 if Wp.turbine.N==9; vline(Wp.turbine.Crx(7)); end
 title( ['VAF = ',num2str(VAF_1(indices(3)),3), '\% at $k$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
 subplot(2,2,4)
-plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1);hold on;
-plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'b','Linewidth',1);grid;
+plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1.5);hold on;
+plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'b--','Linewidth',1);grid;
 xlabel('$x$ [m]','interpreter','latex');
-ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
 vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));
 if Wp.turbine.N==9; vline(Wp.turbine.Crx(7)); end
 title( ['VAF = ',num2str(VAF_1(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
 if Wp.turbine.N==9
-    text( -2560, 26, 'First row: WFSim (black) and SOWFA (blue)','interpreter','latex') ;
+    text( -2730, 27.5, 'First row: WFSim (black) and SOWFA (blue dashed)','interpreter','latex') ;
     %suptitle('First row: WFSim (black) and SOWFA (blue)')
 end
 
@@ -269,31 +257,31 @@ if Wp.turbine.N==2
         VAF(k)        = vaf(usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,k),...
             uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,k));
     end
-    
+
     figure(6);clf;
     subplot(2,2,1)
-    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'b--','Linewidth',1);grid;
     vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
     ylabel('$u$ [m/s]','interpreter','latex');
     %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     title( ['VAF = ',num2str(VAF(indices(1)),3), '\% at $k$ = ', num2str(indices(1)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,2)
-    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(2)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(2)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(2)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(2)),'b--','Linewidth',1);grid;
     vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
     %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     title( ['VAF = ',num2str(VAF(indices(2)),3), '\% at $k$ = ', num2str(indices(2)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,3)
-    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(3)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(3)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(3)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(3)),'b--','Linewidth',1);grid;
     vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
     xlabel('$y$ [m]','interpreter','latex');ylabel('$u$ [m/s]','interpreter','latex');
     %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     title( ['VAF = ',num2str(VAF(indices(3)),3), '\% at $k$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,4)
-    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(4)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(4)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(4)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(4)),'b--','Linewidth',1);grid;
     vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
     xlabel('$y$ [m]','interpreter','latex');
     %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
@@ -363,33 +351,33 @@ if Wp.turbine.N==9
     
     figure(4);clf;
     subplot(2,2,1)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(1)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(1)),'b--','Linewidth',1);grid;
     ylabel('$U^c$ [m/s]','interpreter','latex');
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_2(indices(1)),3), '\% at $k$ = ', num2str(indices(1)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,2)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(2)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(2)),'b','Linewidth',1);grid;
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(2)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(2)),'b--','Linewidth',1);grid;
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_2(indices(2)),3), '\% at $k$ = ', num2str(indices(2)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,3)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'b--','Linewidth',1);grid;
     xlabel('$x$ [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_2(indices(3)),3), '\% at $k$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,4)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'b--','Linewidth',1);grid;
     xlabel('$x$ [m]','interpreter','latex');
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_2(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
-    text( -2500, 26, 'Second row: WFSim (black) and SOWFA (blue)','interpreter','latex') ;
+    text( -2730, 27.5, 'Second row: WFSim (black) and SOWFA (blue dashed)','interpreter','latex') ;
     %suptitle('Second row: WFSim (black) and SOWFA (blue)')
     
     yline    = Wp.mesh.yline{3};
@@ -416,34 +404,34 @@ if Wp.turbine.N==9
     end
     figure(5);clf;
     subplot(2,2,1)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(1)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(1)),'b--','Linewidth',1);grid;
     ylabel('$U^c$ [m/s]','interpreter','latex');
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_3(indices(1)),3), '\% at $k$ = ', num2str(indices(1)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,2)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(2)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(2)),'b','Linewidth',1);grid;
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(2)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(2)),'b--','Linewidth',1);grid;
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_3(indices(2)),3), '\% at $k$ = ', num2str(indices(2)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,3)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(3)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(3)),'b--','Linewidth',1);grid;
     xlabel('$x$ [m]','interpreter','latex');ylabel('$U^c$ [m/s]','interpreter','latex');
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_3(indices(3)),3), '\% at $k$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
     subplot(2,2,4)
-    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1);hold on;
-    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'b','Linewidth',1);grid;
+    plot(Wp.mesh.ldxx2(:,1)',up(:,indices(4)),'k','Linewidth',1.5);hold on;
+    plot(Wp.mesh.ldxx2(:,1)',upsowfa(:,indices(4)),'b--','Linewidth',1);grid;
     xlabel('$x$ [m]','interpreter','latex');
-    ylim([5 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
+    ylim([4 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
     vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));vline(Wp.turbine.Crx(7));
     title( ['VAF = ',num2str(VAF_3(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
     %suptitle('Third row: WFSim (black) and SOWFA (blue)')
-    text( -2500, 26, 'Third row: WFSim (black) and SOWFA (blue)','interpreter','latex') ;
+    text( -2730, 27.5, 'Third row: WFSim (black) and SOWFA (blue dashed)','interpreter','latex') ;
 end
 
 %% Power
@@ -470,51 +458,51 @@ if isfield(SOWFAdata,'power')
         n = 6;
         figure(10);clf;
         subplot(3,3,1)
-        plot(Power(3,1:end));hold on;
-        plot(Powersowfa(3,1:end),'r');
+        plot(Power(3,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(3,1:end),'b--');
         set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
         grid;ylabel('$P_1$','interpreter','latex');ylim([0 n*10^6])
         subplot(3,3,2)
-        plot(Power(6,1:end));hold on;
-        plot(Powersowfa(6,1:end),'r');
+        plot(Power(6,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(6,1:end),'b--');
         set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         grid;ylabel('$P_2$','interpreter','latex');ylim([0 n*10^6])
         subplot(3,3,3)
-        plot(Power(1,1:end));hold on;
-        plot(Powersowfa(1,1:end),'r');
+        plot(Power(1,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(1,1:end),'b--');
         set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         grid;ylabel('$P_3$','interpreter','latex');ylim([0 n*10^6]);
         subplot(3,3,4)
-        plot(Power(2,1:end));hold on;
-        plot(Powersowfa(2,1:end),'r');
+        plot(Power(2,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(2,1:end),'b--');
         set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
         grid;ylabel('$P_4$','interpreter','latex');ylim([0 n*10^6]);
         subplot(3,3,5)
-        plot(Power(4,1:end));hold on;
-        plot(Powersowfa(4,1:end),'r');
+        plot(Power(4,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(4,1:end),'b--');
         grid;ylabel('$P_5$','interpreter','latex');ylim([0 n*10^6]);
         set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         subplot(3,3,6)
-        plot(Power(5,1:end));hold on;
-        plot(Powersowfa(5,1:end),'r');
+        plot(Power(5,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(5,1:end),'b--');
         grid;ylabel('$P_6$','interpreter','latex');ylim([0 n*10^6]);
         set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         subplot(3,3,7)
-        plot(Power(7,1:end));hold on;
-        plot(Powersowfa(7,1:end),'r');
+        plot(Power(7,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(7,1:end),'b--');
         grid;xlabel('$k [s]$','interpreter','latex');ylabel('$P_7$','interpreter','latex');ylim([0 n*10^6])
         subplot(3,3,8)
-        plot(Power(8,1:end));hold on;
-        plot(Powersowfa(8,1:end),'r');
+        plot(Power(8,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(8,1:end),'b--');
         grid;xlabel('$k [s]$','interpreter','latex');ylabel('$P_8$','interpreter','latex');ylim([0 n*10^6]);
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         subplot(3,3,9)
-        plot(Power(9,1:end));hold on;
-        plot(Powersowfa(9,1:end),'r');
+        plot(Power(9,1:end),'k','Linewidth',1);hold on;
+        plot(Powersowfa(9,1:end),'b--');
         grid;xlabel('$k [s]$','interpreter','latex');ylabel('$P_9$','interpreter','latex');ylim([0 n*10^6]);
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         %suptitle('SOWFA (red) and WFSim (blue)')
