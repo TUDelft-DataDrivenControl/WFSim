@@ -24,4 +24,8 @@ p(Nx-1,:)   =  p(Nx-2,:);       % Trick to make pressure field nice
 p(:,1)      =  p(:,2);          % p_{i,1}  = p_{i+1,2}   for i = 1,..Nx
 p(:,Ny)     =  p(:,Ny-1);       % p_{i,Ny} = p_{i,Ny-1}  for i = 1,..Nx
 p(Nx,:)     =  p(Nx-1,:);       % p_{Nx,J} = p_{Nx-1,J}  for J = 1,..Ny
+
+% p = p + (rand(size(p))-.5)/.5*1e-2;
+% v = v + (rand(size(u))-.5)/.5*5e-1;
+
 end

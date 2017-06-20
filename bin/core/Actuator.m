@@ -111,7 +111,8 @@ for kk=1:N
     %Power(kk)       = 1.5*powerscale*2*Rho*Ar*input.beta(kk)*(meanUe{kk}*1).^3;
     
     % Following works well
-    Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
+    %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
+    Power(kk)       = mean(powerscale*.5*Rho*Ar*(sol.u(x-3,y)).^3*CT(kk)*(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
         
     %Power(kk)       = mean(powerscale*.5*Rho*Ar*Ue{kk}.^3*CT(kk)/(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
 
