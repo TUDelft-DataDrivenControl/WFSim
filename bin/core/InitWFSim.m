@@ -10,6 +10,8 @@ Linearversion = options.Linearversion;
 [Wp,input]   = meshing(Wp,plotMesh,1); 
 
 % Initial flow fields
+%u0 = load('data_WFSim\u0.mat');
+%[sol.u,sol.uu] = deal(struct2cell(u0));  
 [sol.u,sol.uu] = deal(Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny));  
 [sol.v,sol.vv] = deal(Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny));  
 [sol.p,sol.pp] = deal(Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny)); 
