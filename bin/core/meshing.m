@@ -101,7 +101,7 @@ switch lower(Wp.name)
         L        = 999;       % Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = 6.0;       % Freestream flow velocity x-direction (m/s)
+        u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
