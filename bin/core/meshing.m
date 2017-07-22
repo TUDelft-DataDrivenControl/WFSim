@@ -19,7 +19,8 @@ if nargin <= 2; PrintGridMismatch = true;                end;
 
 % Some pre-processing to determine correct input file location
 meshingloc  = which('meshing.m');
-strbslash   = strfind(meshingloc,'\');
+if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
+strbslash   = strfind(meshingloc,slashSymbol);
 WFSimfolder = meshingloc(1:strbslash(end-2));
 
 switch lower(Wp.name)
