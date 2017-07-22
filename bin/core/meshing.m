@@ -78,7 +78,7 @@ switch lower(Wp.name)
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         Wp.Turbulencemodel  = 'WFSim3';
         
         % Correctly format inputs (temporary function)
@@ -120,7 +120,7 @@ switch lower(Wp.name)
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -163,7 +163,7 @@ switch lower(Wp.name)
         N_con    = [11, 11];   % Number of grid points inside concentration radii
         dx_min   = [3, 3];     % Minimal cell size inside concentration radii (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         loadedinput.input.phi = 0*loadedinput.input.phi;
         
         % Correctly format inputs (temporary function)
@@ -206,7 +206,7 @@ switch lower(Wp.name)
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase1\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase1/system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -247,7 +247,7 @@ switch lower(Wp.name)
         Crx    = [400 1032.062];
         Cry    = [700 700];
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\NoPrecursor\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/NoPrecursor/system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -288,7 +288,7 @@ switch lower(Wp.name)
         Crx    = [400 1032.062];
         Cry    = [700 700];
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\WithPrecursor\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/WithPrecursor/system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -330,7 +330,7 @@ switch lower(Wp.name)
         Crx    = [400, 1031.976, 399.98, 399.99, 1031.956, 1031.966, 1663.931, 1663.941, 1663.951];
         Cry    = [700, 700, 1458.405, 1079.203, 1458.405, 1079.203, 1458.405, 1079.203, 700];
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\APC\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/APC/system_input.mat']); % load input settings
         loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
             loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
             loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
@@ -381,7 +381,7 @@ switch lower(Wp.name)
         Crx    = 750;           % Turbine locations in x-direction (m)
         Cry    = 400;            % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -422,7 +422,7 @@ switch lower(Wp.name)
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700-.25*126, 700+.25*126]; % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         
         f                   = -40;
         phi                 = f*ones(1,length(loadedinput.input.t));
@@ -468,7 +468,7 @@ switch lower(Wp.name)
         Crx    = [400 1032.062];
         Cry    = [700 700];
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\NoPrecursor\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/NoPrecursor/system_input.mat']); % load input settings
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -509,7 +509,7 @@ switch lower(Wp.name)
         Crx    = [400, 1150]; % Turbine locations in x-direction (m)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         
         %Beta = .8*(gensig('square',200,loadedinput.input.t(end),1)+.15);
         %Beta = lsim(ss(tf(1,[5 1])),Beta,loadedinput.input.t,Beta(1),'zoh');
@@ -559,7 +559,7 @@ switch lower(Wp.name)
         Crx    = [Lx/2-5*Drotor; Lx/2; Lx/2+5*Drotor]; % Turbine locations in x-direction (m)
         Cry    = [Ly/2; Ly/2; Ly/2];     % Turbine locations in y-direction (m)
         
-        run([WFSimfolder 'data_PALM\wfcontrol_2turb_d3d\Turbine_settings_wfcontrol_2turb'])
+        run([WFSimfolder 'data_PALM/wfcontrol_2turb_d3d/Turbine_settings_wfcontrol_2turb'])
         % Time Ur  Uinf Ct_adm  a Yaw(deg)  Thrust  Power  wf_power
         
         % Correctly format inputs (temporary function)
@@ -602,7 +602,7 @@ switch lower(Wp.name)
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         loadedinput.input.phi = 0*loadedinput.input.phi;
         
         % Correctly format inputs (temporary function)
@@ -644,7 +644,7 @@ switch lower(Wp.name)
         Crx    = [400, 400+6*90, 400+6*90+6*90];     % Turbine locations in x-direction (m)
         Cry    = [300, 300, 300];       % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA\YawCase3\system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
         loadedinput.input.phi = 0*loadedinput.input.phi;
         
         % Correctly format inputs (temporary function)
@@ -780,9 +780,9 @@ for i = 1:length(Crx)
         % Calculate turbine-grid mismatch
         disp([' TURBINE ' num2str(i) ' GRID MISMATCH:']);
         disp(['                    Primary           Secondary ']);
-        disp(['       center:   (' num2str(min(abs(Crx(i)-ldx)),'%10.2f\n') ',' num2str(min(abs(Cry(i)-ldy)),'%10.2f\n') ') m.      (' num2str(min(abs(Crx(i)-ldx2)),'%10.2f\n') ',' num2str(min(abs(Cry(i)-ldy2)),'%10.2f\n') ') m.']);
-        disp(['   left blade:   (' num2str(min(abs(Crx(i)-ldx)),'%10.2f\n') ',' num2str(ML_prim,'%10.2f\n')             ') m.      (' num2str(min(abs(Crx(i)-ldx2)),'%10.2f\n') ',' num2str(ML_sec,'%10.2f\n')                ') m.']);
-        disp(['  right blade:   (' num2str(min(abs(Crx(i)-ldx)),'%10.2f\n') ',' num2str(MR_prim,'%10.2f\n')             ') m.      (' num2str(min(abs(Crx(i)-ldx2)),'%10.2f\n') ',' num2str(MR_sec,'%10.2f\n')                ') m.']);
+        disp(['       center:   (' num2str(min(abs(Crx(i)-ldx)),'%10.2f/n') ',' num2str(min(abs(Cry(i)-ldy)),'%10.2f/n') ') m.      (' num2str(min(abs(Crx(i)-ldx2)),'%10.2f/n') ',' num2str(min(abs(Cry(i)-ldy2)),'%10.2f/n') ') m.']);
+        disp(['   left blade:   (' num2str(min(abs(Crx(i)-ldx)),'%10.2f/n') ',' num2str(ML_prim,'%10.2f/n')             ') m.      (' num2str(min(abs(Crx(i)-ldx2)),'%10.2f/n') ',' num2str(ML_sec,'%10.2f/n')                ') m.']);
+        disp(['  right blade:   (' num2str(min(abs(Crx(i)-ldx)),'%10.2f/n') ',' num2str(MR_prim,'%10.2f/n')             ') m.      (' num2str(min(abs(Crx(i)-ldx2)),'%10.2f/n') ',' num2str(MR_sec,'%10.2f/n')                ') m.']);
         disp(' ');
     end;
 end;
