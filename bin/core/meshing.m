@@ -22,6 +22,7 @@ meshingloc  = which('meshing.m');
 if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
 strbslash   = strfind(meshingloc,slashSymbol);
 WFSimfolder = meshingloc(1:strbslash(end-2));
+WFSimfolder = WFSimfolder(length(pwd)+2:end);
 
 switch lower(Wp.name)
     % Wind farms for which PALM data is available
