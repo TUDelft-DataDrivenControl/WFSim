@@ -79,7 +79,7 @@ switch lower(Wp.name)
         Crx    = [400, 1281.97]; % Turbine locations in x-direction (m)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
-        loadedinput = load([WFSimfolder 'Data_SOWFA/YawCase3/system_input.mat']); % load input settings
+        loadedinput = load([WFSimfolder 'data_SOWFA/YawCase3/system_input.mat']); % load input settings
         Wp.Turbulencemodel  = 'WFSim3';
         
         % Correctly format inputs (temporary function)
