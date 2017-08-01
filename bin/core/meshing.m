@@ -19,10 +19,14 @@ if nargin <= 2; PrintGridMismatch = true;                end;
 
 % Some pre-processing to determine correct input file location
 meshingloc  = which('meshing.m');
-if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
-strbslash   = strfind(meshingloc,slashSymbol);
+% next 4 lines I comment since WFSimfolder appeard empty with Windows OS
+% I added two lines after from previous version
+%if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
+%strbslash   = strfind(meshingloc,slashSymbol);
+%WFSimfolder = meshingloc(1:strbslash(end-2));
+%WFSimfolder = WFSimfolder(length(pwd)+2:end);
+strbslash   = strfind(meshingloc,'\');
 WFSimfolder = meshingloc(1:strbslash(end-2));
-WFSimfolder = WFSimfolder(length(pwd)+2:end);
 
 switch lower(Wp.name)
     % Wind farms for which PALM data is available
@@ -253,7 +257,7 @@ switch lower(Wp.name)
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = [.5;.5];%loadedinput.input.beta(j,:)';
+            input{j}.beta = loadedinput.input.beta(j,:)';
             input{j}.phi  = loadedinput.input.phi(j,:)';
         end;
         
@@ -294,7 +298,7 @@ switch lower(Wp.name)
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
-            input{j}.beta = [.5;.5];%loadedinput.input.beta(j,:)';
+            input{j}.beta = loadedinput.input.beta(j,:)';
             input{j}.phi  = loadedinput.input.phi(j,:)';
         end;
         
@@ -306,7 +310,7 @@ switch lower(Wp.name)
         
         Drotor      = 126.3992;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;       % Turbine powerscaling
-        forcescale  = 1.2;%0.83;      % Turbine force scaling
+        forcescale  = 1.2;       % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 750;      % Simulation length (s)
