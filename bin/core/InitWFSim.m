@@ -7,7 +7,7 @@ Projection    = options.Projection;
 Linearversion = options.Linearversion;
 
 % Create meshing and import control settings
-[Wp,input]   = meshing(Wp,plotMesh,1); 
+[Wp,input]   = meshing(Wp,plotMesh,plotMesh); 
 
 % Initial flow fields
 [sol.u,sol.uu] = deal(Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny));  
