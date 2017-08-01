@@ -34,8 +34,10 @@ elseif N==9
         ones(1,length(yline{3})) zeros(1,Ny-yline{3}(end))];
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 else
-    mixing_length    = lmu*0.5*Drotor;
+    mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
 end
+    %clear mixing_length 
+    %mixing_length    = 0.5*0.5*Drotor*ones(Nx,Ny);
 
 if size(mixing_length,1)>1
     H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
