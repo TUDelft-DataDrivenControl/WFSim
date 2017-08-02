@@ -1,96 +1,93 @@
 clear; clc; close all;
 
-run('..\..\WFSim_addpaths');
+%% Define script settings
+% Model settings
+scriptOptions.Projection        = 0;        % Use projection (true/false)
+scriptOptions.Linearversion     = 0;        % Provide linear variant of WFSim (true/false)
+scriptOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim
+scriptOptions.Derivatives       = 0;        % Compute derivatives
+scriptOptions.startUniform      = 1;        % Start from a uniform flowfield (true) or a steady-state solution (false)
+scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields
 
-% Initialize script
-options.Projection    = 0;                      % Use projection (true/false)
-options.Linearversion = 0;                      % Provide linear variant of WFSim (true/false)
-options.exportLinearSol= 0;                     % Calculate linear solution of WFSim
-options.Derivatives   = 0;                      % Compute derivatives
-options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
-options.exportPressures= ~options.Projection;   % Calculate pressure fields
-
-Wp.name       = 'APC_3x3turb_noyaw_9turb_100x50_lin';    % Meshing name (see "\bin\core\meshing.m")
-%Wp.name       = 'NoPrecursor_2turb_60x30_lin';         % Meshing name (see "\bin\core\meshing.m")
-%Wp.name       = 'YawCase3_50x50_lin';                  % Meshing name (see "\bin\core\meshing.m")
-%Wp.name       = 'Yawcase1_2turb_100x50_lin';
-Wp.Turbulencemodel  = 'WFSim3';
-
-Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
-plotMesh      = 0;                      % Show meshing and turbine locations
-conv_eps      = 1e-6;                   % Convergence threshold
-max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
-
-if options.startUniform==1
-    max_it = 1;
+% Convergence settings
+scriptOptions.conv_eps          = 1e-6;     % Convergence threshold
+scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1
+if scriptOptions.startUniform==1
+    scriptOptions.max_it = 1; 
 else
-    max_it = 50;
+    scriptOptions.max_it = 50;
 end
 
-% WFSim general initialization script
-[Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] ...
-    = InitWFSim(Wp,options,plotMesh);
+% Display and visualization settings
+scriptOptions.printProgress     = 1;  % Print progress every timestep
+scriptOptions.printConvergence  = 1;  % Print convergence parameters every timestep
+scriptOptions.Animate           = 0;  % Show 2D flow fields every x iterations (0: no plots)
+scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
+
+
+%%%------------------------------------------------------------------------%%%%
+
+%% Script core
+% WFSim: call initialization script
+Wp.name      = 'APC_3x3turb_noyaw_9turb_100x50_lin';
+
+run('../../WFSim_addpaths'); % Add paths
+[Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
+
+% Initialize variables and figure specific to this script
+sol_array = {};
+CPUTime   = zeros(Wp.sim.NN,1);
+if scriptOptions.Animate > 0
+    %scrsz = get(0,'ScreenSize');
+    hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
+           [0 0 1 1],'ToolBar','none','visible', 'on');
+end
 
 % Initialize variables and figure specific to this script
 uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
 vk = Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-pk = Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
 
-if Animate > 0
-    scrsz = get(0,'ScreenSize');
-    hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
-        [0 0 1 1],'ToolBar','none','visible', 'on');
-end
-
-sourcepath = ['..\..\Data_SOWFA\' char(strtok(char(Wp.name), '_')) '\' ...
+sourcepath = ['../../Data_SOWFA/' char(strtok(char(Wp.name), '_')) '/' ...
     num2str(Wp.turbine.N) 'turb_' num2str(Wp.mesh.Nx) 'x' num2str(Wp.mesh.Ny) '_'...
-    char(Wp.mesh.type) '\'];
+    char(Wp.mesh.type) '/'];
 list       = dir(fullfile(sourcepath, '*.mat'));
 list       = {list.name};
 list       = natsort(list);
 
+% Performing timestepping until end
+disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
 %% Loop
-for k=1:Wp.sim.NN
-    tic
-    it        = 0;
-    eps       = 1e19;
-    epss      = 1e20;
+while sol.k < Wp.sim.NN
+    tic;         % Intialize timer
+       
+    [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep with WFSim
+    CPUTime(sol.k) = toc; % Take time
     
     % Write flow field solutions to a 3D matrix
-    uk(:,:,k) = sol.u;
-    vk(:,:,k) = sol.v;
-    pk(:,:,k) = sol.p;
-    
-    while ( eps>conv_eps && it<max_it && eps<epss );
-        it   = it+1;
-        epss = eps;
-        
-        if k>1
-            max_it = max_it_dyn;
-        end
-        
-        [sys,Power(:,k),Ueffect(:,k),a(:,k),CT(:,k)] = ...
-            Make_Ax_b(Wp,sys,sol,input{k},B1,B2,bc,k,options); % Create system matrices
-        [sol,sys] = Computesol(sys,input{k},sol,k,it,options);                   % Compute solution
-        [sol,eps] = MapSolution(Wp.mesh.Nx,Wp.mesh.Ny,sol,k,it,options);         % Map solution to field
-        Phi(:,k)  = input{k}.phi;
-    end
-    toc
-    
-    SOWFAdata             = load([sourcepath num2str(list{k})]);
-    eu                    = vec(sol.u-SOWFAdata.uq); eu(isnan(eu)) = [];
-    ev                    = vec(sol.v-SOWFAdata.vq); ev(isnan(ev)) = [];
-    RMSE(k)               = rms([eu;ev]);
-    [maxe(k),maxeloc(k)]  = max(abs(eu));
-    
+    uk(:,:,sol.k)                 = sol.u;
+    vk(:,:,sol.k)                 = sol.v;
+    a(:,sol.k)                    = sol.a;
+    Power(:,sol.k)                = sol.power;
+    Phi(:,sol.k)                  = Wp.turbine.input{sol.k}.phi;
+    SOWFAdata                     = load([sourcepath num2str(list{sol.k})]);
+    eu                            = vec(sol.u-SOWFAdata.uq); eu(isnan(eu)) = [];
+    ev                            = vec(sol.v-SOWFAdata.vq); ev(isnan(ev)) = [];
+    RMSE(sol.k)                   = rms([eu;ev]);
+    [maxe(sol.k),maxeloc(sol.k)]  = max(abs(eu));    
     if isfield(SOWFAdata,'power')
-        Powersowfa(:,k)       = SOWFAdata.power;
+        Powersowfa(:,sol.k)       = SOWFAdata.power;
     end
     
-    if Animate > 0
-        if ~rem(k,Animate)
-            
-            yaw_angles = .5*Wp.turbine.Drotor*exp(1i*input{k}.phi*pi/180);  % Yaw angles
+    % Save sol to a cell array
+    sol_array{sol.k} = sol;
+    
+    % Display progress and animations
+    if scriptOptions.printProgress
+        disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
+    end;
+    if scriptOptions.Animate > 0
+        if ~rem(sol.k,scriptOptions.Animate)
+            yaw_angles = .5*Wp.turbine.Drotor*exp(1i*Wp.turbine.input{sol.k}.phi*pi/180);  % Yaw angles
             
             subplot(2,3,1);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u,'Linecolor','none');  colormap(hot);
@@ -101,7 +98,7 @@ for k=1:Wp.sim.NN
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
-            text(0,Wp.mesh.ldxx2(end,end)+250,['Time ', num2str(Wp.sim.time(k),'%.1f'), 's']);
+            text(0,Wp.mesh.ldxx2(end,end)+250,['Time ', num2str(Wp.sim.time(sol.k),'%.1f'), 's']);
             ylabel('x [m]');
             title('WFSim u [m/s]');
             hold off;
@@ -123,7 +120,7 @@ for k=1:Wp.sim.NN
             caxis([min(min(sol.u-SOWFAdata.uq)) max(max(sol.u-SOWFAdata.uq))]);  hold all; colorbar;
             axis equal; axis tight;
             ldyyv = Wp.mesh.ldyy(:); ldxx2v = Wp.mesh.ldxx2(:);
-            plot(ldyyv(maxeloc(k)),ldxx2v(maxeloc(k)),'whiteo','LineWidth',1,'MarkerSize',8,'DisplayName','Maximum error location');
+            plot(ldyyv(maxeloc(sol.k)),ldxx2v(maxeloc(sol.k)),'whiteo','LineWidth',1,'MarkerSize',8,'DisplayName','Maximum error location');
             for ll=1:Wp.turbine.N
                 Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
@@ -171,20 +168,20 @@ for k=1:Wp.sim.NN
             xlabel('y [m]')
             title('error [m/s]');
             hold off;
-            drawnow;
-            
-        end;
-    end;
+            drawnow; 
+        end; 
+    end; 
 end;
+disp(['Completed ' num2str(Wp.sim.NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
 
-%%
+%% Post-analysis
 figure(2);clf
 plot(Wp.sim.time(1:end-1),RMSE);hold on;
 plot(Wp.sim.time(1:end-1),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-%% Wake centreline
+% Wake centreline
 D_ind    = Wp.mesh.yline{1};
 indices  = [250 500 750 999];
 
@@ -233,7 +230,7 @@ if Wp.turbine.N==9
     %suptitle('First row: WFSim (black) and SOWFA (blue)')
 end
 
-%% Plot cross-sections
+% Plot cross-sections
 if Wp.turbine.N==2
     indices  = [250 500 750 999];
     
@@ -274,7 +271,7 @@ if Wp.turbine.N==2
     title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
 end
 
-%% Plot control signals (Numbering according topology presented in paper)
+% Plot control signals (Numbering according topology presented in paper)
 if Wp.turbine.N==2
     figure(9);clf;
     subplot(2,1,1)
@@ -290,7 +287,7 @@ if Wp.turbine.N==2
     title('$\gamma^1$ (blue), $\gamma^2$ (black)','interpreter','latex')
     %legend({'$\gamma_1$','$\gamma_2$'},'interpreter','latex')
 end
-
+ 
 if Wp.turbine.N==9
     figure(9);clf;
     subplot(1,3,1)
@@ -313,8 +310,8 @@ if Wp.turbine.N==9
     title('$a^7$ (blue), $a^8$ (black), $a^9$ (red)','interpreter','latex')
     xlabel('$k$ [s]','interpreter','latex');
 end
-
-%% Mean wake centrelines
+ 
+% Mean wake centrelines
 if Wp.turbine.N==9
     
     D_ind    = Wp.mesh.yline{4};
@@ -404,7 +401,7 @@ if Wp.turbine.N==9
     text( -2500, 26, 'Third row: WFSim (black) and SOWFA (blue)','interpreter','latex') ;
 end
 
-%% Power
+% Power
 if isfield(SOWFAdata,'power')
     if Wp.turbine.N<9
         figure(10);clf;
@@ -477,6 +474,4 @@ if isfield(SOWFAdata,'power')
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         %suptitle('SOWFA (red) and WFSim (blue)')
     end
-    
 end
-
