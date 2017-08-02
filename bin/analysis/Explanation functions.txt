@@ -1,7 +1,7 @@
 1) CompareLinearWithNonlinear:
 	Compares a linear model with the nonlinear one.
 
-2) SimLinearModel
+2) SimLinearModelWithProjectionModel
 	Simulates the linear model (and truncated one) obtained when settting Projection=1
 
 3) SimLinearWithoutProjectionModel
@@ -11,23 +11,15 @@
 	Simulates different cases and the results can indicate if the power
 	expression is correct or not.
 
-5) Solutions2DEffect
-	Contains two methods which can reduce the 2D effect .
+5) CompareNonlinearWithPALM
+	Compared PALM simulation restuls with WFSim simulation results.
 
 6) CompareNonlinearWithSowfa
-	Compared Sowfa simulation restuls with WFSim simulation results.
+	Compared Sowfa simulation restuls with WFSim simulation results. (update to new WFSim done)
 
 
-7) SimQlpvWithoutProjectionModel
-	Simulates the qlpv-model obtained when setting Projection=0.
-
-
-Functions needed:
-
-8) Compare finite difference linear model with analytic linear model.
+7) CheckLinearmodelNumerical 
+        Compare finite difference linear model with analytic linear model.
 
 
 
-To do:
-
-1) Check all indices in WFSim
