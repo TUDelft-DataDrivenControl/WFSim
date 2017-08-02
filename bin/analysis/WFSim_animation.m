@@ -1,4 +1,4 @@
-function [ ] = WFSim_animation( Wp,sol )
+function [hfig] = WFSim_animation( Wp,sol,hfig )
     Dr     = Wp.turbine.Drotor;
     Nx     = Wp.mesh.Nx;
     Ny     = Wp.mesh.Ny;
@@ -27,8 +27,16 @@ function [ ] = WFSim_animation( Wp,sol )
     input  = Wp.turbine.input{sol.k}
 
     time   = Wp.sim.time;
-
+    k      = sol.k;
+    
     yaw_angles = .5*Dr*exp(1i*input.phi*pi/180);  % Yaw angles
+
+    %% Create figure window, if not yet available
+    if nargin <= 2
+        scrsz = get(0,'ScreenSize');
+        hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
+        [0 0 1 1],'ToolBar','none','visible', 'on');
+    end;
 
     %% Plot u velocity flow component
     figure(hfig);
