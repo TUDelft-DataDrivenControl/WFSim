@@ -1,16 +1,13 @@
 function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOptions )
 
     % Import necessary information from sol_in (previous timestep)
-    sol_out = struct('k',sol_in.k+1,'time',Wp.sim.time(sol_in.k+2),'u',...
-                     sol_in.u,'uu',sol_in.uu,'v',sol_in.v,'vv',sol_in.vv);
-    if scriptOptions.exportPressures | scriptOptions.Projection
-        sol_out.p  = sol_in.p;
-        sol_out.pp = sol_in.pp;
-    end;
-    sys_out = struct('B1',sys_in.B1,'B2',sys_in.B2,'bc',sys_in.bc,...
-                     'pRCM',sys_in.pRCM);    
+    sol_out      = sol_in;
+    sol_out.k    = sol_in.k + 1;            % Propagate forward in time
+    sol_out.time = Wp.sim.time(sol_in.k+2); % Propagate forward in time
+    sys_out      = struct('B1',sys_in.B1,'B2',sys_in.B2,'bc',sys_in.bc,...
+                          'pRCM',sys_in.pRCM);   
+                 
     if scriptOptions.Projection
-        if sol_out.k > 1; sol_out.alpha = sol_in.alpha; end;
         sys_out.Qsp     = sys_in.Qsp;
         sys_out.Bsp     = sys_in.Bsp;
     end;

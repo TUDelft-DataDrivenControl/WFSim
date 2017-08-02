@@ -63,7 +63,7 @@ else
         Al          = [Axl Axlo sys.B1;Aylo Ayl sys.B2;sys.B1' 2*sys.B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]-sys.A;
         
         sys.Al = (StrucDynamical.dcdx+StrucBCs.dbcdx+StrucActuator.dSm.dx-Al);
-        sys.Bl = [StrucActuator.Sm.dxx;StrucActuator.Sm.dyy;zeros(length(sys.bc),size(input.beta,1)+size(input.phi,1))];
+        sys.Bl = [StrucActuator.Sm.dxx;StrucActuator.Sm.dyy;zeros(length(sys.bc),Wp.turbine.N*2)];
         sys.bl = [vec(StrucActuator.Sm.dx');
             vec(StrucActuator.Sm.dy');
             0.*sys.bc];
