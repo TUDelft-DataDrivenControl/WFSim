@@ -8,11 +8,11 @@ clear; clc; close all; %
 %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  % 
 %
 %%   Quick use:
-%     1. Specify the wind farm you would like to simulate on line 65.
+%     1. Specify the wind farm you would like to simulate on line 64.
 %        A list of all the wind farm scenarios can be found in
 %        'bin/core/meshing.m'. You can also create your own wind farm
 %        scenario here.
-%     2. Set up the scriptOptions settings in lines 68-88. Leave the
+%     2. Set up the scriptOptions settings in lines 67-87. Leave the
 %        default if you are unfamiliar with the code.
 %     3. Press start.
 %
