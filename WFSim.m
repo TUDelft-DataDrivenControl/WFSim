@@ -108,12 +108,15 @@ while sol.k < Wp.sim.NN
     CPUTime(sol.k) = toc;   % Stop stopwatch
     
     % Save sol to cell array
-    sol_array{sol.k} = sol;
+    sol_array{sol.k} = sol; 
     
-    % Print progress and plot animations, if necessary
+    % Print progress, if necessary
     if scriptOptions.printProgress
-        disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
+        disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ...
+              ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
     end;
+    
+    % Plot animations, if necessary
     if scriptOptions.Animate > 0
         if ~rem(sol.k,scriptOptions.Animate)
             hfig = WFSim_animation(Wp,sol,hfig); 
