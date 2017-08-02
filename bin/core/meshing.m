@@ -22,11 +22,10 @@ meshingloc  = which('meshing.m');
 % next 4 lines I comment since WFSimfolder appeard empty with Windows OS
 % I added two lines after from previous version
 if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
-strbslash   = strfind(meshingloc,slashSymbol);
-%WFSimfolder = meshingloc(1:strbslash(end-2));
-%WFSimfolder = WFSimfolder(length(pwd)+2:end);
+strbslash   = strfind(meshingloc ,[slashSymbol 'WFSim']);
+WFSimfolder = meshingloc(1:strbslash(end)+6);
 %strbslash   = strfind(meshingloc,'\');
-WFSimfolder = meshingloc(1:strbslash(end-2));
+%WFSimfolder = meshingloc(1:strbslash(end-2));
 
 switch lower(Wp.name)
     % Wind farms for which PALM data is available
