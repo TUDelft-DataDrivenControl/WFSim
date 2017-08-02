@@ -89,7 +89,7 @@ scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and prin
 
 
 %% Script core functions
-WFSim_addpaths;                             % Add essential paths to MATLABs environment
+run('WFSim_addpaths.m');                    % Add essential paths to MATLABs environment
 [Wp,sol,sys] = InitWFSim(Wp,scriptOptions); % Initialize WFSim model
 
 % Initialize variables and figure specific to this script
