@@ -3,21 +3,12 @@ if N==1
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-
 elseif N==2
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
     x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    
-    % The following lines for PALM data
-    if (strcmp(Wp.name,'wfcontrol_2turb') || strcmp(Wp.name,'TwoTurbinePartialOverlap_lin'))
-        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
-        x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
-        y                = [zeros(1,yline{1}(1)-1) ones(1,length(unique([yline{1} yline{2}]))) zeros(1,Ny-yline{2}(end))] ;
-        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    end
-    
+
 elseif N==3 || N==6
     xline            = sort(unique(xline));
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
@@ -33,21 +24,17 @@ elseif N==9
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{4}(1)-yline{1}(end)-1) ...
         ones(1,length(yline{4})) zeros(1,yline{3}(1)-yline{4}(end)-1) ...
         ones(1,length(yline{3})) zeros(1,Ny-yline{3}(end))];
-    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;    
-    
+    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 else
-    mixing_length    = lmu*0.5*Drotor;
+    mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
 end
+    %clear mixing_length 
+    %mixing_length    = 0.5*0.5*Drotor*ones(Nx,Ny);
 
 if size(mixing_length,1)>1
     H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
     mixing_length    = filter2(H,mixing_length);
 end
-% Check with the following lines the mixing length parameter
-%mixing_length(mixing_length<=10^-8)=nan;
-%mesh(mixing_length);
-%xlim([0 size(mixing_length,2)]);ylim([0 size(mixing_length,1)]);zlim([0 max(max(mixing_length))+.25*Drotor]);
-
 
 switch lower(Wp.Turbulencemodel)
     
@@ -121,11 +108,11 @@ switch lower(Wp.Turbulencemodel)
             .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx3D(1:Nx,2:Ny)   = Rho/(Wp.turbine.Drotor)*dyy2(1:Nx,2:Ny).*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2))...
             .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-        
+       
         ax.aN             = ax.aN + ax.Tnx3D;
         ax.aS             = ax.aS + ax.Tsx3D;
         ax.aP             = ax.aP + ax.Tnx3D + ax.Tsx3D;
-        
+           
         % For v-momentum equation
         ay.Tey   = zeros(Nx,Ny);
         ay.Twy   = zeros(Nx,Ny);
@@ -357,7 +344,7 @@ switch lower(Wp.Turbulencemodel)
             .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2))...
             .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-        
+                
         ax.aN             = ax.aN + ax.Tnx;
         ax.aS             = ax.aS + ax.Tsx;
         ax.aP             = ax.aP + ax.Tnx + ax.Tsx;
@@ -392,9 +379,9 @@ switch lower(Wp.Turbulencemodel)
             % dTnx/du_(i,J+1)
             %dTnxd2(1:Nx,1:Ny-1) = Rho*(mixing_length(1:Nx,1:Ny-1).^2).*(dxx2(1:Nx,1:Ny-1)./(dyy(1:Nx,2:Ny).^2)).*sign((u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1)));
             
-            dax.S(1:Nx,2:Ny)   = dax.S(1:Nx,2:Ny)   + ax.Tsx(1:Nx,2:Ny);
+            dax.S(1:Nx,2:Ny)   = dax.S(1:Nx,2:Ny)   + ax.Tsx(1:Nx,2:Ny) ;
             dax.N(1:Nx,1:Ny-1) = dax.N(1:Nx,1:Ny-1) + ax.Tnx(1:Nx,1:Ny-1);
-            dax.P(1:Nx,1:Ny-1) = dax.P(1:Nx,1:Ny-1) + ax.Tnx(1:Nx,1:Ny-1) + ax.Tsx(1:Nx,1:Ny-1);
+            dax.P(1:Nx,1:Ny-1) = dax.P(1:Nx,1:Ny-1) + ax.Tnx(1:Nx,1:Ny-1) + ax.Tsx(1:Nx,1:Ny-1) ;
             
             %dax.S(1:Nx,2:Ny)   = dax.S(1:Nx,2:Ny)+dTsxd2(1:Nx,2:Ny).*u(1:Nx,2:Ny)-dTsxd2(1:Nx,2:Ny).*u(1:Nx,1:Ny-1);
             %dax.N(1:Nx,1:Ny-1) = dax.N(1:Nx,1:Ny-1)-dTnxd2(1:Nx,1:Ny-1).*u(1:Nx,1:Ny-1)+dTnxd2(1:Nx,1:Ny-1).*u(1:Nx,2:Ny);
