@@ -1,4 +1,8 @@
-function [sol,eps] = MapSolution(Nx,Ny,sol,k,it,options)
+function [sol,eps] = MapSolution(Wp,sol,it,options)
+% Import variables
+k  = sol.k;
+Nx = Wp.mesh.Nx;
+Ny = Wp.mesh.Ny;
 
 exportPressures   = options.exportPressures;
 exportLinearSol   = options.exportLinearSol;

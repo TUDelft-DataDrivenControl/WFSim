@@ -1,5 +1,6 @@
-function [sol,sys] = Computesol(sys,input,sol,k,it,options)
-
+function [sol,sys] = Computesol(Wp,sys,sol,it,options)
+k               = sol.k;
+input           = Wp.turbine.input{k};
 Projection      = options.Projection;
 exportLinearSol = options.exportLinearSol;
 

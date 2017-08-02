@@ -1,22 +1,20 @@
-function [output,Ueffect,a,Power,CT] = Actuator(Wp,input,sol,options)
-
-Nx          = Wp.mesh.Nx;
-Ny          = Wp.mesh.Ny;
-dyy2        = Wp.mesh.dyy2;
-xline       = Wp.mesh.xline;
-yline       = Wp.mesh.yline;
-ylinev      = Wp.mesh.ylinev;
-
-Rho        = Wp.site.Rho;
-
-Drotor     = Wp.turbine.Drotor;
-powerscale = Wp.turbine.powerscale;
-N          = Wp.turbine.N;
-F          = Wp.turbine.forcescale; % http://www.nrel.gov/docs/fy05osti/36834.pdf
-
-Projection    = options.Projection;
-Linearversion = options.Linearversion;
-Derivatives   = options.Derivatives;
+function [output,sol] = Actuator(Wp,sol,options)
+% Import variables
+Nx              = Wp.mesh.Nx;
+Ny              = Wp.mesh.Ny;
+dyy2            = Wp.mesh.dyy2;
+xline           = Wp.mesh.xline;
+yline           = Wp.mesh.yline;
+ylinev          = Wp.mesh.ylinev;
+Rho             = Wp.site.Rho;
+Drotor          = Wp.turbine.Drotor;
+powerscale      = Wp.turbine.powerscale;
+N               = Wp.turbine.N;
+F               = Wp.turbine.forcescale; % http://www.nrel.gov/docs/fy05osti/36834.pdf
+input           = Wp.turbine.input{sol.k};
+Projection      = options.Projection;
+Linearversion   = options.Linearversion;
+Derivatives     = options.Derivatives;
 
 %%
 Ar              = pi*(0.5*Drotor)^2;
@@ -227,9 +225,13 @@ for kk=1:N
     end
 end
 
-% Write to output
+%% Write to outputs
+sol.Ueffect = Ueffect;
+sol.a       = a;
+sol.power   = Power;
+sol.ct      = CT;
+
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)
     output.dSm = dSm;
 end
-

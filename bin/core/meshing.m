@@ -1,4 +1,4 @@
-function [ Wp, input ] = meshing( Wp, plotMesh, PrintGridMismatch )
+function [ Wp ] = meshing( Wp, plotMesh, PrintGridMismatch )
 %MESHING2 Meshing for the WFSim code
 %  Usage: [ Wp, input ] = meshing( Wp, plotMesh, PrintGridMismatch )
 %   This script produces linear/exponential meshes for the WFSim flow
@@ -21,11 +21,11 @@ if nargin <= 2; PrintGridMismatch = true;                end;
 meshingloc  = which('meshing.m');
 % next 4 lines I comment since WFSimfolder appeard empty with Windows OS
 % I added two lines after from previous version
-%if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
-%strbslash   = strfind(meshingloc,slashSymbol);
+if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end;
+strbslash   = strfind(meshingloc,slashSymbol);
 %WFSimfolder = meshingloc(1:strbslash(end-2));
 %WFSimfolder = WFSimfolder(length(pwd)+2:end);
-strbslash   = strfind(meshingloc,'\');
+%strbslash   = strfind(meshingloc,'\');
 WFSimfolder = meshingloc(1:strbslash(end-2));
 
 switch lower(Wp.name)
@@ -685,12 +685,12 @@ Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',Wp.name,'Turbulencemodel',Wp.
 Wp.sim     = struct('h',h,'time',time,'L',L,'NN',NN);
 Wp.turbine = struct('Drotor',Drotor,'powerscale',powerscale,'forcescale',forcescale, ...
     'N',length(Crx),'Crx',Crx,'Cry',Cry);
+Wp.turbine.input = input; % System inputs too
 Wp.site    = struct('mu',mu,'Rho',Rho,'u_Inf',u_Inf,'v_Inf',v_Inf,'p_init',p_init, ...
     'lmu',lmu,'turbul',turbul,'m',m,'n',n);
 Wp.mesh    = struct('Lx',Lx,'Ly',Ly,'Nx',Nx,'Ny',Ny,'ldxx',ldxx,'ldyy',ldyy,'ldxx2',...
     ldxx2,'ldyy2',ldyy2,'dxx',dxx,'dyy',dyy,'dxx2',dxx2,'dyy2',dyy2,...
     'xline',xline,'type',type);Wp.mesh.yline = yline; Wp.mesh.ylinev = ylinev; % Do not support struct command
-
 
 %% Construct mu if no turbulence
 if turbul==0; mu = ConstructMu(Wp); Wp.site(:).mu = mu; end
