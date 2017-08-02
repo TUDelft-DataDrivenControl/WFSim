@@ -12,7 +12,7 @@
 	expression is correct or not.
 
 5) CompareNonlinearWithPALM
-	Compared PALM simulation restuls with WFSim simulation results.
+	Compared PALM simulation restuls with WFSim simulation results. (update to new WFSim done)
 
 6) CompareNonlinearWithSowfa
 	Compared Sowfa simulation restuls with WFSim simulation results. (update to new WFSim done)
