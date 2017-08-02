@@ -5,4 +5,4 @@ addpath([WFSimFolder slashSymbol 'bin' slashSymbol 'core']);      % Add core fil
 addpath([WFSimFolder slashSymbol 'bin' slashSymbol 'analysis']);  % Add analysis files
 addpath(genpath([WFSimFolder slashSymbol 'libraries']));          % Add external libraries
 
-clear WFSimFolder
+clear WFSimFolder slashSymbol

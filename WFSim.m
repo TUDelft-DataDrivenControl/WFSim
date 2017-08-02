@@ -1,4 +1,20 @@
+clear; clc; close all;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%          WIND FARM SIMULATOR (WFSIM) by S. Boersma
+%               Delft University of Technology, 2017
+%
+%            URL: https://github.com/Bartdoekemeijer/WFSim
+%
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  % 
+%
+%%   Quick use:
+%     1. Specify the wind farm you would like to simulate on line 31.
+%     2. Set up the scriptOptions settings in lines 33-60. Leave the
+%        default if you are unfamiliar with the settings.
+%     3.
+%
 % Types of systems when Projection=0:
 % Linearversion = 0;
 % sys.A * x_{k+1}  = sys.b(x_k,u_k)
@@ -8,9 +24,12 @@
 % sys.A * dx_{k+1} = sys.Al * dx_k + sys.Bl * du_k
 % sys.Ac * \dot{x} = sys.Alc * dx + sys.Bl * u
 
-clear; clc; close all;
+
 
 %% Define script settings
+% Wind farm settings
+Wp.name      = 'YawCase3_50x50_lin_OBS';    % See bin/core/meshing.m
+
 % Model settings
 scriptOptions.Projection        = 0;        % Use projection (true/false)
 scriptOptions.Linearversion     = 0;        % Provide linear variant of WFSim (true/false)
@@ -34,15 +53,11 @@ scriptOptions.printConvergence  = 1;  % Print convergence parameters every times
 scriptOptions.Animate           = 1;  % Show 2D flow fields every x iterations (0: no plots)
 scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
-
 %%%------------------------------------------------------------------------%%%%
 
 %% Script core
-% WFSim: call initialization script
-Wp.name      = 'YawCase3_50x50_lin_OBS';
-
-WFSim_addpaths; % Add paths
-[Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
+WFSim_addpaths;                             % Add paths
+[Wp,sol,sys] = InitWFSim(Wp,scriptOptions); % Initialize WFSim model
 
 % Initialize variables and figure specific to this script
 sol_array = {};
