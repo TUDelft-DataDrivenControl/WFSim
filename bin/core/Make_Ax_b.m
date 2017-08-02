@@ -30,7 +30,7 @@ if  options.Projection
     sys.St = sys.Qsp'*[StrucBCs.bx;StrucBCs.by] - sys.Qsp'*blkdiag(Ax,Ay)*sys.Bsp + sys.Qsp'*sys.Ct*sys.Bsp;
     sys.Bt = sys.Qsp'*[StrucActuator.Sm.xx;StrucActuator.Sm.yy];
     
-    if k==1
+    if sol.k==1
         sys.pRCM = symrcm(sys.Et); % Calculate RCM
     end
     

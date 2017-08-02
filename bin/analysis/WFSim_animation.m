@@ -24,7 +24,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     N      = Wp.turbine.N;
     Cry    = Wp.turbine.Cry;
     Crx    = Wp.turbine.Crx;
-    input  = Wp.turbine.input{sol.k}
+    input  = Wp.turbine.input{sol.k};
 
     time   = Wp.sim.time;
     k      = sol.k;
@@ -38,7 +38,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
         [0 0 1 1],'ToolBar','none','visible', 'on');
     end;
     
-    set(0,'CurrentFigure',hfig); clf
+    set(0,'CurrentFigure',hfig);
 
     %% Plot u velocity flow component
     subplot(2,2,[1 3]);

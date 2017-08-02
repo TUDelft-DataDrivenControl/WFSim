@@ -32,9 +32,9 @@ if exportLinearSol
 end
 
 % Check if solution converged
-Normv{k} = norm(vec(sol.v(2:end-1,3:end-1)-sol.vv(2:end-1,3:end-1)));
-Normu{k} = norm(vec(sol.u(3:end-1,2:end-1)-sol.uu(3:end-1,2:end-1)));
-eps          = sqrt((Normv{k}+Normu{k}))/((Ny-2)*(Nx-2))/2;
+Normv = norm(vec(sol.v(2:end-1,3:end-1)-sol.vv(2:end-1,3:end-1)));
+Normu = norm(vec(sol.u(3:end-1,2:end-1)-sol.uu(3:end-1,2:end-1)));
+eps   = sqrt((Normv+Normu))/((Ny-2)*(Nx-2))/2;
 
 if k==1; alpha      = min(1-.9^it,1); else alpha=1; end;
 sol.u(3:end-1,2:end-1)  = (1-alpha)*sol.u(3:end-1,2:end-1)+alpha*sol.uu(3:end-1,2:end-1);
@@ -48,4 +48,7 @@ if exportLinearSol
     [sol.du,sol.dv,sol.dp] = Updateboundaries(Nx,Ny,sol.du,sol.dv,sol.dp);
 end
 
+if options.printConvergence
+    display(['k ',num2str(sol.k,'%-1000.f'),', It ',num2str(it,'%-1000.0f'),', Nv=', num2str(Normv,'%10.2e'), ', Nu=', num2str(Normu,'%10.2e'), ', TN=',num2str(eps,'%10.2e'),'']) ;
+end;
 end
