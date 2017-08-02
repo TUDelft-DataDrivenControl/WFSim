@@ -37,9 +37,10 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
         hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
         [0 0 1 1],'ToolBar','none','visible', 'on');
     end;
+    
+    set(0,'CurrentFigure',hfig); clf
 
     %% Plot u velocity flow component
-    figure(hfig);
     subplot(2,2,[1 3]);
     contourf(ldyy(1,:),ldxx2(:,1)',sol.u,(0:0.1:u_Inf*1.2),'Linecolor','none');  colormap(hot); caxis([min(min(sol.u))-2 u_Inf*1.04]);  hold all; colorbar;
     axis equal; axis tight;
@@ -117,7 +118,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     cent_ind = ceil(0.5*(D_ind(1)+D_ind(end)));
     up(:,k)  = mean(sol.u(:,D_ind),2);
 
-    figure(hfig);
+    set(0,'CurrentFigure',hfig);
     subplot(2,2,4)
     plot(ldxx2(:,1)',up(:,k),'k','Linewidth',2);
     xlabel('x [m]');ylabel('U_c [m/s]');grid;
