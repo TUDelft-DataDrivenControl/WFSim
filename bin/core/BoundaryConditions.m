@@ -1,4 +1,11 @@
-function [StrucDiscretization,StrucBCs] = BoundaryConditions(Nx,Ny,StrucDiscretization,u,v,Linearversion)
+function [StrucDiscretization,StrucBCs] = BoundaryConditions(Wp,StrucDiscretization,sol,Linearversion)
+% Import variables
+Nx = Wp.mesh.Nx;
+Ny = Wp.mesh.Ny;
+u  = sol.u;
+v  = sol.v;
+
+% Execute script
 ax = StrucDiscretization.ax;
 ay = StrucDiscretization.ay;
 
