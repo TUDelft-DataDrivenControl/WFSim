@@ -29,9 +29,9 @@ else
 end
 
 % Display and visualization settings
-scriptOptions.printProgress     = 0;  % Print progress every timestep
-scriptOptions.printConvergence  = 0;  % Print convergence parameters every timestep
-scriptOptions.Animate           = 0;  % Show 2D flow fields every x iterations (0: no plots)
+scriptOptions.printProgress     = 1;  % Print progress every timestep
+scriptOptions.printConvergence  = 1;  % Print convergence parameters every timestep
+scriptOptions.Animate           = 1;  % Show 2D flow fields every x iterations (0: no plots)
 scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
 

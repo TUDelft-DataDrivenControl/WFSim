@@ -98,7 +98,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
 
     %% Plot the v velocity flow component
     subplot(2,2,2);
-    contourf(ldyy(1,:),ldxx2(:,1)',min(sol.v,u_Inf*1.2),min(sol.v(:)):0.1:max(sol.v(:)),'Linecolor','none');  colormap(hot);   hold all
+    contourf(ldyy(1,:),ldxx2(:,1)',min(sol.v,u_Inf*1.2),'Linecolor','none');  colormap(hot);   hold all
     % contourf(ldyy(1,:),ldxx2(:,1)',min(v,u_Inf*1.2),'Linecolor','none');  colormap(hot);   hold all
     colorbar;
     for kk=1:N
