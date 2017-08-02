@@ -57,10 +57,7 @@ switch lower(Wp.name)
         n        = 2;         % Turbulence model tuning parameter #1
         m        = 8;         % Turbulence model tuning parameter #2
         
-        
-        
-        
-        
+     
     % Wind farms for which PALM data is available
     case lower('2turb_adm')
         type   = 'lin';                     % Meshing type ('lin' or 'exp')
@@ -101,6 +98,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
         lmu      = .5;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -143,7 +141,8 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
+ 
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 1;         % Mixing length in x-direction (m)
         turbul   = false;     % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -184,7 +183,8 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
+
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
         lmu      = 1;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -361,7 +361,8 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
+ 
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -404,7 +405,8 @@ switch lower(Wp.name)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
+ 
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -446,7 +448,8 @@ switch lower(Wp.name)
         u_Inf    = 9.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
+  
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice       
         lmu      = 1.75;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -488,6 +491,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
+        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice      
         lmu      = 5;         % Mixing length in x-direction (m)
         turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
