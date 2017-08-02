@@ -1,4 +1,5 @@
 function [sol, sys] = Make_Ax_b(Wp,sys,sol,options)
+% Import variables
 Nx    = Wp.mesh.Nx;
 Ny    = Wp.mesh.Ny;
 
@@ -9,12 +10,13 @@ else
     dt = Wp.sim.h;
 end;
 
+% The following is really the core of WFSim: creating the system matrices
 [StrucDiscretization]                = SpatialDiscr_Hybrid(Wp,sol,options.Linearversion); % Spatial discretization
 [StrucDiscretization,StrucDynamical] = Dynamical(Wp,StrucDiscretization,sol,dt,options.Linearversion);  % Dynamical term
 [StrucActuator,sol]                  = Actuator(Wp,sol,options); % Actuator/forcing function
 [StrucDiscretization,StrucBCs]       = BoundaryConditions(Wp,StrucDiscretization,sol,options.Linearversion); % Zero gradient boundary conditions momentum equations
 
-% Setup A matrix
+% Collect all terms and create the A matrix in 'A*x = b'
 Ay    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ay,2,3,1);
 Ax    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ax,3,2,1);
 sys.A = [blkdiag(Ax,Ay) [sys.B1;sys.B2]; ...
@@ -23,6 +25,7 @@ sys.M = blkdiag(spdiags(StrucDynamical.ccx,0,Wp.Nu,Wp.Nu),...
                 spdiags(StrucDynamical.ccy,0,Wp.Nv,Wp.Nv),...
                 spdiags(zeros(Wp.Np,1),0,Wp.Np,Wp.Np));
 
+% If necessary, project away the continuity equation in A*x = b            
 if  options.Projection
     sys.Ct = blkdiag(spdiags(StrucDynamical.ccx,0,Wp.Nu,Wp.Nu),spdiags(StrucDynamical.ccy,0,Wp.Nv,Wp.Nv));
     sys.Et = sys.Qsp'*blkdiag(Ax,Ay)*sys.Qsp;
@@ -48,6 +51,7 @@ if  options.Projection
     end
     
 else
+    % Collect all terms and create the b vector in 'A*x = b'
     sys.b    = [StrucBCs.bx+StrucDynamical.cx+vec(StrucActuator.Sm.x');
         StrucBCs.by+StrucDynamical.cy+vec(StrucActuator.Sm.y');
         sys.bc];
