@@ -1,12 +1,14 @@
 function [sol,eps] = MapSolution(Wp,sol,it,options)
+%MAPSOLUTION This function converts 'sol.x' to real flow fields.
+
     % Import variables
     k  = sol.k;
     Nx = Wp.mesh.Nx;
     Ny = Wp.mesh.Ny;
-
     exportPressures   = options.exportPressures;
     exportLinearSol   = options.exportLinearSol;
 
+    % Project sol.x back to the flow fields, excluding the boundary conditions
     sol.uu(3:end-1,2:end-1)     = reshape(sol.x(1:(Nx-3)*(Ny-2)),Ny-2,Nx-3)';
     sol.vv(2:end-1,3:end-1)     = reshape(sol.x((Nx-3)*(Ny-2)+1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3)),Ny-3,Nx-2)';
     %pp(2:end-1,2:end-1)     = reshape([sol.x((Nx-3)*(Ny-2)+(Nx-2)*(Ny-3)+1:end);0],Ny-2,Nx-2)';
@@ -31,7 +33,7 @@ function [sol,eps] = MapSolution(Wp,sol,it,options)
         end
     end
 
-    % Check if solution converged
+    % Check if solution has converged
     Normv = norm(vec(sol.v(2:end-1,3:end-1)-sol.vv(2:end-1,3:end-1)));
     Normu = norm(vec(sol.u(3:end-1,2:end-1)-sol.uu(3:end-1,2:end-1)));
     eps   = sqrt((Normv+Normu))/((Ny-2)*(Nx-2))/2;
@@ -42,7 +44,7 @@ function [sol,eps] = MapSolution(Wp,sol,it,options)
     sol.p(2:end-1,2:end-1)  = (1-alpha)*sol.p(2:end-1,2:end-1)+alpha*sol.pp(2:end-1,2:end-1);
 
     % Update velocities for next iteration and boundary conditions
-    [sol.u,sol.v,sol.p]    = Updateboundaries(Nx,Ny,sol.u,sol.v,sol.p);
+    [sol.u,sol.v,sol.p] = Updateboundaries(Nx,Ny,sol.u,sol.v,sol.p);
     if exportLinearSol
         [sol.ul,sol.vl,sol.pl] = Updateboundaries(Nx,Ny,sol.ul,sol.vl,sol.pl);
         [sol.du,sol.dv,sol.dp] = Updateboundaries(Nx,Ny,sol.du,sol.dv,sol.dp);

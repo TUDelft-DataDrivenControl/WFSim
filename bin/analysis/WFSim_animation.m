@@ -1,4 +1,5 @@
 function [hfig] = WFSim_animation( Wp,sol,hfig )
+    % Import local variables from large structs
     Dr     = Wp.turbine.Drotor;
     Nx     = Wp.mesh.Nx;
     Ny     = Wp.mesh.Ny;
