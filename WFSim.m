@@ -43,10 +43,8 @@ Wp.name      = 'YawCase3_50x50_lin_OBS';
 [Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
 
 % Initialize variables and figure specific to this script
-uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-vk = Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-pk = Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-
+sol_array = {};
+CPUTime   = zeros(Wp.sim.NN,1);
 if scriptOptions.Animate > 0
     %scrsz = get(0,'ScreenSize');
     hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
@@ -55,12 +53,14 @@ end
 
 
 % Performing timestepping until end
-CPUTime = zeros(Wp.sim.NN,1);
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
 while sol.k < Wp.sim.NN
     tic;         % Intialize timer
     [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep with WFSim
     CPUTime(sol.k) = toc; % Take time
+    
+    % Save sol to a cell array
+    sol_array{sol.k} = sol;
     
     % Display progress and animations
     if scriptOptions.printProgress
