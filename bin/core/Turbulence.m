@@ -8,15 +8,7 @@ elseif N==2
     x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    
-    % The following lines for PALM data
-    if (strcmp(Wp.name,'wfcontrol_2turb') || strcmp(Wp.name,'TwoTurbinePartialOverlap_lin'))
-        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
-        x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
-        y                = [zeros(1,yline{1}(1)-1) ones(1,length(unique([yline{1} yline{2}]))) zeros(1,Ny-yline{2}(end))] ;
-        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-    end
-    
+
 elseif N==3 || N==6
     xline            = sort(unique(xline));
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';

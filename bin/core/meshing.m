@@ -30,45 +30,46 @@ WFSimfolder = meshingloc(1:strbslash(end-2));
 
 switch lower(Wp.name)
     % Wind farms for which PALM data is available
-    case lower('wfcontrol_2turb')
-        type   = 'lin';          % Meshing type ('lin' or 'exp')
-        Lx     = 7700-5500;      % Domain length in x-direction (m)
-        Ly     = 1665-905;           % Domain length in y-direction (m)
-        Nx     = 221;             % Number of grid points in x-direction
-        Ny     = 77;                        % Number of grid points in y-direction
-        Crx    = [6000.0,6504.0]-5500;           % Turbine locations in x-direction (m)
-        Cry    = [1280.0,1280.0+.5*126.4]-905;     % Turbine locations in y-direction (m)
+    case lower('2turb_adm')
+        type   = 'lin';                     % Meshing type ('lin' or 'exp')
+        Lx     = 7500-5500;                % Domain length in x-direction (m)
+        Ly     = 1460-900;                % Domain length in y-direction (m)
+        Nx     = 50;                       % Number of grid points in x-direction
+        Ny     = 25;                        % Number of grid points in y-direction
+        Crx    = [5700, 6456]-5500;        % Turbine locations in x-direction (m)
+        Cry    = [1175, 1175]-900;        % Turbine locations in y-direction (m)
         
-        run([WFSimfolder 'data_PALM\wfcontrol_2turb_d3d\Turbine_settings_wfcontrol_2turb'])
-        % Time Ur  Uinf Ct_adm  a Yaw(deg)  Thrust  Power  wf_power
-        
+        M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters01.txt');
+        M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');       
+        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+                 
         % Correctly format inputs (temporary function)
-        for j = 1:size(Turbine1,1)
-            input{j}.t    = Turbine1(j,1);
-            input{j}.beta = [Turbine1(j,5);Turbine2(j,5)]./(1-[Turbine1(j,5);Turbine2(j,5)]);
-            input{j}.phi  = [Turbine1(j,6);Turbine2(j,6)];
+        for j = 1:size(M1,1)
+            input{j}.t    = M1(j,1);
+            input{j}.beta = [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
+            input{j}.phi  = [M1(j,6);M2(j,6)];
         end;
         
         % Calculate delta inputs
-        for j = 1:size(Turbine1,1)-1
-            input{j}.dbeta = [Turbine1(j+1,5);Turbine2(j+1,5)]./(1-[Turbine1(j+1,5);Turbine2(j+1,5)])- ...
-                [Turbine1(j,5);Turbine2(j,5)]./(1-[Turbine1(j,5);Turbine2(j,5)]);
-            input{j}.dphi  = [Turbine1(j+1,6);Turbine2(j+1,6)] - [Turbine1(j,6);Turbine2(j,6)] ;
+        for j = 1:size(M1,1)-1
+            input{j}.dbeta = [M1(j+1,5);M2(j+1,5)]./(1-[M1(j+1,5);M2(j+1,5)])- ...
+                [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
+            input{j}.dphi  = [M1(j+1,6);M2(j+1,6)] - [M1(j,6);M2(j,6)] ;
         end;
         
-        Drotor      = 126.4;  % Turbine rotor diameter in (m)
-        powerscale  = 1.0;    % Turbine powerscaling
+        Drotor      = 126;    % Turbine rotor diameter in (m)
+        powerscale  = .8;    % Turbine powerscaling
         forcescale  = 1.6;    % Turbine force scaling
         
-        h        = 1;       % Sampling time (s)
+        h        = 1;         % Sampling time (s)
         L        = 300;       % Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
+        u_Inf    = M1(1,3);   % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = 2;         % Mixing length in x-direction (m)
+        lmu      = .5;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 4;
