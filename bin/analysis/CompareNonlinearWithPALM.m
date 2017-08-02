@@ -1,45 +1,51 @@
 clear; clc; close all;
 
-run('../../WFSim_addpaths');
+%% Define script settings
+% Model settings
+scriptOptions.Projection        = 0;        % Use projection (true/false)
+scriptOptions.Linearversion     = 0;        % Provide linear variant of WFSim (true/false)
+scriptOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim
+scriptOptions.Derivatives       = 0;        % Compute derivatives
+scriptOptions.startUniform      = 1;        % Start from a uniform flowfield (true) or a steady-state solution (false)
+scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields
 
-[WFSimFolder, ~, ~] = fileparts(which([mfilename '.m']));   % Get WFSim directory
-
-% Initialize script
-options.Projection    = 0;                      % Use projection (true/false)
-options.Linearversion = 0;                      % Provide linear variant of WFSim (true/false)
-options.exportLinearSol= 0;                     % Calculate linear solution of WFSim
-options.Derivatives   = 0;                      % Compute derivatives
-options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
-options.exportPressures= ~options.Projection;   % Calculate pressure fields
-
-Wp.name             = '2turb_adm';
-Wp.Turbulencemodel  = 'WFSim3';
-
-Animate       = 25;                      % Show 2D flow fields every x iterations (0: no plots)
-plotMesh      = 0;                      % Show meshing and turbine locations
-conv_eps      = 1e-6;                   % Convergence threshold
-max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
-
-if options.startUniform==1
-    max_it = 1;
+% Convergence settings
+scriptOptions.conv_eps          = 1e-6;     % Convergence threshold
+scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1
+if scriptOptions.startUniform==1
+    scriptOptions.max_it = 1;
 else
-    max_it = 50;
+    scriptOptions.max_it = 50;
 end
 
-% WFSim general initialization script
-[Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] ...
-    = InitWFSim(Wp,options,plotMesh);
+% Display and visualization settings
+scriptOptions.printProgress     = 1;  % Print progress every timestep
+scriptOptions.printConvergence  = 1;  % Print convergence parameters every timestep
+scriptOptions.Animate           = 10;  % Show 2D flow fields every x iterations (0: no plots)
+scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
+
+
+%%%------------------------------------------------------------------------%%%%
+
+%% Script core
+% WFSim: call initialization script
+Wp.name      = '2turb_adm';
+
+run('../../WFSim_addpaths'); % Add paths
+[Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
+
+% Initialize variables and figure specific to this script
+sol_array = {};
+CPUTime   = zeros(Wp.sim.NN,1);
+if scriptOptions.Animate > 0
+    %scrsz = get(0,'ScreenSize');
+    hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
+        [0 0 1 1],'ToolBar','none','visible', 'on');
+end
 
 % Initialize variables and figure specific to this script
 uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
 vk = Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-pk = Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-
-if Animate > 0
-    scrsz = get(0,'ScreenSize');
-    hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
-        [0 0 1 1],'ToolBar','none','visible', 'on');
-end
 
 % Load PALM data
 M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters01.txt');
@@ -57,53 +63,50 @@ yv       = double(nc_varget(filename,'yv'));
 zw_3d    = double(nc_varget(filename,'zw_3d'));
 nz       = 4;
 
+% Performing timestepping until end
+disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
 %% Loop
-for k=1:Wp.sim.NN
+while sol.k < Wp.sim.NN
+    tic;         % Intialize timer
     
-    it        = 0;
-    eps       = 1e19;
-    epss      = 1e20;
+    [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep with WFSim
+    CPUTime(sol.k) = toc; % Take time
     
     % Write flow field solutions to a 3D matrix
-    uk(:,:,k) = sol.u;
-    vk(:,:,k) = sol.v;
-    pk(:,:,k) = sol.p;
+    uk(:,:,sol.k)         = sol.u;
+    vk(:,:,sol.k)         = sol.v;
+    a(:,sol.k)            = sol.a;
+    Power(:,sol.k)        = sol.power;
+    Phi(:,sol.k)          = Wp.turbine.input{sol.k}.phi;
     
-    while ( eps>conv_eps && it<max_it && eps<epss );
-        it   = it+1;
-        epss = eps;
-        
-        if k>1
-            max_it = max_it_dyn;
-        end
-        
-        [sys,Power(:,k),Ueffect(:,k),a(:,k),CT(:,k)] = ...
-            Make_Ax_b(Wp,sys,sol,input{k},B1,B2,bc,k,options); % Create system matrices
-        [sol,sys] = Computesol(sys,input{k},sol,k,it,options);                   % Compute solution
-        [sol,eps] = MapSolution(Wp.mesh.Nx,Wp.mesh.Ny,sol,k,it,options);         % Map solution to field
-        Phi(:,k)  = input{k}.phi;
-    end
-    
-    uPALM                 = reshape(u(k,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)
-    vPALM                 = reshape(v(k,nz,:,:),size(v,3),size(v,4))';
-    % Interpolate PALM data on WFSim grid
+    uPALM                 = reshape(u(sol.k,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)
+    vPALM                 = reshape(v(sol.k,nz,:,:),size(v,3),size(v,4))';
+    % Project PALM data on WFSim grid
     targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
     sourceSize            = size(uPALM);
     [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
     uPALM                 = interp2(uPALM, X_samples, Y_samples);
     vPALM                 = interp2(vPALM, X_samples, Y_samples);
     
-    eu                    = vec(sol.u-uPALM); eu(isnan(eu)) = [];
-    ev                    = vec(sol.v-vPALM); ev(isnan(ev)) = [];
-    RMSE(k)               = rms([eu;ev]);
-    [maxe(k),maxeloc(k)]  = max(abs(eu));
+    eu                            = vec(sol.u-uPALM); eu(isnan(eu)) = [];
+    ev                            = vec(sol.v-vPALM); ev(isnan(ev)) = [];
+    RMSE(sol.k)                   = rms([eu;ev]);
+    [maxe(sol.k),maxeloc(sol.k)]  = max(abs(eu));
     
-    PowerPALM(:,k)       = [M1(k,8);M2(k,8)];
+    PowerPALM(:,sol.k)            = [M1(sol.k,8);M2(sol.k,8)];
     
-    if Animate > 0
-        if ~rem(k,Animate)
+    % Save sol to a cell array
+    sol_array{sol.k} = sol;
+    
+    % Display progress and animations
+    if scriptOptions.printProgress
+        disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
+    end;
+    
+    if scriptOptions.Animate > 0
+        if ~rem(sol.k,scriptOptions.Animate)
             
-            yaw_angles = .5*Wp.turbine.Drotor*exp(1i*input{k}.phi*pi/180);  % Yaw angles
+            yaw_angles = .5*Wp.turbine.Drotor*exp(1i*Wp.turbine.input{sol.k}.phi*pi/180);  % Yaw angles
             
             subplot(2,3,1);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u,'Linecolor','none');  colormap(hot);
@@ -114,7 +117,7 @@ for k=1:Wp.sim.NN
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
-            text(0,Wp.mesh.ldxx2(end,end)+250,['Time ', num2str(Wp.sim.time(k),'%.1f'), 's']);
+            text(0,Wp.mesh.ldxx2(end,end)+250,['Time ', num2str(Wp.sim.time(sol.k),'%.1f'), 's']);
             ylabel('x [m]');
             title('WFSim u [m/s]');
             hold off;
@@ -136,7 +139,7 @@ for k=1:Wp.sim.NN
             caxis([min(min(sol.u-uPALM)) max(max(sol.u-uPALM))]);  hold all; colorbar;
             axis equal; axis tight;
             ldyyv = Wp.mesh.ldyy(:); ldxx2v = Wp.mesh.ldxx2(:);
-            plot(ldyyv(maxeloc(k)),ldxx2v(maxeloc(k)),'whiteo','LineWidth',1,'MarkerSize',8,'DisplayName','Maximum error location');
+            plot(ldyyv(maxeloc(sol.k)),ldxx2v(maxeloc(sol.k)),'whiteo','LineWidth',1,'MarkerSize',8,'DisplayName','Maximum error location');
             for ll=1:Wp.turbine.N
                 Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
@@ -146,17 +149,17 @@ for k=1:Wp.sim.NN
             hold off;
             
             subplot(2,3,4);
-            plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
-            plot(Wp.sim.time(1:k),PowerPALM(2,1:k),'k--');
+            plot(Wp.sim.time(1:sol.k),PowerPALM(1,1:sol.k));hold on
+            plot(Wp.sim.time(1:sol.k),PowerPALM(2,1:sol.k),'k--');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5])
             title('Power PALM')
             grid;hold off;
             drawnow
- 
+            
             subplot(2,3,5);
-            plot(Wp.sim.time(1:k),Power(1,1:k));hold on
-            plot(Wp.sim.time(1:k),Power(2,1:k),'k--');
+            plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k));hold on
+            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k),'k--');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5]);
             title('Power WFSim')
@@ -164,14 +167,14 @@ for k=1:Wp.sim.NN
             drawnow
             
             subplot(2,3,6)
-            plot(Wp.sim.time(1:k),Power(1,1:k)-PowerPALM(1,1:k));hold on
-            plot(Wp.sim.time(1:k),Power(2,1:k)-PowerPALM(2,1:k),'r');
+            plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k)-PowerPALM(1,1:sol.k));hold on
+            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k)-PowerPALM(2,1:sol.k),'r');
             title('error [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) min(min(Power(:,1:k)-PowerPALM(:,1:k)))-.2 max(max(Power(:,1:k)-PowerPALM(:,1:k)))+.2]);
+            axis([0,Wp.sim.time(end) min(min(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))-.2 max(max(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))+.2]);
             grid;hold off;
         end
         drawnow
-               
+        
     end;
 end;
 
@@ -182,15 +185,15 @@ plot(Wp.sim.time(1:end-1),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-figure(3);clf            
+figure(3);clf
 plot(Wp.sim.time(1:end-1),a(1,1:end));hold on
 plot(Wp.sim.time(1:end-1),a(2,1:end),'r');
 ylabel('$a$','interpreter','latex')
 title('axial induction','interpreter','latex');
 axis([0,Wp.sim.time(end) 0 max(max(a(:,1:end)))+.2]);
 grid;hold off;
-            
-            
+
+
 %% Wake centreline
 D_ind    = Wp.mesh.yline{1};
 indices  = [50 125 200 300];
