@@ -40,6 +40,8 @@ scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 %% Script core
 % WFSim: call initialization script
 Wp.name      = 'YawCase3_50x50_lin_OBS';
+
+WFSim_addpaths; % Add paths
 [Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
 
 % Initialize variables and figure specific to this script

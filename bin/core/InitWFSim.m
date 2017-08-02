@@ -1,5 +1,5 @@
 function [Wp,sol,sys] = InitWFSim(Wp,options)
-    WFSim_addpaths; % Add paths
+    
 
     % Create empty structs
     sys = struct;
