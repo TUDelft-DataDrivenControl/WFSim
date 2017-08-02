@@ -1,7 +1,8 @@
 clear; clc; close all;
 
+run('../../WFSim_addpaths');
+
 [WFSimFolder, ~, ~] = fileparts(which([mfilename '.m']));   % Get WFSim directory
-addpath(genpath('..\..\Data_PALM\'));                       % Add PALM data
 
 % Initialize script
 options.Projection    = 0;                      % Use projection (true/false)
@@ -11,8 +12,8 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-Wp.name             = 'wfcontrol_2turb';
-Wp.Turbulencemodel  = 'WFSim1';
+Wp.name             = '2turb_adm';
+Wp.Turbulencemodel  = 'WFSim3';
 
 Animate       = 25;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
@@ -40,17 +41,25 @@ if Animate > 0
         [0 0 1 1],'ToolBar','none','visible', 'on');
 end
 
-%% Get PALM data
-filename = 'wfcontrol_2turb.nc'; nc_dump(filename);
+% Load PALM data
+M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters01.txt');
+M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');
+%M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+
+addpath(genpath('../../Data_PALM'));  % Add mexcfd
+filename = '../../Data_PALM/2turb_adm/example_2turb_adm_matlab_m01.nc';
 u        = double(nc_varget(filename,'u'));
 v        = double(nc_varget(filename,'v'));
-w        = double(nc_varget(filename,'w'));
-
-Turbine_settings_wfcontrol_2turb;
+x        = double(nc_varget(filename,'x'));
+y        = double(nc_varget(filename,'y'));
+xu       = double(nc_varget(filename,'xu'));
+yv       = double(nc_varget(filename,'yv'));
+zw_3d    = double(nc_varget(filename,'zw_3d'));
+nz       = 4;
 
 %% Loop
 for k=1:Wp.sim.NN
-    tic
+    
     it        = 0;
     eps       = 1e19;
     epss      = 1e20;
@@ -74,25 +83,29 @@ for k=1:Wp.sim.NN
         [sol,eps] = MapSolution(Wp.mesh.Nx,Wp.mesh.Ny,sol,k,it,options);         % Map solution to field
         Phi(:,k)  = input{k}.phi;
     end
-    toc
     
-    uPALM = reshape(u(k,:,:,:),77,221)';
-    vPALM = reshape(v(k,:,:,:),77,221)';
+    uPALM                 = reshape(u(k,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)
+    vPALM                 = reshape(v(k,nz,:,:),size(v,3),size(v,4))';
+    % Interpolate PALM data on WFSim grid
+    targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
+    sourceSize            = size(uPALM);
+    [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
+    uPALM                 = interp2(uPALM, X_samples, Y_samples);
+    vPALM                 = interp2(vPALM, X_samples, Y_samples);
     
     eu                    = vec(sol.u-uPALM); eu(isnan(eu)) = [];
     ev                    = vec(sol.v-vPALM); ev(isnan(ev)) = [];
     RMSE(k)               = rms([eu;ev]);
     [maxe(k),maxeloc(k)]  = max(abs(eu));
     
-    PowerPALM(:,k)       = [Turbine1(k,8);Turbine2(k,8)];
-    
+    PowerPALM(:,k)       = [M1(k,8);M2(k,8)];
     
     if Animate > 0
         if ~rem(k,Animate)
             
             yaw_angles = .5*Wp.turbine.Drotor*exp(1i*input{k}.phi*pi/180);  % Yaw angles
             
-            subplot(2,3,[1 4]);
+            subplot(2,3,1);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u,'Linecolor','none');  colormap(hot);
             caxis([min(min(sol.u)) max(max(sol.u))]);  hold all; colorbar;
             axis equal; axis tight;
@@ -106,7 +119,7 @@ for k=1:Wp.sim.NN
             title('WFSim u [m/s]');
             hold off;
             
-            subplot(2,3,[2 5]);
+            subplot(2,3,2);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',uPALM,'Linecolor','none');  colormap(hot);
             caxis([min(min(uPALM)) max(max(uPALM))]);  hold all; colorbar;
             axis equal; axis tight;
@@ -118,7 +131,7 @@ for k=1:Wp.sim.NN
             title('PALM u [m/s]');
             hold off;
             
-            subplot(2,3,[3 6]);
+            subplot(2,3,3);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u-uPALM,'Linecolor','none');  colormap(hot);
             caxis([min(min(sol.u-uPALM)) max(max(sol.u-uPALM))]);  hold all; colorbar;
             axis equal; axis tight;
@@ -132,48 +145,33 @@ for k=1:Wp.sim.NN
             title('error [m/s]');
             hold off;
             
-%             subplot(2,3,4);
-%             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.v,'Linecolor','none');  colormap(hot);
-%             caxis([min(min(sol.v)) max(max(sol.v))]);  hold all; colorbar;
-%             axis equal; axis tight;
-%             for ll=1:Wp.turbine.N
-%                 Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-%                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
-%                 plot(Qy,Qx,'k','linewidth',1)
-%             end
-%             xlabel('y [m]')
-%             ylabel('x [m]');
-%             title('WFSim v [m/s]');
-%             hold off;
-%             
-%             subplot(2,3,5);
-%             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',vPALM,'Linecolor','none');  colormap(hot);
-%             caxis([min(min(vPALM)) max(max(vPALM))]);  hold all; colorbar;
-%             axis equal; axis tight;
-%             for ll=1:Wp.turbine.N
-%                 Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-%                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
-%                 plot(Qy,Qx,'k','linewidth',1)
-%             end
-%             xlabel('y [m]')
-%             title('PALM v [m/s]');
-%             hold off;
-%             
-%             subplot(2,3,6);
-%             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.v-vPALM,'Linecolor','none');  colormap(hot);
-%             caxis([min(min(sol.v-vPALM)) max(max(sol.v-vPALM))]);  hold all; colorbar;
-%             axis equal; axis tight;
-%             for ll=1:Wp.turbine.N
-%                 Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-%                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
-%                 plot(Qy,Qx,'k','linewidth',1)
-%             end
-%             xlabel('y [m]')
-%             title('error [m/s]');
-%             hold off;
-            drawnow;
+            subplot(2,3,4);
+            plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
+            plot(Wp.sim.time(1:k),PowerPALM(2,1:k),'k--');
+            title('$P$ [W]','interpreter','latex');
+            axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5])
+            title('Power PALM')
+            grid;hold off;
+            drawnow
+ 
+            subplot(2,3,5);
+            plot(Wp.sim.time(1:k),Power(1,1:k));hold on
+            plot(Wp.sim.time(1:k),Power(2,1:k),'k--');
+            title('$P$ [W]','interpreter','latex');
+            axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5]);
+            title('Power WFSim')
+            grid;hold off;
+            drawnow
             
-        end;
+            subplot(2,3,6)
+            plot(Wp.sim.time(1:k),Power(1,1:k)-PowerPALM(1,1:k));hold on
+            plot(Wp.sim.time(1:k),Power(2,1:k)-PowerPALM(2,1:k),'r');
+            title('error [W]','interpreter','latex');
+            axis([0,Wp.sim.time(end) min(min(Power(:,1:k)-PowerPALM(:,1:k)))-.2 max(max(Power(:,1:k)-PowerPALM(:,1:k)))+.2]);
+            grid;hold off;
+        end
+        drawnow
+               
     end;
 end;
 
@@ -184,19 +182,35 @@ plot(Wp.sim.time(1:end-1),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
+figure(3);clf            
+plot(Wp.sim.time(1:end-1),a(1,1:end));hold on
+plot(Wp.sim.time(1:end-1),a(2,1:end),'r');
+ylabel('$a$','interpreter','latex')
+title('axial induction','interpreter','latex');
+axis([0,Wp.sim.time(end) 0 max(max(a(:,1:end)))+.2]);
+grid;hold off;
+            
+            
 %% Wake centreline
 D_ind    = Wp.mesh.yline{1};
 indices  = [50 125 200 300];
 
 for k=indices
     up(:,k)      = mean(uk(:,D_ind,k),2);
-    uPALM        = reshape(u(k,:,:,:),77,221)';
+    uPALM        = reshape(u(k,nz,:,:),size(u,3),size(u,4))';
+    
+    % Interpolate PALM data on WFSim grid
+    targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
+    sourceSize            = size(uPALM);
+    [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
+    uPALM                 = interp2(uPALM, X_samples, Y_samples);
+    
     upPALM(:,k)  = mean(uPALM(:,D_ind),2);
     VAF(:,k)     = vaf(upPALM(:,k),up(:,k));
 end
 
 
-figure(3);clf;
+figure(4);clf;
 subplot(2,2,1)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1);hold on;
 plot(Wp.mesh.ldxx2(:,1)',upPALM(:,indices(1)),'b','Linewidth',1);grid;
@@ -229,21 +243,22 @@ vline(Wp.turbine.Crx(1));vline(Wp.turbine.Crx(2));
 if Wp.turbine.N==9; vline(Wp.turbine.Crx(7)); end
 title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
 if Wp.turbine.N==9
-text( -2560, 26, 'First row: WFSim (black) and PALM (blue)','interpreter','latex') ;
-%suptitle('First row: WFSim (black) and PALM (blue)')
+    text( -2560, 26, 'First row: WFSim (black) and PALM (blue)','interpreter','latex') ;
+    %suptitle('First row: WFSim (black) and PALM (blue)')
 end
+
 
 %% Plot cross-sections
 % if Wp.turbine.N==2
 % indices  = [250 500 750 999];
-% 
+%
 % for k=indices
 %     SOWFAdata     = load([sourcepath num2str(list{k})]);
 %     usowfa(:,:,k) = SOWFAdata.uq;
 %     VAF(k)        = vaf(usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,k),...
 %     uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,k));
 % end
-% 
+%
 % figure(6);clf;
 % subplot(2,2,1)
 % plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'k','Linewidth',1);hold on;
@@ -274,33 +289,7 @@ end
 % title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
 % end
 
-%% Plot control signals (Numbering according topology presented in paper)
-if Wp.turbine.N==2
-figure(9);clf;
-subplot(2,1,1)
-plot(Wp.sim.time(1:end-1),a(1,:),'b');hold on;
-plot(Wp.sim.time(1:end-1),a(2,:),'k');grid;
-ylabel('$a$','interpreter','latex');
-title('$a^1$ (blue), $a^2$ (black)','interpreter','latex')
-%legend({'$a_1$','$a_2$'},'interpreter','latex')
-subplot(2,1,2)
-plot(Wp.sim.time(1:end-1),Phi(1,:),'b');hold on;
-plot(Wp.sim.time(1:end-1),Phi(2,:),'k');grid;
-ylabel('$\gamma$ [deg]','interpreter','latex');xlabel('$k$ [s]','interpreter','latex');
-title('$\gamma^1$ (blue), $\gamma^2$ (black)','interpreter','latex')
-%legend({'$\gamma_1$','$\gamma_2$'},'interpreter','latex')
-end
 
-%% Power
-figure(10);clf;
-subplot(2,1,1)
-plot(Power(1,1:end));hold on;
-plot(PowerPALM(1,1:end),'r--');
-grid;ylabel('Power T_1');legend('WFSim','PALM')
-subplot(2,1,2)
-plot(Power(2,1:end));hold on;
-plot(PowerPALM(2,1:end),'r--');
-grid;xlabel('Time [s]');ylabel('Power T_2')
 
 
 
