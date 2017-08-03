@@ -58,11 +58,11 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = .8;    % Turbine powerscaling
+        powerscale  = .7;    % Turbine powerscaling
         forcescale  = 1.6;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
-        L        = 300;       % Simulation length (s)
+        L        = floor(M1(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = M1(1,3);   % Freestream flow velocity x-direction (m/s)
@@ -71,8 +71,8 @@ switch lower(Wp.name)
         
         lmu      = .5;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 2;
-        m        = 4;
+        n        = 4;
+        m        = 2;
         
         % Wind farms for which SOWFA data is available
     case lower('YawCase3_50x50_lin_OBS')
