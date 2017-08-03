@@ -148,7 +148,7 @@ for k=1:size(u,1)
             plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
             plot(Wp.sim.time(1:k),PowerPALM(2,1:k),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5])
+            axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5])
             title('Power PALM')
             grid;hold off;
             drawnow
@@ -157,7 +157,7 @@ for k=1:size(u,1)
             plot(Wp.sim.time(1:k),Power(1,1:k));hold on
             plot(Wp.sim.time(1:k),Power(2,1:k),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) 0 max(max(Power(:,1:end)))+10^5]);
+            axis([0,Wp.sim.time(size(u,1)) 0 max(max(Power(:,1:end)))+10^5]);
             title('Power WFSim')
             grid;hold off;
             drawnow
@@ -166,7 +166,7 @@ for k=1:size(u,1)
             plot(Wp.sim.time(1:k),Power(1,1:k)-PowerPALM(1,1:k));hold on
             plot(Wp.sim.time(1:k),Power(2,1:k)-PowerPALM(2,1:k),'r');
             title('error [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) min(min(Power(:,1:k)-PowerPALM(:,1:k)))-.2 max(max(Power(:,1:k)-PowerPALM(:,1:k)))+.2]);
+            axis([0,Wp.sim.time(size(u,1)) min(min(Power(:,1:k)-PowerPALM(:,1:k)))-.2 max(max(Power(:,1:k)-PowerPALM(:,1:k)))+.2]);
             grid;hold off;
         end
         drawnow
