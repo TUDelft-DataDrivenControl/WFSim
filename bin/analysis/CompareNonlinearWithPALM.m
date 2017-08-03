@@ -149,7 +149,7 @@ while sol.k < Wp.sim.NN
             
             subplot(2,3,4);
             plot(Wp.sim.time(1:sol.k),PowerPALM(1,1:sol.k));hold on
-            plot(Wp.sim.time(1:sol.k),PowerPALM(2,1:sol.k),'k--');
+            plot(Wp.sim.time(1:sol.k),PowerPALM(2,1:sol.k),'r');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5])
             title('Power PALM')
@@ -158,7 +158,7 @@ while sol.k < Wp.sim.NN
             
             subplot(2,3,5);
             plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k));hold on
-            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k),'k--');
+            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k),'r');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5]);
             title('Power WFSim')
