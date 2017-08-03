@@ -46,7 +46,6 @@ M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameter
 M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');
 %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
 
-addpath(genpath('../../Data_PALM'));  % Add mexcfd
 filename = '../../Data_PALM/2turb_adm/example_2turb_adm_matlab_m01.nc';
 u        = double(nc_varget(filename,'u'));
 v        = double(nc_varget(filename,'v'));
