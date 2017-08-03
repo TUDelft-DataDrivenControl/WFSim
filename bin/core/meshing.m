@@ -1,4 +1,4 @@
-function [ Wp ] = meshing( Wp, plotMesh, PrintGridMismatch )
+function [ Wp ] = meshing( scenarioName, plotMesh, PrintGridMismatch )
 %MESHING Meshing and settings function for the WFSim code
 % This code includes all the topology information, atmospheric
 % information, turbine properties and turbine control settings for any
@@ -16,7 +16,7 @@ if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end; % Compatible with both
 strbslash   = strfind(meshingloc ,[slashSymbol 'WFSim']);
 WFSimfolder = meshingloc(1:strbslash(end)+6);
 
-switch lower(Wp.name)
+switch lower(scenarioName)
     % DEMO SIMULATION CASE FOR WFSIM
     case lower('2turb_demo')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
@@ -51,7 +51,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
         lmu      = 1;         % Mixing length in x-direction (m)
         turbul   = false;     % Use mixing length turbulence model (true/false)
         n        = 2;         % Turbulence model tuning parameter #1
@@ -98,7 +98,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
         lmu      = .5;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -115,7 +115,7 @@ switch lower(Wp.name)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
         loadedinput = load([WFSimfolder 'data_SOWFA/YawCase3/system_input.mat']); % load input settings
-        Wp.Turbulencemodel  = 'WFSim3';
+        Turbulencemodel  = 'WFSim3';
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -135,14 +135,14 @@ switch lower(Wp.name)
         forcescale  = 0.75;   % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 999;       % Simulation length (s)
+        L        = 10;       % Simulation length (s)
         mu       = 10;        % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
  
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 1;         % Mixing length in x-direction (m)
         turbul   = false;     % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -184,7 +184,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
 
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
         lmu      = 1;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -226,7 +226,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        Wp.Turbulencemodel  = 'WFSim3';
+        Turbulencemodel  = 'WFSim3';
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -277,7 +277,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
          
-        Wp.Turbulencemodel  = 'WFSim3';
+        Turbulencemodel  = 'WFSim3';
         lmu      = 1.5;      % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -320,7 +320,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        Wp.Turbulencemodel  = 'WFSim3';
+        Turbulencemodel  = 'WFSim3';
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -362,7 +362,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
  
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -406,7 +406,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
  
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 2;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -449,7 +449,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
   
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice       
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice       
         lmu      = 1.75;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -491,7 +491,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        Wp.Turbulencemodel  = 'WFSim3'; % Turbulence model of choice      
+        Turbulencemodel  = 'WFSim3'; % Turbulence model of choice      
         lmu      = 5;         % Mixing length in x-direction (m)
         turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
@@ -591,13 +591,13 @@ if plotMesh
 end;
 
 %% Export to Wp and input
-Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',Wp.name,'Turbulencemodel',Wp.Turbulencemodel);
+Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',scenarioName);
 Wp.sim     = struct('h',h,'time',time,'L',L,'NN',NN);
 Wp.turbine = struct('Drotor',Drotor,'powerscale',powerscale,'forcescale',forcescale, ...
     'N',length(Crx),'Crx',Crx,'Cry',Cry);
 Wp.turbine.input = input; % System inputs too
 Wp.site    = struct('mu',mu,'Rho',Rho,'u_Inf',u_Inf,'v_Inf',v_Inf,'p_init',p_init, ...
-    'lmu',lmu,'turbul',turbul,'m',m,'n',n);
+    'lmu',lmu,'turbul',turbul,'m',m,'n',n,'Turbulencemodel',Turbulencemodel);
 Wp.mesh    = struct('Lx',Lx,'Ly',Ly,'Nx',Nx,'Ny',Ny,'ldxx',ldxx,'ldyy',ldyy,'ldxx2',...
     ldxx2,'ldyy2',ldyy2,'dxx',dxx,'dyy',dyy,'dxx2',dxx2,'dyy2',dyy2,...
     'xline',xline,'type',type);Wp.mesh.yline = yline; Wp.mesh.ylinev = ylinev; % Do not support struct command
