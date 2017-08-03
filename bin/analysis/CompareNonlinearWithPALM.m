@@ -15,7 +15,7 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 Wp.name             = '2turb_adm';
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 25;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 50;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -57,7 +57,7 @@ zw_3d    = double(nc_varget(filename,'zw_3d'));
 nz       = 4;
 
 %% Loop
-for k=1:Wp.sim.NN
+for k=1:size(u,1)
     
     it        = 0;
     eps       = 1e19;
@@ -146,7 +146,7 @@ for k=1:Wp.sim.NN
             
             subplot(2,3,4);
             plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
-            plot(Wp.sim.time(1:k),PowerPALM(2,1:k),'k--');
+            plot(Wp.sim.time(1:k),PowerPALM(2,1:k),'r');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5])
             title('Power PALM')
@@ -155,9 +155,9 @@ for k=1:Wp.sim.NN
  
             subplot(2,3,5);
             plot(Wp.sim.time(1:k),Power(1,1:k));hold on
-            plot(Wp.sim.time(1:k),Power(2,1:k),'k--');
+            plot(Wp.sim.time(1:k),Power(2,1:k),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5]);
+            axis([0,Wp.sim.time(end) 0 max(max(Power(:,1:end)))+10^5]);
             title('Power WFSim')
             grid;hold off;
             drawnow
@@ -176,17 +176,17 @@ end;
 
 %%
 figure(2);clf
-plot(Wp.sim.time(1:end-1),RMSE);hold on;
-plot(Wp.sim.time(1:end-1),maxe,'r');grid;
+plot(Wp.sim.time(1:size(u,1)),RMSE);hold on;
+plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
 figure(3);clf            
-plot(Wp.sim.time(1:end-1),a(1,1:end));hold on
-plot(Wp.sim.time(1:end-1),a(2,1:end),'r');
+plot(Wp.sim.time(1:size(u,1)),a(1,1:size(u,1)));hold on
+plot(Wp.sim.time(1:size(u,1)),a(2,1:size(u,1)),'r');
 ylabel('$a$','interpreter','latex')
 title('axial induction','interpreter','latex');
-axis([0,Wp.sim.time(end) 0 max(max(a(:,1:end)))+.2]);
+axis([0,Wp.sim.time(size(u,1)) 0 max(max(a(:,1:size(u,1))))+.2]);
 grid;hold off;
             
             
