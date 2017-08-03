@@ -226,10 +226,10 @@ for kk=1:N
 end
 
 %% Write to outputs
-sol.Ueffect = Ueffect;
-sol.a       = a;
-sol.power   = Power;
-sol.ct      = CT;
+sol.turbine.Ueffect = Ueffect;
+sol.turbine.a       = a;
+sol.turbine.power   = Power;
+sol.turbine.ct      = CT;
 
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)

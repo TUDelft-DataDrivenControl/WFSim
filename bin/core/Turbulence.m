@@ -36,7 +36,7 @@ if size(mixing_length,1)>1
     mixing_length    = filter2(H,mixing_length);
 end
 
-switch lower(Wp.Turbulencemodel)
+switch lower(Wp.site.Turbulencemodel)
     
     case lower('WFSim5')
         
