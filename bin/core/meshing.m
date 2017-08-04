@@ -91,7 +91,7 @@ switch lower(scenarioName)
         forcescale  = 1.6;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
-        L        = 300;       % Simulation length (s)
+        L        = floor(M1(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = M1(1,3);   % Freestream flow velocity x-direction (m/s)
