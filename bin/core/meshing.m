@@ -48,6 +48,7 @@ switch lower(Wp.name)
             input{j}.t    = M1(j,1);
             input{j}.beta = [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
             input{j}.phi  = [M1(j,6);M2(j,6)];
+            input{j}.CT   = [M1(j,4);M2(j,4)];
         end;
         
         % Calculate delta inputs
@@ -58,8 +59,8 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = .7;    % Turbine powerscaling
-        forcescale  = 1.6;    % Turbine force scaling
+        powerscale  = .55;    % Turbine powerscaling
+        forcescale  = 1.8;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
         L        = floor(M1(end-1,1));% Simulation length (s)
@@ -71,8 +72,8 @@ switch lower(Wp.name)
         
         lmu      = .5;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 4;
-        m        = 2;
+        n        = 2;
+        m        = 4;
         
         % Wind farms for which SOWFA data is available
     case lower('YawCase3_50x50_lin_OBS')
