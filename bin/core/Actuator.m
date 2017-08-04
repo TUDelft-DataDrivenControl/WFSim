@@ -82,6 +82,7 @@ for kk=1:N
         dCTdbeta(kk)=  4*diff1*F;
     end
     
+    CT(kk)          = F*input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
     
     %% Thrust force      
     % With the following, we only take middle velocity component and
@@ -97,8 +98,9 @@ for kk=1:N
        Ur   = repmat(mean(temp(ind)),1,m);
     end    
     %Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
-    Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
-    
+    %Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
+    Fthrust         = 1/2*Rho*Ur.^2*CT(kk);
+
     Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
     
@@ -111,8 +113,9 @@ for kk=1:N
     %Power(kk)       = 1.5*powerscale*2*Rho*Ar*input.beta(kk)*(meanUe{kk}*1).^3;
     
     % Following works well
-    Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
+    %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
     %Power(kk)       = mean(powerscale*.5*Rho*Ar*Ue{kk}.^3*CT(kk)/(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
+    Power(kk)       = powerscale*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear

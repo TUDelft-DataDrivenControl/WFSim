@@ -15,7 +15,7 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 Wp.name             = '2turb_adm';
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 50;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -146,27 +146,27 @@ for k=1:size(u,1)
             
             subplot(2,3,4);
             plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
-            plot(Wp.sim.time(1:k),PowerPALM(2,1:k),'r');
+            plot(Wp.sim.time(1:k),Power(1,1:k),'r');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5])
-            title('Power PALM')
+            title('upwind: blue PALM, red WFSim')
             grid;hold off;
             drawnow
  
             subplot(2,3,5);
-            plot(Wp.sim.time(1:k),Power(1,1:k));hold on
+            plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
             plot(Wp.sim.time(1:k),Power(2,1:k),'r');
             title('$P$ [W]','interpreter','latex');
             axis([0,Wp.sim.time(size(u,1)) 0 max(max(Power(:,1:end)))+10^5]);
-            title('Power WFSim')
+            title('downwind: blue PALM, red WFSim')
             grid;hold off;
             drawnow
             
             subplot(2,3,6)
-            plot(Wp.sim.time(1:k),Power(1,1:k)-PowerPALM(1,1:k));hold on
-            plot(Wp.sim.time(1:k),Power(2,1:k)-PowerPALM(2,1:k),'r');
-            title('error [W]','interpreter','latex');
-            axis([0,Wp.sim.time(size(u,1)) min(min(Power(:,1:k)-PowerPALM(:,1:k)))-.2 max(max(Power(:,1:k)-PowerPALM(:,1:k)))+.2]);
+            plot(Wp.sim.time(1:k),PowerPALM(1,1:k)+PowerPALM(2,1:k));hold on
+            plot(Wp.sim.time(1:k),Power(1,1:k)+Power(2,1:k),'r');
+            title('WF power [W]','interpreter','latex');
+            axis([0,Wp.sim.time(size(u,1)) min(min(Power(:,1:k)+Power(:,1:k)))-10^3 max(max(Power(:,1:k)+Power(:,1:k)))-10^3]);
             grid;hold off;
         end
         drawnow
@@ -192,7 +192,7 @@ grid;hold off;
             
 %% Wake centreline
 D_ind    = Wp.mesh.yline{1};
-indices  = [50 125 200 300];
+indices  = [300 400 700 800];
 
 for k=indices
     up(:,k)      = mean(uk(:,D_ind,k),2);
