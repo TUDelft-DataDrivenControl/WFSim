@@ -52,7 +52,6 @@ M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameter
 M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');
 %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
 
-addpath(genpath('../../Data_PALM'));  % Add mexcfd
 filename = '../../Data_PALM/2turb_adm/example_2turb_adm_matlab_m01.nc';
 u        = double(nc_varget(filename,'u'));
 v        = double(nc_varget(filename,'v'));
@@ -66,7 +65,7 @@ nz       = 4;
 % Performing timestepping until end
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
 %% Loop
-while sol.k < Wp.sim.NN
+while sol.k < size(u,1)
     tic;         % Intialize timer
     
     [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep with WFSim
@@ -150,18 +149,18 @@ while sol.k < Wp.sim.NN
             
             subplot(2,3,4);
             plot(Wp.sim.time(1:sol.k),PowerPALM(1,1:sol.k));hold on
-            plot(Wp.sim.time(1:sol.k),PowerPALM(2,1:sol.k),'k--');
+            plot(Wp.sim.time(1:sol.k),PowerPALM(2,1:sol.k),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5])
+            axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5])
             title('Power PALM')
             grid;hold off;
             drawnow
             
             subplot(2,3,5);
             plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k));hold on
-            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k),'k--');
+            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) 0 max(max(PowerPALM(:,1:end)))+10^5]);
+            axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5]);
             title('Power WFSim')
             grid;hold off;
             drawnow
@@ -170,7 +169,7 @@ while sol.k < Wp.sim.NN
             plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k)-PowerPALM(1,1:sol.k));hold on
             plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k)-PowerPALM(2,1:sol.k),'r');
             title('error [W]','interpreter','latex');
-            axis([0,Wp.sim.time(end) min(min(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))-.2 max(max(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))+.2]);
+            axis([0,Wp.sim.time(size(u,1)) min(min(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))-.2 max(max(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))+.2]);
             grid;hold off;
         end
         drawnow
@@ -180,19 +179,18 @@ end;
 
 %%
 figure(2);clf
-plot(Wp.sim.time(1:end-1),RMSE);hold on;
-plot(Wp.sim.time(1:end-1),maxe,'r');grid;
+plot(Wp.sim.time(1:size(u,1)),RMSE);hold on;
+plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-figure(3);clf
-plot(Wp.sim.time(1:end-1),a(1,1:end));hold on
-plot(Wp.sim.time(1:end-1),a(2,1:end),'r');
+figure(3);clf            
+plot(Wp.sim.time(1:size(u,1)),a(1,1:size(u,1)));hold on
+plot(Wp.sim.time(1:size(u,1)),a(2,1:size(u,1)),'r');
 ylabel('$a$','interpreter','latex')
 title('axial induction','interpreter','latex');
-axis([0,Wp.sim.time(end) 0 max(max(a(:,1:end)))+.2]);
+axis([0,Wp.sim.time(size(u,1)) 0 max(max(a(:,1:size(u,1))))+.2]);
 grid;hold off;
-
 
 %% Wake centreline
 D_ind    = Wp.mesh.yline{1};
