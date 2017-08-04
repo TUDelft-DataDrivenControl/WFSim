@@ -575,18 +575,21 @@ Np = (Nx-2)*(Ny-2)-2; % Number of pressure terms in state vector
 if plotMesh
     clf;
     Z1 = -2*ones(size(ldxx));
-    mesh(ldyy,ldxx,Z1,'FaceAlpha',0,'EdgeColor','black','LineWidth',0.1)
+    mesh(ldyy,ldxx,Z1,'FaceAlpha',0,'EdgeColor','black','LineWidth',0.1,'DisplayName','Primary mesh')
     hold on;
     Z2 = -1*ones(size(ldxx2));
-    mesh(ldyy2,ldxx2,Z2,'FaceAlpha',0,'EdgeColor','blue','LineWidth',0.1)
+    mesh(ldyy2,ldxx2,Z2,'FaceAlpha',0,'EdgeColor','blue','LineWidth',0.1,'DisplayName','Secondary mesh')
     hold on;
-    plot([Cry-Drotor/2;Cry+Drotor/2],[Crx;Crx],'r-','LineWidth',2.0)
+    for j = 1:length(Cry)
+        plot([Cry(j)-Drotor/2;Cry(j)+Drotor/2],[Crx(j);Crx(j)],'LineWidth',3.0,'DisplayName',['Turbine ' num2str(j)])
+    end;
     axis equal
     xlim([-0.1*Ly 1.2*Ly]);
     ylim([-0.1*Lx 1.1*Lx]);
     xlabel('y (m)');
     ylabel('x (m)');
     view(0,90); % view from the top
+    legend('-dynamicLegend');
     drawnow;
 end;
 
