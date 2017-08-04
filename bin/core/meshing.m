@@ -353,6 +353,7 @@ switch lower(Wp.name)
             input{j}.t    = loadedinput.input.t(j);
             input{j}.beta = loadedinput.input.beta(j,:)';
             input{j}.phi  = loadedinput.input.phi(j,:)';
+            input{j}.CT   = 4*input{j}.beta./(1+input{j}.beta).*(1-input{j}.beta./(1+input{j}.beta));
         end;
         
         % Calculate delta inputs
@@ -362,7 +363,7 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126.3992;  % Turbine rotor diameter in (m)
-        powerscale  = .55;    % Turbine powerscaling
+        powerscale  = .45;%.55;    % Turbine powerscaling
         forcescale  = 2.5;%1.75    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)

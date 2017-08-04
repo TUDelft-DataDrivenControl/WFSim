@@ -508,5 +508,12 @@ if isfield(SOWFAdata,'power')
         %suptitle('SOWFA (red) and WFSim (blue)')
     end
     
+    figure(11);clf
+    plot(sum(Power),'k','Linewidth',1);hold on;
+    plot(sum(Powersowfa),'b--');
+    grid;xlabel('$k [s]$','interpreter','latex');ylabel('$P$','interpreter','latex');
+    set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
+
+    
 end
 
