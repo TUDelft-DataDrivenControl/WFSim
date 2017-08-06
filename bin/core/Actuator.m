@@ -21,7 +21,7 @@ Derivatives   = options.Derivatives;
 
 %%
 Ar              = pi*(0.5*Drotor)^2;
-scale           = 3;                                  % To scale the force in the y-direction
+scale           = 1;                                  % To scale the force in the y-direction
 
 [Sm.x,Sm.dx]    = deal(sparse(Nx-3,Ny-2));            % Input x-mom nonlinear and linear
 [Sm.y,Sm.dy]    = deal(sparse(Nx-2,Ny-3));            % Input y-mom nonlinear and linear
@@ -57,7 +57,7 @@ for kk=1:N
     vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); % Bart: this can be fixed!
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
-    phi{kk}       = atan(vv./uu);
+    phi{kk}       = 0*atan(vv./uu);
     Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});
     
@@ -115,7 +115,7 @@ for kk=1:N
     % Following works well
     %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
     %Power(kk)       = mean(powerscale*.5*Rho*Ar*Ue{kk}.^3*CT(kk)/(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
-    Power(kk)       = powerscale*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
+    Power(kk)       = powerscale*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^1);    
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear

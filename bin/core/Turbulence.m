@@ -22,8 +22,8 @@ elseif N==9
     x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
     x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{4}(1)-yline{1}(end)-1) ...
-        ones(1,length(yline{4})) zeros(1,yline{3}(1)-yline{4}(end)-1) ...
-        ones(1,length(yline{3})) zeros(1,Ny-yline{3}(end))];
+        ones(1,length(yline{4})) zeros(1,yline{7}(1)-yline{4}(end)-1) ...
+        ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 else
     mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
