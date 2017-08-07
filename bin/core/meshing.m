@@ -115,7 +115,6 @@ switch lower(scenarioName)
         Cry    = [700, 700];     % Turbine locations in y-direction (m)
         
         loadedinput = load([WFSimfolder 'data_SOWFA/YawCase3/system_input.mat']); % load input settings
-        Turbulencemodel  = 'WFSim3';
         
         % Correctly format inputs (temporary function)
         for j = 1:length(loadedinput.input.t)
@@ -132,11 +131,11 @@ switch lower(scenarioName)
         
         Drotor      = 126.4;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 0.75;   % Turbine force scaling
+        forcescale  = 1.2;   % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 500;       % Simulation length (s)
-        mu       = 10;        % Dynamic flow viscosity
+        mu       = 0;        % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
@@ -144,7 +143,7 @@ switch lower(scenarioName)
  
         Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
         lmu      = 1;         % Mixing length in x-direction (m)
-        turbul   = false;     % Use mixing length turbulence model (true/false)
+        turbul   = true;     % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
         
@@ -185,7 +184,7 @@ switch lower(scenarioName)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
 
         Turbulencemodel  = 'WFSim3'; % Turbulence model of choice
-        lmu      = 1;         % Mixing length in x-direction (m)
+        lmu      = 1.0;       % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
