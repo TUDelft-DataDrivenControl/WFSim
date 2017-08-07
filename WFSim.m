@@ -8,11 +8,11 @@ clear; clc; close all; %
 %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  % 
 %
 %%   Quick use:
-%     1. Specify the wind farm you would like to simulate on line 64.
+%     1. Specify the wind farm you would like to simulate on line 68.
 %        A list of all the wind farm scenarios can be found in
 %        'bin/core/meshing.m'. You can also create your own wind farm
 %        scenario here.
-%     2. Set up the scriptOptions settings in lines 67-87. Leave the
+%     2. Set up the scriptOptions settings in lines 71-91. Leave the
 %        default if you are unfamiliar with the code.
 %     3. Press start.
 %
@@ -33,16 +33,20 @@ clear; clc; close all; %
 %     - sol: this struct contains the system states at a certain timestep.
 %         sol.k:     Discrete timestep  to which these system states belong
 %         sol.time:  Actual time (in s) to which these system states belong
+%         sol.x:     True system state (basically flow field excluding bcs)
 %         sol.u:     Instantaneous longitudinal flow field over the mesh (in m/s)
 %         sol.v:     Instantaneous longitudinal flow field over the mesh (in m/s)
 %         sol.p:     Instantaneous pressure field over the mesh (in Pa)
-%         sol.uu:    Same as sol.u, used for convergence.
-%         sol.vv:    Same as sol.v, used for convergence.
-%         sol.pp:    Same as sol.p, used for convergence.
-%         sol.a:     Axial induction factor of each turbine at time sol.k.
-%         sol.power: Generated power (in W) of each turbine at time sol.k.
-%         sol.ct:    Thrust coefficient (-) of each turbine at time sol.k.
-%         sol.x:     True system state (basically flow field excluding bcs).
+%         sol.uu:    Same as sol.u, used for convergence
+%         sol.vv:    Same as sol.v, used for convergence
+%         sol.pp:    Same as sol.p, used for convergence
+%         sol.turbine: a struct containing relevant turbine outputs such as
+%         the ax. ind. factor, the generated power, and the ct coefficient
+%         sol.measuredData: a struct containing the true flow field and the
+%         measurements used for estimation
+%         sol.score: a struct containing estimator performance measures
+%         such as the magnitude and location of the maximum flow estimation
+%         error, the RMSE, and the computational cost (CPU time)
 %
 %     - sys: this struct contains the system matrices at a certain timestep.
 %         sys.A:     System matrix A in the grand picture: A*sol.x = b
@@ -51,7 +55,7 @@ clear; clc; close all; %
 %         sys.B1:    Important matrix in the boundary conditions.
 %         sys.B2:    Important matrix in the boundary conditions.
 %         sys.bc:    Important vector in the boundary conditions.
-
+%
 %%   Debugging and contributing:
 %     - First, try to locate any errors by turning all possible outputs
 %       on (printProgress, printConvergence, Animate, plotMesh).
