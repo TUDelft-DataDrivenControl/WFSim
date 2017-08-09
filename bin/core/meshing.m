@@ -131,7 +131,7 @@ switch lower(scenarioName)
         
         Drotor      = 126.4;  % Turbine rotor diameter in (m)
         powerscale  = 1.0;    % Turbine powerscaling
-        forcescale  = 1.2;   % Turbine force scaling
+        forcescale  = 1.0;   % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
         L        = 999;       % Simulation length (s)
@@ -142,7 +142,7 @@ switch lower(scenarioName)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
  
         Turbulencemodel  = 'WFSim3'; % Turbulence model of choice        
-        lmu      = 1;         % Mixing length in x-direction (m)
+        lmu      = 1.0;      % Mixing length in x-direction (m)
         turbul   = true;     % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 8;
