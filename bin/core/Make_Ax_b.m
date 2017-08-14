@@ -53,11 +53,11 @@ if  options.Projection
 else
     % Collect all terms and create the b vector in 'A*x = b'
     sys.b    = [StrucBCs.bx+StrucDynamical.cx+vec(StrucActuator.Sm.x');
-        StrucBCs.by+StrucDynamical.cy+vec(StrucActuator.Sm.y');
-        sys.bc];
+                StrucBCs.by+StrucDynamical.cy+vec(StrucActuator.Sm.y');
+                sys.bc];
     sys.m    = [StrucBCs.bx+vec(StrucActuator.Sm.x');
-        StrucBCs.by+vec(StrucActuator.Sm.y');
-        sys.bc];
+                StrucBCs.by+vec(StrucActuator.Sm.y');
+                sys.bc];
     
     if options.Linearversion
         % Linear version
@@ -69,8 +69,8 @@ else
         sys.Al = (StrucDynamical.dcdx+StrucBCs.dbcdx+StrucActuator.dSm.dx-Al);
         sys.Bl = [StrucActuator.Sm.dxx;StrucActuator.Sm.dyy;zeros(length(sys.bc),Wp.turbine.N*2)];
         sys.bl = [vec(StrucActuator.Sm.dx');
-            vec(StrucActuator.Sm.dy');
-            0.*sys.bc];
+                  vec(StrucActuator.Sm.dy');
+                  0.*sys.bc];
         
         sys.Al(size(Ax,1)+size(Ay,1)+size(sys.B1',1)-(Ny-2)+1,:) = [];
         sys.bl(size(Ax,1)+size(Ay,1)+size(sys.B1',1)-(Ny-2)+1,:) = [];
