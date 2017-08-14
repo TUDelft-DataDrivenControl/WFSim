@@ -9,15 +9,18 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOpt
     % Copy relevant system matrices from previous time
     sys_out      = struct('B1',sys_in.B1,'B2',sys_in.B2,'bc',sys_in.bc,'pRCM',sys_in.pRCM); 
     if scriptOptions.Projection
-        sys_out.Qsp     = sys_in.Qsp;
-        sys_out.Bsp     = sys_in.Bsp;
+        sys_out.Qsp = sys_in.Qsp;
+        sys_out.Bsp = sys_in.Bsp;
     end;
     
     % Load convergence settings
-    conv_eps    = scriptOptions.conv_eps;
-    max_it      = scriptOptions.max_it;
-    max_it_dyn  = scriptOptions.max_it_dyn;
-    
+    conv_eps = scriptOptions.conv_eps;
+    if sol_out.k > 1
+        max_it = scriptOptions.max_it_dyn;
+    else
+        max_it = scriptOptions.max_it;
+    end
+
     % Initialize default convergence parameters
     it        = 0;
     eps       = 1e19;
@@ -27,10 +30,6 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOpt
     while ( eps>conv_eps && it<max_it && eps<epss )
         it   = it+1;
         epss = eps;
-
-        if sol_out.k > 1
-            max_it = max_it_dyn;
-        end
 
         % Create system matrices sys.A and sys.b for our nonlinear model,
         % where WFSim basically comes down to: sys.A*sol.x=sys.b.
