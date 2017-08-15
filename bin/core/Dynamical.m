@@ -7,8 +7,8 @@ dxx2 = Wp.mesh.dxx2;
 dyy2 = Wp.mesh.dyy2;
 Nx   = Wp.mesh.Nx;
 Ny   = Wp.mesh.Ny;
-u    = sol.u;
-v    = sol.v;
+u    = sol.uk;
+v    = sol.vk;
 
 % Fully implicit (page 248 Versteeg) See also page 257
 StrucDiscretization.ax.aP   = StrucDiscretization.ax.aP + Rho.*dxx.*dyy2./dt;       % Rho.*dxx.*dyy2./dt = a_P^0
