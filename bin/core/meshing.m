@@ -175,6 +175,62 @@ switch lower(Wp.name)
         n        = 2;
         m        = 4;
         
+        case lower('9turb_adm_turbulence')
+        type   = 'lin';                     % Meshing type ('lin' or 'exp')
+        Lx     = 2800;                      % Domain length in x-direction (m)
+        Ly     = 1360;                      % Domain length in y-direction (m)
+        Nx     = 100;                       % Number of grid points in x-direction
+        Ny     = 50;                        % Number of grid points in y-direction
+        Cry    = [300.0, 300.0, 300.0, 680.0, 680.0, 680.0, 1060.0, 1060.0, 1060.0];% Turbine locations in x-direction (m)
+        Crx    = [300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0];% Turbine locations in y-direction (m)
+        
+        M1  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters01.txt');
+        M2  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters02.txt');       
+        M3  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters03.txt');
+        M4  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters04.txt'); 
+        M5  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters05.txt');
+        M6  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters06.txt'); 
+        M7  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters07.txt');
+        M8  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters08.txt'); 
+        M9  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters09.txt'); 
+        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+                 
+        % Correctly format inputs (temporary function)
+        for j = 1:size(M1,1)
+            input{j}.t    = M1(j,1);
+            input{j}.beta = [M1(j,5);M2(j,5);M3(j,5);M4(j,5);M5(j,5);M6(j,5);M7(j,5);M8(j,5);M9(j,5)]...
+                            ./(1-[M1(j,5);M2(j,5);M3(j,5);M4(j,5);M5(j,5);M6(j,5);M7(j,5);M8(j,5);M9(j,5)]);
+            input{j}.phi  = [M1(j,6);M2(j,6);M3(j,6);M4(j,6);M5(j,6);M6(j,6);M7(j,6);M8(j,6);M9(j,6)];
+            input{j}.CT   = [M1(j,4);M2(j,4);M3(j,4);M4(j,4);M5(j,4);M6(j,4);M7(j,4);M8(j,4);M9(j,4)];
+        end;
+        % Make sure that farm converges to same field as PALM
+            input{1}.beta = 0.171*ones(9,1);
+            input{1}.CT   = 0.5*ones(9,1);
+        
+        % Calculate delta inputs (not fixed for this case)
+        for j = 1:size(M1,1)-1
+            input{j}.dbeta = [M1(j+1,5);M2(j+1,5)]./(1-[M1(j+1,5);M2(j+1,5)])- ...
+                [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
+            input{j}.dphi  = [M1(j+1,6);M2(j+1,6)] - [M1(j,6);M2(j,6)] ;
+        end;
+        
+        Drotor      = 120;    % Turbine rotor diameter in (m)
+        powerscale  = .43;    % Turbine powerscaling
+        forcescale  = 2.0;    % Turbine force scaling
+        
+        h        = 1;         % Sampling time (s)
+        L        = floor(M1(end-1,1));% Simulation length (s)
+        mu       = 0*18e-5;     % Dynamic flow viscosity
+        Rho      = 1.20;      % Flow density (kg m-3)
+        u_Inf    = M1(2,3);   % Freestream flow velocity x-direction (m/s)
+        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
+        p_init   = 0.0;       % Initial values for pressure terms (Pa)
+        
+        lmu      = .8;         % Mixing length in x-direction (m)
+        turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 2;
+        
         % Wind farms for which SOWFA data is available
     case lower('YawCase3_50x50_lin_OBS')
         type   = 'lin';          % Meshing type ('lin' or 'exp')
@@ -374,7 +430,7 @@ switch lower(Wp.name)
         forcescale  = 1.4;%1.2;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 20;      % Simulation length (s)
+        L        = 10;      % Simulation length (s)
         mu       = 0*18e-5;   % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)

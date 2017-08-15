@@ -16,11 +16,11 @@ options.Projection     = 0;                      % Use projection (true/false)
 options.Linearversion  = 0;                      % Provide linear variant of WFSim (true/false)
 options.exportLinearSol= 0;                      % Calculate linear solution of WFSim
 options.Derivatives    = 0;                      % Compute derivatives
-options.startUniform   = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
+options.startUniform   = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
   
 %Wp.name             = 'WP_CPUTime';      % Meshing name (see "\bin\core\meshing.m")
-Wp.name             = 'WP_CPUTime';
+Wp.name             = 'NoPrecursor_2turb_60x30_lin';
 %Wp.name             = 'ThreeTurbine_Ampc';
 
 Wp.Turbulencemodel  = 'WFSim3';
@@ -28,7 +28,7 @@ Wp.Turbulencemodel  = 'WFSim3';
 Animate       = 1;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
-max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
+max_it_dyn    = 50;                      % Maximum number of iterations for k > 1
 
 if options.startUniform==1
     max_it = 1; 
@@ -50,11 +50,6 @@ for ll=1:inc
 % WFSim general initialization script
 [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] = InitWFSim(Wp,options,plotMesh);
 
-% Initialize variables and figure specific to this script
-uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-vk = Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-pk = Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-
 if Animate > 0
     scrsz = get(0,'ScreenSize');
     hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
@@ -68,7 +63,9 @@ for k=1:Wp.sim.NN
     it        = 0;
     eps       = 1e19;
     epss      = 1e20;
-
+    sol.uk    = sol.u; 
+    sol.vk    = sol.v;
+    
     while ( eps>conv_eps && it<max_it && eps<epss );
         it   = it+1;
         epss = eps;
@@ -82,7 +79,7 @@ for k=1:Wp.sim.NN
         [sol,sys] = Computesol(sys,input{k},sol,k,it,options);                      % Compute solution
         [sol,eps] = MapSolution(Wp.mesh.Nx,Wp.mesh.Ny,sol,k,it,options);            % Map solution to field
         
-        %display(['k ',num2str(k,'%-1000.1f'),', It ',num2str(it,'%-1000.0f'),', Nv=', num2str(Normv{k}(it),'%10.2e'), ', Nu=', num2str(Normu{k}(it),'%10.2e'), ', TN=',num2str(eps,'%10.2e'),', Np=','Mean effective=',num2str(mean(Ueffect(1,k)),'%-1000.2f')]) ;
+        display(['k ',num2str(k,'%-1000.1f'),', It ',num2str(it,'%-1000.0f'),]);
     end
     CPUTime(k) = toc;
   

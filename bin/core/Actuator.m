@@ -57,8 +57,8 @@ for kk=1:N
     vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); % Bart: this can be fixed!
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
-    phi{kk}       = 0*atan(vv./uu);
-    Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
+    phi{kk}       = atan(sol.v(1,1)/sol.u(1,1));%atan(vv./uu);
+    Ue{kk}        = cos(0*phi{kk}+input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});
     
     dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
@@ -82,7 +82,7 @@ for kk=1:N
         dCTdbeta(kk)=  4*diff1*F;
     end
     
-    CT(kk)          = F*input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
+    %CT(kk)          = input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
     
     %% Thrust force      
     % With the following, we only take middle velocity component and
@@ -99,10 +99,10 @@ for kk=1:N
     end    
     %Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
     %Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
-    Fthrust         = 1/2*Rho*Ur.^2*CT(kk);
+    Fthrust         = F*1/2*Rho*Ur.^2*CT(kk);
 
-    Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
-    Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
+    Fx              = Fthrust.*cos((phi{kk}+input.phi(kk))*pi/180);
+    Fy              = Fthrust.*sin((phi{kk}+input.phi(kk))*pi/180);
     
     Ueffect(kk)     = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     %Ueffect(kk)     = mean(Ur)/(1-a(kk));     % Estimation effective wind speed
