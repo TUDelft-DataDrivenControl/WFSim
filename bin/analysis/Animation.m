@@ -15,7 +15,7 @@ yline  = Wp.mesh.yline;
 Rho    = Wp.site.Rho;
 mu     = Wp.site.mu;
 lmu    = Wp.site.lmu;
-lmv    = Wp.site.lmv;
+%lmv    = Wp.site.lmv;
 Turb   = Wp.site.turbul;
 u_Inf  = Wp.site.u_Inf;
 v_Inf  = Wp.site.v_Inf;
@@ -88,7 +88,7 @@ hold off;
 
 %% Plot the v velocity flow component
 subplot(2,2,2);
-contourf(ldyy(1,:),ldxx2(:,1)',min(sol.v,u_Inf*1.2),min(sol.v(:)):0.1:max(sol.v(:)),'Linecolor','none');  colormap(hot);   hold all
+contourf(ldyy(1,:),ldxx2(:,1)',min(sol.v,u_Inf*1.2),min(sol.v(:))-.1:0.1:max(sol.v(:)+.1),'Linecolor','none');  colormap(hot);   hold all
 % contourf(ldyy(1,:),ldxx2(:,1)',min(v,u_Inf*1.2),'Linecolor','none');  colormap(hot);   hold all
 colorbar;
 for kk=1:N
@@ -101,7 +101,6 @@ xlabel('y [m]')
 ylabel('x [m]');
 title('v [m/s]')
 hold off;
-drawnow;
 
 %% Wake mean centreline first turbine
 D_ind    = yline{1};

@@ -2,13 +2,20 @@
 if N==1
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
+    %y                = [zeros(1,yline{1}(1)+3) ones(1,length(yline{1})-4) zeros(1,Ny-yline{1}(end))] ;
+%    y1               = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
+%    y2               = [zeros(1,yline{1}(1)) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-1)] ;
+%    y3               = [zeros(1,yline{1}(1)+1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-2)] ;
+%    y4               = [zeros(1,yline{1}(1)+2) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-3)] ;
+%    y5               = [zeros(1,yline{1}(1)+3) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-4)] ;
+%    y                = [repmat(y1,20,1);repmat(y2,20,1);repmat(y3,10,1)];
+%    mixing_length    = (repmat(x,1,Ny).*y)*0.5*Drotor;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 elseif N==2
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
     x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-
 elseif N==3 || N==6
     xline            = sort(unique(xline));
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';

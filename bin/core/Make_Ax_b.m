@@ -1,6 +1,7 @@
 function [sys,Power,Ueffect,a,CT] = Make_Ax_b(Wp,sys,sol,input,B1,B2,bc,k,options)
-Nx    = Wp.mesh.Nx;
-Ny    = Wp.mesh.Ny;
+Nx       = Wp.mesh.Nx;
+Ny       = Wp.mesh.Ny;
+Wp.input = input;
 
 % Decide whether to start from uniform flow field or steady state
 if k == 1 && options.startUniform == 0
@@ -10,7 +11,7 @@ else
 end;
 
 [StrucDiscretization]                = SpatialDiscr_Hybrid(Wp,sol.u,sol.v,options.Linearversion); % Spatial discretization
-[StrucDiscretization,StrucDynamical] = Dynamical(Wp,StrucDiscretization,sol.u,sol.v,dt,options.Linearversion); % Dynamical term
+[StrucDiscretization,StrucDynamical] = Dynamical(Wp,StrucDiscretization,sol.uk,sol.vk,dt,options.Linearversion); % Dynamical term
 [StrucActuator,Ueffect,a,Power,CT]   = Actuator(Wp,input,sol,options); % Actuator
 [StrucDiscretization,StrucBCs]       = BoundaryConditions(Nx,Ny,StrucDiscretization,sol.u,sol.v,options.Linearversion); % Zero gradient boundary conditions momentum equations
 
