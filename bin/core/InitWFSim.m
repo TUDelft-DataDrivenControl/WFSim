@@ -7,7 +7,7 @@ Projection    = options.Projection;
 Linearversion = options.Linearversion;
 
 % Create meshing and import control settings
-[Wp,input]   = meshing(Wp,plotMesh,1); 
+[Wp,input]   = meshing(Wp,plotMesh,0); 
 
 % Initial flow fields
 %u0 = load('data_WFSim\u0.mat');
