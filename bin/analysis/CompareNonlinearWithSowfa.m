@@ -61,6 +61,8 @@ for k=1:Wp.sim.NN
     it        = 0;
     eps       = 1e19;
     epss      = 1e20;
+    sol.uk    = sol.u; 
+    sol.vk    = sol.v;   
     
     % Write flow field solutions to a 3D matrix
     uk(:,:,k) = sol.u;
@@ -448,6 +450,7 @@ if isfield(SOWFAdata,'power')
         plot(Powersowfa(2,1:end),'r--');
         grid;xlabel('Time [s]');ylabel('Power')
     else
+        
         %Power       = Power/max(max(Powersowfa));
         %Powersowfa  = Powersowfa/max(max(Powersowfa));
         
@@ -508,13 +511,13 @@ if isfield(SOWFAdata,'power')
         set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
         %suptitle('SOWFA (red) and WFSim (blue)')
     end
-    
+    %%
     figure(11);clf
-    plot(sum(Power),'k','Linewidth',1);hold on;
+    plot(2.5*sum(Power),'k','Linewidth',1);hold on;
     plot(sum(Powersowfa),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$\Sigma P$ [W]','interpreter','latex');
     title('WF Power: SOWFA (blue dashed), WFSim (black) ','interpreter','latex');
-
+%%
     
 end
 

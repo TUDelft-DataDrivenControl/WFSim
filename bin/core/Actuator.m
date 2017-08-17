@@ -82,7 +82,7 @@ for kk=1:N
         dCTdbeta(kk)=  4*diff1*F;
     end
     
-    %CT(kk)          = input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
+    CT(kk)          = input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
     
     %% Thrust force      
     % With the following, we only take middle velocity component and
@@ -115,7 +115,7 @@ for kk=1:N
     % Following works well
     %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
     %Power(kk)       = mean(powerscale*.5*Rho*Ar*Ue{kk}.^3*CT(kk)/(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
-    Power(kk)       = powerscale*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^1);    
+    Power(kk)       = powerscale*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^.75);    
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear

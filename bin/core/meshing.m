@@ -39,33 +39,36 @@ switch lower(Wp.name)
         Crx    = 6000-5500;        % Turbine locations in x-direction (m)
         Cry    = 1280-900;        % Turbine locations in y-direction (m)
         
-        M1  = load('../../Data_PALM/1turb_adm/example_1turb_adm_matlab_turbine_parameters01.txt');
-        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
+        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
+        for kk=1:length(Crx)
+            M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+        end
                  
         % Correctly format inputs (temporary function)
-        for j = 1:size(M1,1)
-            input{j}.t    = M1(j,1);
-            input{j}.beta = M1(j,5)./(1-M1(j,5));
-            input{j}.phi  = M1(j,6);
-            input{j}.CT   = M1(j,4);
+        for j = 1:length(M{1})
+            input{j}.t    = M{1}(j,1);
+            input{j}.beta = M{1}(j,5)...
+                            ./(1-M{1}(j,5));
+            input{j}.phi  = M{1}(j,6);
+            input{j}.CT   = M{1}(j,4);
         end;
         
-        % Calculate delta inputs
-        for j = 1:size(M1,1)-1
-            input{j}.dbeta = M1(j+1,5)./(1-M1(j+1,5))- ...
-                M1(j,5)./(1-M1(j,5));
-            input{j}.dphi  = M1(j+1,6) - M1(j,6) ;
+        % Calculate delta inputs 
+        for j = 1:length(M{1})-1
+            input{j}.dbeta = input{j+1}.beta-input{j}.beta;
+            input{j}.dphi  = input{j+1}.phi-input{j}.phi ;
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = .55;    % Turbine powerscaling
+        powerscale  = 1;    % Turbine powerscaling
         forcescale  = 1.8;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
-        L        = floor(M1(end-1,1));% Simulation length (s)
+        L        = floor(M{1}(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = M1(1,3);   % Freestream flow velocity x-direction (m/s)
+        u_Inf    = mean(M{1}(1,3));   % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
@@ -83,34 +86,35 @@ switch lower(Wp.name)
         Crx    = [5700, 6456]-5500;        % Turbine locations in x-direction (m)
         Cry    = [1175, 1175]-900;        % Turbine locations in y-direction (m)
         
-        M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters01.txt');
-        M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');       
-        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+       %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
+        for kk=1:length(Crx)
+            M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+        end
                  
         % Correctly format inputs (temporary function)
-        for j = 1:size(M1,1)
-            input{j}.t    = M1(j,1);
-            input{j}.beta = [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
-            input{j}.phi  = [M1(j,6);M2(j,6)];
-            input{j}.CT   = [M1(j,4);M2(j,4)];
+        for j = 1:length(M{1})
+            input{j}.t    = M{1}(j,1);
+            input{j}.beta = [M{1}(j,5);M{2}(j,5)]...
+                            ./(1-[M{1}(j,5);M{2}(j,5)]);
+            input{j}.phi  = [M{1}(j,6);M{2}(j,6)];
+            input{j}.CT   = [M{1}(j,4);M{2}(j,4)];
         end;
         
-        % Calculate delta inputs
-        for j = 1:size(M1,1)-1
-            input{j}.dbeta = [M1(j+1,5);M2(j+1,5)]./(1-[M1(j+1,5);M2(j+1,5)])- ...
-                [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
-            input{j}.dphi  = [M1(j+1,6);M2(j+1,6)] - [M1(j,6);M2(j,6)] ;
+        % Calculate delta inputs 
+        for j = 1:length(M{1})-1
+            input{j}.dbeta = input{j+1}.beta-input{j}.beta;
+            input{j}.dphi  = input{j+1}.phi-input{j}.phi ;
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = .55;    % Turbine powerscaling
+        powerscale  = .9;    % Turbine powerscaling
         forcescale  = 1.8;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
-        L        = floor(M1(end-1,1));% Simulation length (s)
+        L        = floor(M{1}(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = M1(1,3);   % Freestream flow velocity x-direction (m/s)
+        u_Inf    = mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
@@ -128,45 +132,35 @@ switch lower(Wp.name)
         Cry    = [300.0, 300.0, 300.0, 680.0, 680.0, 680.0, 1060.0, 1060.0, 1060.0]-100;% Turbine locations in x-direction (m)
         Crx    = [300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0]-100;% Turbine locations in y-direction (m)
         
-        M1  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters01.txt');
-        M2  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters02.txt');       
-        M3  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters03.txt');
-        M4  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters04.txt'); 
-        M5  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters05.txt');
-        M6  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters06.txt'); 
-        M7  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters07.txt');
-        M8  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters08.txt'); 
-        M9  = load('../../Data_PALM/9turb_adm/example_9turb_adm_matlab_turbine_parameters09.txt'); 
-        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
+        for kk=1:length(Crx)
+            M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+        end
                  
         % Correctly format inputs (temporary function)
-        for j = 1:size(M1,1)
-            input{j}.t    = M1(j,1);
-            input{j}.beta = [M1(j,5);M2(j,5);M3(j,5);M4(j,5);M5(j,5);M6(j,5);M7(j,5);M8(j,5);M9(j,5)]...
-                            ./(1-[M1(j,5);M2(j,5);M3(j,5);M4(j,5);M5(j,5);M6(j,5);M7(j,5);M8(j,5);M9(j,5)]);
-            input{j}.phi  = [M1(j,6);M2(j,6);M3(j,6);M4(j,6);M5(j,6);M6(j,6);M7(j,6);M8(j,6);M9(j,6)];
-            input{j}.CT   = [M1(j,4);M2(j,4);M3(j,4);M4(j,4);M5(j,4);M6(j,4);M7(j,4);M8(j,4);M9(j,4)];
+        for j = 1:length(M{1})
+            input{j}.t    = M{1}(j,1);
+            input{j}.beta = [M{1}(j,5);M{2}(j,5);M{3}(j,5);M{4}(j,5);M{5}(j,5);M{6}(j,5);M{7}(j,5);M{8}(j,5);M{9}(j,5)]...
+                            ./(1-[M{1}(j,5);M{2}(j,5);M{3}(j,5);M{4}(j,5);M{5}(j,5);M{6}(j,5);M{7}(j,5);M{8}(j,5);M{9}(j,5)]);
+            input{j}.phi  = [M{1}(j,6);M{2}(j,6);M{3}(j,6);M{4}(j,6);M{5}(j,6);M{6}(j,6);M{7}(j,6);M{8}(j,6);M{9}(j,6)];
+            input{j}.CT   = [M{1}(j,4);M{2}(j,4);M{3}(j,4);M{4}(j,4);M{5}(j,4);M{6}(j,4);M{7}(j,4);M{8}(j,4);M{9}(j,4)];
         end;
-        % Make sure that farm converges to same field as PALM
-            input{1}.beta = 0.171*ones(9,1);
-            input{1}.CT   = 0.5*ones(9,1);
         
-        % Calculate delta inputs (not fixed for this case)
-        for j = 1:size(M1,1)-1
-            input{j}.dbeta = [M1(j+1,5);M2(j+1,5)]./(1-[M1(j+1,5);M2(j+1,5)])- ...
-                [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
-            input{j}.dphi  = [M1(j+1,6);M2(j+1,6)] - [M1(j,6);M2(j,6)] ;
+        % Calculate delta inputs 
+        for j = 1:length(M{1})-1
+            input{j}.dbeta = input{j+1}.beta-input{j}.beta;
+            input{j}.dphi  = input{j+1}.phi-input{j}.phi ;
         end;
         
         Drotor      = 120;    % Turbine rotor diameter in (m)
-        powerscale  = .45;    % Turbine powerscaling
+        powerscale  = .9;    % Turbine powerscaling
         forcescale  = 1.9;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
-        L        = floor(M1(end-1,1));% Simulation length (s)
+        L        = floor(M{1}(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = M1(2,3);   % Freestream flow velocity x-direction (m/s)
+        u_Inf    = mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
@@ -184,34 +178,24 @@ switch lower(Wp.name)
         Cry    = [300.0, 300.0, 300.0, 680.0, 680.0, 680.0, 1060.0, 1060.0, 1060.0];% Turbine locations in x-direction (m)
         Crx    = [300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0];% Turbine locations in y-direction (m)
         
-        M1  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters01.txt');
-        M2  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters02.txt');       
-        M3  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters03.txt');
-        M4  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters04.txt'); 
-        M5  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters05.txt');
-        M6  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters06.txt'); 
-        M7  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters07.txt');
-        M8  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters08.txt'); 
-        M9  = load('../../Data_PALM/9turb_adm_turbulence/example_9turb_adm_matlab_turbine_parameters09.txt'); 
-        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
+       %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
+        for kk=1:length(Crx)
+            M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+        end
                  
         % Correctly format inputs (temporary function)
-        for j = 1:size(M1,1)
-            input{j}.t    = M1(j,1);
-            input{j}.beta = [M1(j,5);M2(j,5);M3(j,5);M4(j,5);M5(j,5);M6(j,5);M7(j,5);M8(j,5);M9(j,5)]...
-                            ./(1-[M1(j,5);M2(j,5);M3(j,5);M4(j,5);M5(j,5);M6(j,5);M7(j,5);M8(j,5);M9(j,5)]);
-            input{j}.phi  = [M1(j,6);M2(j,6);M3(j,6);M4(j,6);M5(j,6);M6(j,6);M7(j,6);M8(j,6);M9(j,6)];
-            input{j}.CT   = [M1(j,4);M2(j,4);M3(j,4);M4(j,4);M5(j,4);M6(j,4);M7(j,4);M8(j,4);M9(j,4)];
+        for j = 1:length(M{1})
+            input{j}.t    = M{1}(j,1);
+            input{j}.beta = [M{1}(j,5);M{2}(j,5);M{3}(j,5);M{4}(j,5);M{5}(j,5);M{6}(j,5);M{7}(j,5);M{8}(j,5);M{9}(j,5)]...
+                            ./(1-[M{1}(j,5);M{2}(j,5);M{3}(j,5);M{4}(j,5);M{5}(j,5);M{6}(j,5);M{7}(j,5);M{8}(j,5);M{9}(j,5)]);
+            input{j}.phi  = [M{1}(j,6);M{2}(j,6);M{3}(j,6);M{4}(j,6);M{5}(j,6);M{6}(j,6);M{7}(j,6);M{8}(j,6);M{9}(j,6)];
+            input{j}.CT   = [M{1}(j,4);M{2}(j,4);M{3}(j,4);M{4}(j,4);M{5}(j,4);M{6}(j,4);M{7}(j,4);M{8}(j,4);M{9}(j,4)];
         end;
-        % Make sure that farm converges to same field as PALM
-            input{1}.beta = 0.171*ones(9,1);
-            input{1}.CT   = 0.5*ones(9,1);
         
-        % Calculate delta inputs (not fixed for this case)
-        for j = 1:size(M1,1)-1
-            input{j}.dbeta = [M1(j+1,5);M2(j+1,5)]./(1-[M1(j+1,5);M2(j+1,5)])- ...
-                [M1(j,5);M2(j,5)]./(1-[M1(j,5);M2(j,5)]);
-            input{j}.dphi  = [M1(j+1,6);M2(j+1,6)] - [M1(j,6);M2(j,6)] ;
+        % Calculate delta inputs 
+        for j = 1:length(M{1})-1
+            input{j}.dbeta = input{j+1}.beta-input{j}.beta;
+            input{j}.dphi  = input{j+1}.phi-input{j}.phi ;
         end;
         
         Drotor      = 120;    % Turbine rotor diameter in (m)
@@ -219,10 +203,10 @@ switch lower(Wp.name)
         forcescale  = 2.0;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
-        L        = floor(M1(end-1,1));% Simulation length (s)
+        L        = floor(M{1}(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = M1(2,3);   % Freestream flow velocity x-direction (m/s)
+        u_Inf    = mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
