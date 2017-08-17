@@ -68,8 +68,8 @@ switch lower(scenarioName)
         Crx    = [5700, 6456]-5500;        % Turbine locations in x-direction (m)
         Cry    = [1175, 1175]-900;        % Turbine locations in y-direction (m)
         
-        M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters01.txt');
-        M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');       
+        M1  = load('../../Data_PALM/2turb_adm/2turb_adm_matlab_turbine_parameters01.txt');
+        M2  = load('../../Data_PALM/2turb_adm/2turb_adm_matlab_turbine_parameters02.txt');       
         %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
                  
         % Correctly format inputs (temporary function)
