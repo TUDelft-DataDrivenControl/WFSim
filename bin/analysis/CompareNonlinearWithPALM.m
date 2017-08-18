@@ -197,21 +197,21 @@ ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
 figure(3);clf
-plot(Wp.sim.time(1:size(u,1)),sum(Power(:,1:size(u,1))),'k','Linewidth',1);hold on;
-plot(Wp.sim.time(1:size(u,1)),sum(PowerPALM(:,1:size(u,1))),'b--');
+plot(Wp.sim.time(1:1750),sum(Power(:,1:1750)),'k','Linewidth',1);hold on;
+plot(Wp.sim.time(1:1750),sum(PowerPALM(:,1:1750)),'b--');
 grid;xlabel('$t [s]$','interpreter','latex');
-ylabel('$\Sigma P$ [W]','interpreter','latex');
-title('WF Power: PALM (blue dashed), WFSim (black) ','interpreter','latex');
+ylabel('$P$ [W]','interpreter','latex');
+title('Wind farm power: WFSim (black) PALM (blue dashed)','interpreter','latex');
 
 if Wp.turbine.N==2
     figure(4);clf
-    plot(Wp.sim.time(1:size(u,1)),CT(1,1:size(u,1)));hold on
-    plot(Wp.sim.time(1:size(u,1)),CT(2,1:size(u,1)),'r');
+    plot(Wp.sim.time(1:1750),CT(1,1:1750));hold on
+    plot(Wp.sim.time(1:1750),CT(2,1:1750),'r');
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t [s]$','interpreter','latex');
     title('$T_1$ (blue), $T_2$ (red) ','interpreter','latex');
     axis([0,Wp.sim.time(size(u,1)) 0 max(max(CT(:,1:size(u,1))))+.2]);
-    grid;hold off;
+    grid;hold off;xlim([0 1750]);ylim([0 1.8])
 elseif Wp.turbine.N==9
     figure(4);clf;
     subplot(1,3,1)
@@ -304,14 +304,14 @@ if Wp.turbine.N>2
 end
 title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $t$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
 if Wp.turbine.N==2
-    text( -1300, 20.4, 'WFSim (black) and PALM (blue)','interpreter','latex') ;
+    text( -1550, 20.4, 'WFSim (black) and PALM (blue dashed)','interpreter','latex') ;
     %suptitle('First row: WFSim (black) and PALM (blue)')
 end
 if Wp.turbine.N==9
-    text( -1800, 20.4, 'First row: WFSim (black) and PALM (blue)','interpreter','latex') ;
+    text( -1800, 20.4, 'First row: WFSim (black) and PALM (blue dashed)','interpreter','latex') ;
     %suptitle('First row: WFSim (black) and PALM (blue)')
 end
-
+%%
 if Wp.turbine.N==9
     
     yline    = Wp.mesh.yline{4};

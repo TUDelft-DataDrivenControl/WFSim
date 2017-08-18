@@ -469,7 +469,7 @@ switch lower(Wp.name)
         m        = 8;
         
     case lower('APC_3x3turb_noyaw_9turb_100x50_lin')
-        load([WFSimfolder 'data_SOWFA/APC/9turb_100x50_lin/workspace.mat']); % load input settings 
+        %load([WFSimfolder 'data_SOWFA/APC/9turb_100x50_lin/workspace.mat']); % load input settings 
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = Wp.mesh.Lx;
         Ly     = Wp.mesh.Ly;
