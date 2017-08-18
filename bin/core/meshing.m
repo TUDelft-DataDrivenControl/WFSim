@@ -107,8 +107,8 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = .9;    % Turbine powerscaling
-        forcescale  = 1.8;    % Turbine force scaling
+        powerscale  = 1;    % Turbine powerscaling
+        forcescale  = 1.9;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
         L        = floor(M{1}(end-1,1));% Simulation length (s)
@@ -118,7 +118,7 @@ switch lower(Wp.name)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
-        lmu      = .5;         % Mixing length in x-direction (m)
+        lmu      = .4;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 4;
@@ -469,19 +469,20 @@ switch lower(Wp.name)
         m        = 8;
         
     case lower('APC_3x3turb_noyaw_9turb_100x50_lin')
+        load([WFSimfolder 'data_SOWFA/APC/9turb_100x50_lin/workspace.mat']); % load input settings 
         type   = 'lin';          % Meshing type ('lin' or 'exp')
-        Lx     = 2863.9514;
-        Ly     = 2158.4055;
-        Nx     = 100;
-        Ny     = 50;
-        Crx    = [400, 1031.976, 399.98, 399.99, 1031.956, 1031.966, 1663.931, 1663.941, 1663.951];
-        Cry    = [700, 700, 1458.405, 1079.203, 1458.405, 1079.203, 1458.405, 1079.203, 700];
+        Lx     = Wp.mesh.Lx;
+        Ly     = Wp.mesh.Ly;
+        Nx     = Wp.mesh.Nx;
+        Ny     = Wp.mesh.Ny;
+        Crx    = Wp.turbine.Crx;
+        Cry    = Wp.turbine.Cry;
         
-        loadedinput = load([WFSimfolder 'data_SOWFA/APC/system_input.mat']); % load input settings
-        loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
-            loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
-            loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
-        
+%         loadedinput = load([WFSimfolder 'data_SOWFA/APC/system_input.mat']); % load input settings
+%         loadedinput.input.beta = [loadedinput.input.beta(:,3) loadedinput.input.beta(:,6) loadedinput.input.beta(:,1)...
+%             loadedinput.input.beta(:,2) loadedinput.input.beta(:,4) loadedinput.input.beta(:,5)...
+%             loadedinput.input.beta(:,7) loadedinput.input.beta(:,8) loadedinput.input.beta(:,9)];
+                
         % Filter the input signals
         for j = 1:size(loadedinput.input.beta,2)
             loadedinput.input.beta(:,j)= lsim(ss(tf(1,[15 1])),loadedinput.input.beta(:,j),...

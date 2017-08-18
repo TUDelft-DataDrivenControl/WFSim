@@ -12,10 +12,10 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-Wp.name             = '1turb_adm';
+Wp.name             = '2turb_adm';
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 50;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -37,6 +37,7 @@ for kk=1:Wp.turbine.N
     M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
 end
 filename = ['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_m01.nc'];
+
 % flow
 u        = double(nc_varget(filename,'u'));
 v        = double(nc_varget(filename,'v'));
@@ -60,7 +61,7 @@ if Animate > 0
 end
 
 %% Loop
-for k=1:size(u,1)
+for k=1:size(u,1) %350 (for wake cross)
     
     it        = 0;
     eps       = 1e19;
@@ -75,14 +76,12 @@ for k=1:size(u,1)
     sourceSize            = size(uPALM);
     [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
     uPALM                 = interp2(uPALM, X_samples, Y_samples);
-    vPALM                 = interp2(vPALM, X_samples, Y_samples);
-    
+    vPALM                 = interp2(vPALM, X_samples, Y_samples);  
     % start with same initial conditions as PALM
     if k==1
         sol.u = uPALM;
         sol.v = vPALM;
     end
-
     % Write flow field solutions WFSim to a 3D matrix
     uk(:,:,k) = sol.u;
     vk(:,:,k) = sol.v;
@@ -168,13 +167,21 @@ for k=1:size(u,1)
                 axis([0,Wp.sim.time(size(u,1)) 0 max(max(Power(:,1:end)))+10^5]);
                 title('$T_2$: blue PALM, red WFSim', 'interpreter','latex')
                 grid;hold off;
-                                
+                
                 subplot(2,3,6)
-                plot(Wp.sim.time(1:k),sum(PowerPALM(:,1:k)),'b--');hold on
-                plot(Wp.sim.time(1:k),sum(Power(:,1:k)),'k');
-                title('WF power [W]','interpreter','latex');
-                axis([0,Wp.sim.time(size(u,1)) min(min(sum(PowerPALM(:,1:k))))-10^3 max(max(sum(PowerPALM(:,1:k))))+10^3]);
-                grid;hold off;
+                xwakeind = ceil((Wp.turbine.Crx + 5*Wp.turbine.Drotor)/Wp.mesh.dxx(1));                
+                plot(Wp.mesh.ldyy(1,:),sol.u(xwakeind(2),:) );hold on
+                plot(Wp.mesh.ldyy(1,:),uPALM(xwakeind(2),:),'r' );
+                ylabel('$u$','interpreter','latex');xlabel('$y$','interpreter','latex');
+                title('wake cross-section','interpreter','latex');
+                axis tight;axis([0,Wp.mesh.ldyy(1,end) 2 9]); grid;hold off;
+                
+%                 subplot(2,3,6)
+%                 plot(Wp.sim.time(1:k),sum(PowerPALM(:,1:k)),'b--');hold on
+%                 plot(Wp.sim.time(1:k),sum(Power(:,1:k)),'k');
+%                 title('WF power [W]','interpreter','latex');
+%                 axis([0,Wp.sim.time(size(u,1)) min(min(sum(PowerPALM(:,1:k))))-10^3 max(max(sum(PowerPALM(:,1:k))))+10^3]);
+%                 grid;hold off;
             end
         end
         drawnow
@@ -465,7 +472,21 @@ if Wp.turbine.N==9
     set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
     xlim([0 Wp.sim.time(size(u,1))])
 end
-
-
-
-
+%%
+% uPALM = zeros(5,size(u,4),size(u,3));
+% figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
+%     [0 0 1 1],'ToolBar','none','visible', 'on');
+% 
+% for k=300:size(u,1)
+%     for l=1:5
+%         uPALM(l,:,:) = reshape(u(k,l,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)    
+%     end
+%     
+%     for ii=1:5
+%       subplot(3,2,ii)
+%       mesh(squeeze(uPALM(ii,:,:)))
+%       view(0,0);zlim([0 9])
+%       drawnow
+%     end
+%    
+% end
