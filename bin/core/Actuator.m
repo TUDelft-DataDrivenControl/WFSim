@@ -1,18 +1,18 @@
 function [output,Ueffect,a,Power,CT] = Actuator(Wp,input,sol,options)
 
-Nx          = Wp.mesh.Nx;
-Ny          = Wp.mesh.Ny;
-dyy2        = Wp.mesh.dyy2;
-xline       = Wp.mesh.xline;
-yline       = Wp.mesh.yline;
-ylinev      = Wp.mesh.ylinev;
+Nx         = Wp.mesh.Nx;
+Ny         = Wp.mesh.Ny;
+dyy2       = Wp.mesh.dyy2;
+xline      = Wp.mesh.xline;
+yline      = Wp.mesh.yline;
+ylinev     = Wp.mesh.ylinev;
 
 Rho        = Wp.site.Rho;
 
 Drotor     = Wp.turbine.Drotor;
-powerscale = Wp.turbine.powerscale;
+cp         = Wp.turbine.powerscale;
 N          = Wp.turbine.N;
-F          = Wp.turbine.forcescale; % http://www.nrel.gov/docs/fy05osti/36834.pdf
+cf         = Wp.turbine.forcescale; 
 
 
 Projection    = options.Projection;
@@ -53,40 +53,20 @@ for kk=1:N
     y  = yline{kk};    % Turbine y-pos in field
     yv = ylinev{kk};   % Corrected turbine y-pos in field
     
-    %%
     vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); % Bart: this can be fixed!
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
     phi{kk}       = atan(sol.v(1,1)/sol.u(1,1));%atan(vv./uu);
-    Ue{kk}        = cos(0*phi{kk}+input.phi(kk)/180*pi).*U{kk};
+    Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});
     
-    dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
-    
-    if nargin==8;
-        input.beta(kk)    = Power_in(kk)/(1/F*powerscale*2*Rho*Ar*meanUe{kk}^3);
-        input.beta(kk)    = min(max(0.05,input.beta(kk)),0.5);
-        a(kk)             = input.beta(kk)/(input.beta(kk)+1);        % beta = a/(1-a)
-    else
-        a(kk)             = input.beta(kk)/(input.beta(kk)+1);
-    end
-        
-    if a(kk)> 0.4
-        CT(kk)      = 8/9+(4*F-40/9)*a(kk)+(50/9-4*F)*a(kk)^2;
-        diff1       = 1/(input.beta(kk)+1).^2;
-        diff2       = 2*input.beta(kk)/(input.beta(kk)+1)^3;
-        dCTdbeta(kk)=((4*F-40/9)*diff1+(50/9-4*F)*diff2);
-    else
-        CT(kk)      =  4*a(kk)*F*(1-a(kk));
-        diff1       = -(input.beta(kk)-1)/(input.beta(kk)+1)^3;
-        dCTdbeta(kk)=  4*diff1*F;
-    end
-    
-    CT(kk)          = input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
+    dUedPhi{kk}   = -1/180*pi*sin(input.phi(kk)/180*pi).*U{kk} ;
+   
+    a(kk)         = input.beta(kk)/(input.beta(kk)+1);
+    CT(kk)        = input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
     
     %% Thrust force      
-    % With the following, we only take middle velocity component and
-    % apply this on the rotor cells 
+    % With the following, we only take middle velocity component 
     m = size(Ue{kk},2);
     if rem(m,2)
        ind  = ceil(m/2); 
@@ -97,30 +77,17 @@ for kk=1:N
        temp = Ue{kk};
        Ur   = repmat(mean(temp(ind)),1,m);
     end    
-    %Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
-    %Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
-    Fthrust         = F*1/2*Rho*Ur.^2*CT(kk);
 
+    Fthrust         = cf*1/2*Rho*Ur.^2*CT(kk);
     Fx              = Fthrust.*cos((phi{kk}+input.phi(kk))*pi/180);
     Fy              = Fthrust.*sin((phi{kk}+input.phi(kk))*pi/180);
     
     Ueffect(kk)     = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     %Ueffect(kk)     = mean(Ur)/(1-a(kk));     % Estimation effective wind speed
-
-    %%
-    %CP(kk)        = 4*a(kk)*(1-a(kk))^2*0.768*cos(input.phi(kk)*pi/180)^(1.88);
-    %Power(kk)     = CP(kk)*mean( sol.u(xline(kk,:)+5,yline{kk}) ).^3 ;
-    %Power(kk)       = 1.5*powerscale*2*Rho*Ar*input.beta(kk)*(meanUe{kk}*1).^3;
-    
-    % Following works well
-    %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));    
-    %Power(kk)       = mean(powerscale*.5*Rho*Ar*Ue{kk}.^3*CT(kk)/(1-a(kk))*cos(input.phi(kk)*pi/180)^(1.88));
-    Power(kk)       = powerscale*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^.75);    
+    Power(kk)       = cp*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^.75);    
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear
-    %Sm.y(x,y(2:end)-2)      = scale*Fy(2:end)'.*dyy2(1,y(2:end))';
-    %Sm.y(x-2,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';
     Sm.y(x-1,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';                                               % Input y-mom nonlinear
     
     if Linearversion
@@ -137,8 +104,6 @@ for kk=1:N
         dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
         
         Sm.dx(x-2,y-1)          = -(dFxdbeta'*input.dbeta(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
-        %Sm.dy(x,y(2:end)-2)     = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';
-        %Sm.dy(x-2,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';
         Sm.dy(x-1,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
         
         tempdx(x-2,y-1) = -dFxdbeta'.*dyy2(1,y)';
@@ -146,12 +111,8 @@ for kk=1:N
         tempdx(x-2,y-1) = -dFxdPhi'.*dyy2(1,y)';
         Sm.dxx(:,N+kk)  =  vec(tempdx');           % Input matrix (yaw) x-mom linear
         
-        %tempdy(x,y(2:end)-2)    = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
-        %tempdy(x-2,y(2:end)-2)  = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
         tempdy(x-1,y(2:end)-2)  = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
         Sm.dyy(:,kk)            = scale*vec(tempdy');                   % Input (beta) y-mom linear qlpv
-        %tempdy(x,y(2:end)-2)    = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
-        %tempdy(x-2,y(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
         tempdy(x-1,y(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
         Sm.dyy(:,N+kk)          = scale*vec(tempdy');                   % Input (yaw) y-mom linear qlpv
     end;
@@ -167,8 +128,6 @@ for kk=1:N
         end
         
         tempy(x-1,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';
-        %tempy(x,y(2:end)-2)     = Fy(2:end)'.*dyy2(1,y(2:end))';
-        %tempy(x-2,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';
         Sm.yy(:,kk)             = scale*vec(tempy')/input.beta(kk);
         Sm.yy(:,N+kk)           = scale*vec(tempy');
         if input.phi(kk)~=0
@@ -204,37 +163,27 @@ for kk=1:N
         dFxdU = Rho*CT(kk)*Ue{kk}*((input.beta(kk)+1)).^2*cos((mean(0*phi{kk})+input.phi(kk))*pi/180);
         dFydU = Rho*CT(kk)*Ue{kk}*((input.beta(kk)+1)).^2*sin((mean(0*phi{kk})+input.phi(kk))*pi/180);
         dSm.xdu((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-3)*(Ny-2)+yline{kk}-1) = diag((-dFxdU.*dUedu(kk,:).*dyy2(1,yline{kk})));
-        %dSm.xdv((xline(kk,:)-3)*(Ny-2)+ylinev{kk}-1,(xline(kk,:)-2)*(Ny-3)+ylinev{kk}-2) = diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})*dvvdv));
         dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-2) = 1/2*diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})));
         dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-1) = dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-1)+ 1/2*diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})));
         dSm.ydu((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-3)*(Ny-2)+yline{kk}(2:end)-1) = diag(scale*(dFydU(2:end).*dUedu(kk,2:end).*dyy2(1,yline{kk}(2:end))));
-        %dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}-2) = diag(scale*(dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))*dvvdv(2:end,2:end)));
         dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2) = 1/2*diag(scale*(dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))));
         dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-1) =   dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-1)+ 1/2*diag(scale*(dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))));
         
         
-        dSm.dbetadPower_in(kk) = 1/(1/F*powerscale*2*Rho*pi*(0.5*Drotor)^2*mean(Ue{kk}).^3);
-        dSm.dJdPower_in(kk)    = -1/F*powerscale*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue{kk}).^3*dSm.dbetadPower_in(kk);
+        dSm.dbetadPower_in(kk) = 1/(1/cf*cp*2*Rho*pi*(0.5*Drotor)^2*mean(Ue{kk}).^3);
+        dSm.dJdPower_in(kk)    = -1/cf*cp*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue{kk}).^3*dSm.dbetadPower_in(kk);
         
         
-        dSm.dJdPower_in(kk)   = -1/F*powerscale*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue{kk}).^3*dSm.dbetadPower_in(kk);
-%         if nargin==7
-%             JXXu(Wp.xline(kk,:)-2,Wp.yline{kk}-1) =  ((-1/F* Wp.powerscale*pi*(0.5*Wp.turbine.Drotor)^2*6*Rho*beta(kk).*mean(Ue{kk}).^2)./(length(Wp.yline{kk}))+ dSm.dJdbeta(kk).*dSm.dbetadUe{kk}).*dUedu{kk};%-3*mean(urotor).^2*pi*(0.5*Wp.turbine.Drotor)^2*2*beta(kk)/(length(solind)/2);
-%             JXXv(Wp.xline(kk,:)-1,Wp.ylinev{kk}-2) = ((-1/F*Wp.powerscale*pi*(0.5*Wp.turbine.Drotor)^2*6*Rho*beta(kk).*mean(Ue{kk}).^2)./((length(Wp.yline{kk})))+ dSm.dJdbeta(kk).*dSm.dbetadUe{kk}).*dUedv{kk}*dvvdv;%-3*mean(urotor).^2*pi*(0.5*Wp.turbine.Drotor)^2*2*beta(kk)/(length(solind)/2);
-%             
-%         else
-%             JXXu(Wp.xline(kk,:)-2,Wp.yline{kk}-1) =  -1/F* Wp.powerscale*pi*(0.5*Wp.turbine.Drotor)^2*6*Rho*beta(kk).*mean(Ue{kk}).^2.*dUedu{kk}./(length(Wp.yline{kk}));%-3*mean(urotor).^2*pi*(0.5*Wp.turbine.Drotor)^2*2*beta(kk)/(length(solind)/2);
-%             JXXv(Wp.xline(kk,:)-1,Wp.ylinev{kk}-2) = -1/F*Wp.powerscale*pi*(0.5*Wp.turbine.Drotor)^2*6*Rho*beta(kk).*mean(Ue{kk}).^2.*dUedv{kk}./((length(Wp.yline{kk})))*dvvdv;%-3*mean(urotor).^2*pi*(0.5*Wp.turbine.Drotor)^2*2*beta(kk)/(length(solind)/2);
-%         end
+        dSm.dJdPower_in(kk)   = -1/cf*cp*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue{kk}).^3*dSm.dbetadPower_in(kk);
       
         % Derivative cost function with respect to state and beta
-        JXXu(xline(kk,:)-2,yline{kk}-1) =  -1/F*pi*(0.5*Drotor)^2*6*Rho*input.beta(kk).*mean(Ue{kk}).^2.*dUedu(kk,:)./(length(yline{kk}));%-3*mean(urotor).^2*pi*(0.5*turbine.Drotor)^2*2*input.beta(kk)/(length(solind)/2);
-        JXXv(xline(kk,:)-1,ylinev{kk}-2) = -1/F*pi*(0.5*Drotor)^2*6*Rho*input.beta(kk).*mean(Ue{kk}).^2.*dUedv(kk,:)./((length(yline{kk})))*dvvdv;%-3*mean(urotor).^2*pi*(0.5*turbine.Drotor)^2*2*input.beta(kk)/(length(solind)/2);
+        JXXu(xline(kk,:)-2,yline{kk}-1) =  -1/cf*pi*(0.5*Drotor)^2*6*Rho*input.beta(kk).*mean(Ue{kk}).^2.*dUedu(kk,:)./(length(yline{kk}));%-3*mean(urotor).^2*pi*(0.5*turbine.Drotor)^2*2*input.beta(kk)/(length(solind)/2);
+        JXXv(xline(kk,:)-1,ylinev{kk}-2) = -1/cf*pi*(0.5*Drotor)^2*6*Rho*input.beta(kk).*mean(Ue{kk}).^2.*dUedv(kk,:)./((length(yline{kk})))*dvvdv;%-3*mean(urotor).^2*pi*(0.5*turbine.Drotor)^2*2*input.beta(kk)/(length(solind)/2);
         
         % two lines above should be checked!!
         dSm.dJdx        = [vec(JXXu');vec(JXXv');vec(JXXp')];
-        dSm.dJdbeta(kk) = -1/F*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue{kk}).^3;
-        dSm.dJdPhi(kk)  = -1/F*6*Rho*pi*(0.5*Drotor)^2*input.beta(kk)*mean(Ue{kk}).^2.*mean(dUedPhi{kk});
+        dSm.dJdbeta(kk) = -1/cf*pi*(0.5*Drotor)^2*(2*Rho).*mean(Ue{kk}).^3;
+        dSm.dJdPhi(kk)  = -1/cf*6*Rho*pi*(0.5*Drotor)^2*input.beta(kk)*mean(Ue{kk}).^2.*mean(dUedPhi{kk});
         
         %
         dSmxdbetakk = sparse(Nx-3,Ny-2);
