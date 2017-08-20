@@ -1,7 +1,7 @@
 clear; clc; close all; %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%%             WIND FARM SIMULATOR (WFSIM) by S. Boersma
+%%      WIND FARM SIMULATOR (WFSIM) by S. Boersma and B. Doekemeijer
 %                 Delft University of Technology, 2017
 %              Repo: https://github.com/Bartdoekemeijer/WFSim
 %
@@ -77,7 +77,7 @@ scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate press
 
 % Convergence settings (recommended: leave default)
 scriptOptions.conv_eps          = 1e-6;     % Convergence threshold. Default: 1e-6.
-scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1. Default: 1.
+scriptOptions.max_it_dyn        = 50;        % Maximum number of iterations for k > 1. Default: 1.
 if scriptOptions.startUniform==1
     scriptOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
 else

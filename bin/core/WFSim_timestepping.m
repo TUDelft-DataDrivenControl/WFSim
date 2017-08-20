@@ -5,6 +5,8 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOpt
     sol_out      = sol_in;
     sol_out.k    = sol_in.k + 1;            % Propagate forward in time
     sol_out.time = Wp.sim.time(sol_in.k+2); % Propagate forward in time
+    sol_out.uk   = sol_in.u;
+    sol_out.vk   = sol_in.v;
     
     % Copy relevant system matrices from previous time
     sys_out      = struct('B1',sys_in.B1,'B2',sys_in.B2,'bc',sys_in.bc,'pRCM',sys_in.pRCM); 
@@ -22,10 +24,10 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOpt
     end
 
     % Initialize default convergence parameters
-    it        = 0;
-    eps       = 1e19;
-    epss      = 1e20;
- 
+    it         = 0;
+    eps        = 1e19;
+    epss       = 1e20;
+    
     % Convergence until satisfactory solution has been found
     while ( eps>conv_eps && it<max_it && eps<epss )
         it   = it+1;
