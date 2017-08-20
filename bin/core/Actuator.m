@@ -11,7 +11,7 @@ Drotor          = Wp.turbine.Drotor;
 powerscale      = Wp.turbine.powerscale;
 N               = Wp.turbine.N;
 F               = Wp.turbine.forcescale; % http://www.nrel.gov/docs/fy05osti/36834.pdf
-input           = Wp.turbine.input{sol.k};
+input           = Wp.turbine.input(sol.k);
 Projection      = options.Projection;
 Linearversion   = options.Linearversion;
 Derivatives     = options.Derivatives;
@@ -56,23 +56,8 @@ for kk=1:N
     phi{kk}       = atan(vv./uu);
     Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});
-    
     dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
- 
-    a(kk)         = input.beta(kk)/(input.beta(kk)+1);
-    
-    Ueffect(kk)   = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
-    
-    if a(kk)> 0.4
-        CT(kk)      = 8/9+(4*F-40/9)*a(kk)+(50/9-4*F)*a(kk)^2;
-        diff1       = 1/(input.beta(kk)+1).^2;
-        diff2       = 2*input.beta(kk)/(input.beta(kk)+1)^3;
-        dCTdbeta(kk)=((4*F-40/9)*diff1+(50/9-4*F)*diff2);
-    else
-        CT(kk)      =  4*a(kk)*F*(1-a(kk));
-        diff1       = -(input.beta(kk)-1)/(input.beta(kk)+1)^3;
-        dCTdbeta(kk)=  4*diff1*F;
-    end
+    CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
        
  %% Thrust force      
     % With the following, we only take middle velocity component and
@@ -87,15 +72,13 @@ for kk=1:N
        temp = Ue{kk};
        Ur   = repmat(mean(temp(ind)),1,m);
     end    
-    %Fthrust         = 1/2*Rho*Ur.^2*CT(kk)*(input.beta(kk)+1).^2;
-    Fthrust         = 1/2*Rho*Ue{kk}.^2*CT(kk)*(input.beta(kk)+1).^2;
-    
+    Fthrust         = F*1/2*Rho*Ue{kk}.^2*CT(kk); % Using CT_prime
     Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
     
     %%
-    %Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
-    Power(kk)       = mean(powerscale*.5*Rho*Ar*(Ue{kk}).^3*CT(kk)*cos(input.phi(kk)*pi/180)^(1.88));
+    pp = 1.88; % Loss factor for yawing a turbine
+    Power(kk) = powerscale*mean(.5*Rho*Ar*Ue{kk}.^3*CT(kk)*cos(input.phi(kk)*pi/180)^pp);    
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           
@@ -226,10 +209,8 @@ for kk=1:N
 end
 
 %% Write to outputs
-sol.turbine.Ueffect = Ueffect;
-sol.turbine.a       = a;
-sol.turbine.power   = Power;
-sol.turbine.ct      = CT;
+sol.turbine.power    = Power;
+sol.turbine.CT_prime = CT;
 
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)

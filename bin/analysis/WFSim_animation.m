@@ -25,7 +25,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     N      = Wp.turbine.N;
     Cry    = Wp.turbine.Cry;
     Crx    = Wp.turbine.Crx;
-    input  = Wp.turbine.input{sol.k};
+    input  = Wp.turbine.input(sol.k);
 
     time   = Wp.sim.time;
     k      = sol.k;

@@ -3,7 +3,7 @@ function [sol,sys] = Computesol(Wp,sys,sol,it,options)
 
     % Import variables
     k               = sol.k;
-    input           = Wp.turbine.input{k};
+    input           = Wp.turbine.input(k);
     Projection      = options.Projection;
     exportLinearSol = options.exportLinearSol;
 

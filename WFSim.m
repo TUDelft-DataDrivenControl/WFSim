@@ -65,7 +65,7 @@ clear; clc; close all; %
 
 
 %% Define script settings
-Wp.name      = '2turb_demo';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
+Wp.name      = 'apc_9turb_alm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
@@ -86,7 +86,7 @@ end
 
 % Display and visualization settings
 scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
-scriptOptions.printConvergence  = 1;    % Print convergence values every timestep.     Default: false.
+scriptOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
 scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
