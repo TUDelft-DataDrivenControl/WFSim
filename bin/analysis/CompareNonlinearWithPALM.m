@@ -48,11 +48,11 @@ uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
 vk = Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
 
 % Load PALM data
-M1  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters01.txt');
-M2  = load('../../Data_PALM/2turb_adm/example_2turb_adm_matlab_turbine_parameters02.txt');
+M1  = load('../../Data_PALM/2turb_adm/2turb_adm_matlab_turbine_parameters01.txt');
+M2  = load('../../Data_PALM/2turb_adm/2turb_adm_matlab_turbine_parameters02.txt');
 %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
 
-filename = '../../Data_PALM/2turb_adm/example_2turb_adm_matlab_m01.nc';
+filename = '../../Data_PALM/2turb_adm/2turb_adm_matlab_m01.nc';
 u        = double(nc_varget(filename,'u'));
 v        = double(nc_varget(filename,'v'));
 x        = double(nc_varget(filename,'x'));
@@ -61,6 +61,16 @@ xu       = double(nc_varget(filename,'xu'));
 yv       = double(nc_varget(filename,'yv'));
 zw_3d    = double(nc_varget(filename,'zw_3d'));
 nz       = 4;
+
+uPALM                 = reshape(u(1,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)
+vPALM                 = reshape(v(1,nz,:,:),size(v,3),size(v,4))';
+targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
+sourceSize            = size(uPALM);
+[X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
+uPALM                 = interp2(uPALM, X_samples, Y_samples);
+vPALM                 = interp2(vPALM, X_samples, Y_samples);
+sol.u                 = uPALM;
+sol.v                 = vPALM;
 
 % Performing timestepping until end
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
@@ -74,8 +84,8 @@ while sol.k < size(u,1)
     % Write flow field solutions to a 3D matrix
     uk(:,:,sol.k)         = sol.u;
     vk(:,:,sol.k)         = sol.v;
-    a(:,sol.k)            = sol.a;
-    Power(:,sol.k)        = sol.power;
+    a(:,sol.k)            = sol.turbine.a;
+    Power(:,sol.k)        = sol.turbine.power;
     Phi(:,sol.k)          = Wp.turbine.input{sol.k}.phi;
     
     uPALM                 = reshape(u(sol.k,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)

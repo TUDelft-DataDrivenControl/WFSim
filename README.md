@@ -8,7 +8,7 @@ Developed by Boersma et al., Delft University of Technology, 2017
 WindFarmSimulator (WFSim) is a medium-fidelity, control-oriented wind farm model based on the two-dimensional Navier-Stokes equations. It is currently actively developed at the Delft University of Technology by Sjoerd Boersma.
 
 ## Quick use:
-Open WFSim.m with any recent version of MATLAB. Follow the instructions therein to perform simple simulations of various wind farm scenarios. Note: if you are missing files such as 'system_input.mat', make sure you have downloaded the relevant files in the data_SOWFA folder.
+Open WFSim.m with any recent version of MATLAB. Follow the instructions therein to perform simple simulations of various wind farm scenarios. Missing files will be downloaded automatically on first run, so make sure you are connected to the internet.
 	
 ## Folder hierarchy:
 
@@ -16,13 +16,11 @@ Open WFSim.m with any recent version of MATLAB. Follow the instructions therein 
 	/bin/analysis/: files not essential to WFSim, but used for debugging and validation.
 	/bin/archive/:  outdated files no longer used by any script.
 	/bin/core/:     files essential to the workings of WFSim, required for any simulation.
-	
-	/data_PALM/:    high-fidelity simulation data from Hannover's LES code 'PALM'. This can be used for model validation.
-	/data_SOWFA/:   high-fidelity simulation data from NREL's LES code 'SOWFA'.    This can be used for model validation.
-	/data_WFSim/:   simulation data from WindFarmSimulator itself, useful for development, debugging and verification.
-    
+	/data_LES/:     high-fidelity simulation data from Hannover's LES code 'PALM' and NREL's LES code 'SOWFA'. 
+                    These datasets will be downloaded auotomatically by meshing.m and can be used for model validation.
+
 	/documentation/: literature on the technical details of WFSim, such as the derivation and the turbulence model.
-		          Please keep in mind that more recent literature may be available online.
+		             Please keep in mind that more recent literature may be available online.
 	/libraries/:    external libraries used in WFSim. All copyright goes to the respective authors.
 	
 ## Debugging:
