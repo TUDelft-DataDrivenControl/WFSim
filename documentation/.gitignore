@@ -3,4 +3,4 @@
 
 # Add exclusions for:
 !.gitignore
-!Download_files.url
+!documentation.7z
