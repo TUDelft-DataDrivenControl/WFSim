@@ -1,0 +1,62 @@
+ &inipar nx = 1023, ny = 191, nz = 192,  ! nx = 575
+    
+         dx = 10.0, dy = 10.0, dz = 10.0,
+
+         bc_lr = 'cyclic',
+         bc_ns = 'cyclic',
+
+         initializing_actions = 'set_constant_profiles',
+         ug_surface = 8.0, vg_surface = 0.0,
+
+         bc_uv_b = 'neumann',
+         fft_method = 'temperton-algorithm',
+         
+         constant_flux_layer = .F., /
+
+ &d3par  end_time = 750.0,
+
+         npex = 4, npey = 4,
+
+         termination_time_needed = 6000.0,
+         
+         create_disturbances = .F.,
+         
+         dt_run_control = 1.,
+           
+         mask_x_loop(1,:) = 100.0, 1900.0, 20.0,
+         mask_y_loop(1,:) = 200.0, 1600.0, 20.0, 
+         mask_z_loop(1,:) = 0.0, 120.0, 15.0,
+         
+         data_output_masks(1,:) = 'u', 'v','w',
+
+         dt_domask = 1.,/
+
+ &wind_turbine_par
+         time_turbine_on  = 0.0,
+
+         nturbines = 2,
+         rcx =   500.0, 1132.0,
+         rcy =   900.0, 900.0,
+         rcz =   90.0, 90.0,
+         rr  =    60.0, 60.0,
+         rnac =    1.5, 1.5,
+         dtow =    4.0, 4.0,
+
+         omega_rot = 0.5, 0.5,
+         phi_yaw = 0.0, 0.0,
+         tilt = 0.0,
+         rated_power = 5296610.0,
+         speed_control = .T.,
+         pitch_control = .T.,
+         pitch_add = 0.0,
+         yaw_control = .T.,
+         yaw_speed = 0.01,
+        
+         turb_cd_nacelle = 0.85, 0.85,
+         turb_cd_tower   = 1.2, 1.2,
+        
+         segment_length = 1.0,
+         segment_width  = 0.5,
+        
+         nairfoils = 8, /
+            

@@ -1,0 +1,258 @@
++ queue=dcsc
++ [[ true = true ]]
++ ./mrun -a 2turb_matlab -c .mrun.config -d 2turb_matlab -h lchpc06 -H lchpc06 -m 64000 -t 3600000 -q dcsc -R 192.168.0.7 -U sboersma3 -u sboersma3 -G 'Rev: 2227M' -s 'palm.f90  wind_turbine_model_mod.f90' -i ' d3f maf restart' -K parallel -o ' d3f maf restart' -X 16 -T 8 -n not_shared -z
+
+*** MRUN  2.1 Rev: 2186 $ 
+    will be executed.     Please wait ......
+#------------------------------------------------------------------------# 
+| MRUN  2.1 Rev: 2186 $                    Mon Aug 21 23:41:05 CEST 2017 | 
+|                                                                        | 
+| called on:               n06-140                                       | 
+| execution on:            lchpc06 (n06-140)                             | 
+| number of PEs:           16                                            | 
+| tasks per node:          8 (number of nodes: 2)                        | 
+|                                                                        | 
+| make options:            -j 16                                         | 
+| cpp directives:          -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION | 
+|                           -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf | 
+|                           -D__lc -D__parallel                          | 
+| compiler options:        -Ofast -ffree-line-length-none -I /home/sboer | 
+|                          sma3/palm/binaries/include -I /usr/include    | 
+| linker options:          -Ofast -ffree-line-length-none /home/sboersma | 
+|                          3/palm/binaries/lib/libnetcdff.so /usr/lib64/ | 
+|                          libfftw3.so                                   | 
+| modules to be load:                                                    | 
+| main program:            palm.f90                                      | 
+|                                                                        | 
+| base name of files:      2turb_matlab                                  | 
+| INPUT control list:      d3f maf restart                               | 
+| OUTPUT control list:     d3f maf restart                               | 
+|                                                                        | 
+| Files to be compiled:                                                  | 
+| palm.f90 wind_turbine_model_mod.f90                                    | 
+#------------------------------------------------------------------------#
+  *** changed to temporary directory: /home/sboersma3/palm/current_version/tmp/sboersma3.12565
+
+
+  *** compilation starts 
+  ----------------------------------------------------------------------------
+  *** compilation with make using following options:
+      make depository:          /home/sboersma3/palm/current_version/MAKE_DEPOSITORY_parallel/palm_current_version.tar      make options:             -j 16
+      compilername:             /home/sboersma3/palm/binaries/bin/mpif90
+      compiler options:         -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include 
+      preprocessor directives:  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel 
+      linker options:           -Ofast -ffree-line-length-none /home/sboersma3/palm/binaries/lib/libnetcdff.so /usr/lib64/libfftw3.so  
+      source code files:        palm.f90  wind_turbine_model_mod.f90 
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c wind_turbine_model_mod.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c palm.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c check_parameters.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c init_3d_model.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c parin.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c prognostic_equations.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -Ofast -ffree-line-length-none -I /home/sboersma3/palm/binaries/include -I /usr/include  -cpp -D__fftw -DMPI_REAL=MPI_DOUBLE_PRECISION -DMPI_2REAL=MPI_2DOUBLE_PRECISION -D__netcdf -D__lc -D__parallel -c time_integration.f90
+/home/sboersma3/palm/binaries/bin/mpif90 -o a.out advec_s_bc.o advec_s_pw.o advec_s_up.o advec_ws.o advec_u_pw.o advec_u_up.o advec_v_pw.o advec_v_up.o advec_w_pw.o advec_w_up.o average_3d_data.o boundary_conds.o buoyancy.o calc_liquid_water_content.o calc_mean_profile.o calc_radiation.o check_for_restart.o check_open.o check_parameters.o close_file.o compute_vpt.o coriolis.o cpulog_mod.o data_log.o data_output_dvrp.o data_output_mask.o data_output_profiles.o data_output_ptseries.o data_output_spectra.o data_output_flight.o data_output_tseries.o data_output_2d.o data_output_3d.o diffusion_e.o diffusion_s.o diffusion_u.o diffusion_v.o diffusion_w.o diffusivities.o disturb_field.o disturb_heatflux.o eqn_state_seawater.o exchange_horiz.o exchange_horiz_2d.o fft_xy_mod.o flow_statistics.o global_min_max.o header.o inflow_turbulence.o init_1d_model.o init_3d_model.o init_advec.o init_cloud_physics.o init_coupling.o init_dvrp.o init_grid.o init_masks.o init_ocean.o init_pegrid.o init_pt_anomaly.o init_rankine.o init_slope.o interaction_droplets_ptq.o land_surface_model_mod.o local_stop.o local_system.o local_tremain.o local_tremain_ini.o lpm.o lpm_advec.o lpm_boundary_conds.o lpm_calc_liquid_water_content.o lpm_collision_kernels.o lpm_data_output_particles.o lpm_droplet_collision.o lpm_droplet_condensation.o lpm_exchange_horiz.o lpm_init.o lpm_init_sgs_tke.o lpm_pack_arrays.o lpm_read_restart_file.o lpm_set_attributes.o lpm_write_exchange_statistics.o lpm_write_restart_file.o ls_forcing_mod.o message.o microphysics_mod.o modules.o mod_kinds.o mod_particle_attributes.o netcdf_interface_mod.o nudging_mod.o outflow_turbulence.o package_parin.o palm.o parin.o plant_canopy_model_mod.o pmc_interface_mod.o pmc_child_mod.o pmc_general_mod.o pmc_handle_communicator_mod.o pmc_mpi_wrapper_mod.o pmc_parent_mod.o poisfft_mod.o poismg_mod.o poismg_noopt.o posix_calls_from_fortran.o pres.o print_1d.o production_e.o prognostic_equations.o progress_bar_mod.o radiation_model_mod.o random_function_mod.o random_gauss.o random_generator_parallel_mod.o read_3d_binary.o read_var_list.o run_control.o set_slicer_attributes_dvrp.o singleton_mod.o sor.o spectra_mod.o subsidence_mod.o sum_up_3d_data.o surface_coupler.o surface_layer_fluxes_mod.o swap_timelevel.o temperton_fft_mod.o time_integration.o time_to_string.o timestep.o timestep_scheme_steering.o transpose.o tridia_solver_mod.o urban_surface_mod.o user_3d_data_averaging.o user_actions.o user_additional_routines.o user_check_data_output.o user_check_data_output_pr.o user_check_parameters.o user_data_output_2d.o user_data_output_3d.o user_data_output_dvrp.o user_data_output_mask.o user_define_netcdf_grid.o user_dvrp_coltab.o user_header.o user_init.o user_init_3d_model.o user_init_flight.o user_init_grid.o user_init_land_surface.o user_init_plant_canopy.o user_init_radiation.o user_flight.o user_init_urban_surface.o user_last_actions.o user_lpm_advec.o user_lpm_init.o user_lpm_set_attributes.o user_module.o user_parin.o user_read_restart_data.o user_spectra.o user_statistics.o virtual_flight_mod.o wall_fluxes.o wind_turbine_model_mod.o write_3d_binary.o write_var_list.o -Ofast -ffree-line-length-none /home/sboersma3/palm/binaries/lib/libnetcdff.so /usr/lib64/libfftw3.so 
+  ----------------------------------------------------------------------------
+  *** compilation finished 
+
+
+  *** providing INPUT-files:
+  ----------------------------------------------------------------------------
+  >>> INPUT: /home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_p3df  to  PARIN
+  *** INFORMATIVE: input file "/home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_rlw.nc" 
+                   is not available!
+  *** INFORMATIVE: input file "/home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_rsw.nc" 
+                   is not available!
+  *** INFORMATIVE: input file "/home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_rsnd.nc" 
+                   is not available!
+  *** INFORMATIVE: input file "/home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_topo" 
+                   is not available!
+  *** INFORMATIVE: input file "/home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_nudge" 
+                   is not available!
+  *** INFORMATIVE: input file "/home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_lsf" 
+                   is not available!
+  >>> INPUT: /home/sboersma3/palm/current_version/JOBS/2turb_matlab/RESTART/2turb_matlab_d3d/....  to  BININ
+      directory will be fetched from temporary directory "/home/sboersma3/palm/current_version/RESTART_DATA" !
+  >>> INPUT: /home/sboersma3/palm/current_version/JOBS/2turb_matlab/INPUT/2turb_matlab_wtm  to  WTM_DATA
+  ----------------------------------------------------------------------------
+  *** all INPUT-files provided 
+
+
+  *** execution starts in directory
+      "/home/sboersma3/palm/current_version/tmp/sboersma3.12565"
+  ----------------------------------------------------------------------------
+
+
+      ... reading environment parameters from ENVPAR      --- finished
+      ... reading NAMELIST parameters from PARIN      --- finished
+      ... creating virtual PE grids + MPI derived data types      --- finished
+      ... checking parameters      --- finished
+      ... allocating arrays      --- finished
+      ... initializing in case of restart / cyclic_fill      --- finished
+      ... initializing wind turbine model      --- finished
+      --- leaving init_3d_model
+      --- start with time-stepping
+      --- finished time-stepping
+      ... writing restart data      --- finished
+      ... calculating cpu statistics      --- finished
+
+  ----------------------------------------------------------------------------
+  *** execution finished 
+
+
+
+ *** post-processing: now executing "combine_plot_fields_parallel.x" ... 
+ 
+ *** combine_plot_fields ***
+     uncoupled run
+ 
+ 
+ *** combine_plot_fields ***
+     no XY-section data available
+ 
+ *** combine_plot_fields ***
+     no XZ-section data available
+ 
+ *** combine_plot_fields ***
+     no YZ-section data available
+  
+ *** combine_plot_fields ***
+     no 3D-data file available
+
+
+  *** execution of OUTPUT-commands:
+  ----------------------------------------------------------------------------
+  >>> [[ -f LIST_PROFIL_1D     ]]  &&  cat  LIST_PROFIL_1D  >>  LIST_PROFILE
+  >>> [[ -f LIST_PROFIL        ]]  &&  cat  LIST_PROFIL     >>  LIST_PROFILE
+  >>> [[ -f PARTICLE_INFOS/_0000 ]]  &&  cat  PARTICLE_INFOS/* >> PARTICLE_INFO
+  ----------------------------------------------------------------------------
+
+
+  *** saving OUTPUT-files:
+  ----------------------------------------------------------------------------
+  >>> OUTPUT: BINOUT/....  to
+              /home/sboersma3/palm/current_version/RESTART_DATA/2turb_matlab_d3d.1 (temporary data catalog)
+              +++ caution: option -A is switched off. No archiving on none!
+
+  >>> OUTPUT: RUN_CONTROL  append to  /home/sboersma3/palm/current_version/JOBS/2turb_matlab/MONITORING/2turb_matlab_rc
+
+  >>> OUTPUT: HEADER  append to  /home/sboersma3/palm/current_version/JOBS/2turb_matlab/MONITORING/2turb_matlab_header
+
+  >>> OUTPUT: CPU_MEASURES  append to  /home/sboersma3/palm/current_version/JOBS/2turb_matlab/MONITORING/2turb_matlab_cpu
+
+  >>> OUTPUT: DATA_MASK_01_NETCDF  to  /home/sboersma3/palm/current_version/JOBS/2turb_matlab/OUTPUT/2turb_matlab_m01.nc
+
+  +++ temporary OUTPUT-file  DATA_MASK_01_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_02_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_02_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_03_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_03_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_04_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_04_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_05_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_05_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_06_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_06_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_07_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_07_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_08_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_08_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_09_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_09_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_10_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_10_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_11_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_11_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_12_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_12_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_13_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_13_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_14_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_14_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_15_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_15_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_16_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_16_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_17_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_17_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_18_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_18_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_19_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_19_AV_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_20_NETCDF  does not exist
+
+  +++ temporary OUTPUT-file  DATA_MASK_20_AV_NETCDF  does not exist
+
+  >>> OUTPUT: TURBINE_PARAMETERS01  to  /home/sboersma3/palm/current_version/JOBS/2turb_matlab/MONITORING/2turb_matlab_turbine_parameters01
+
+  >>> OUTPUT: TURBINE_PARAMETERS02  to  /home/sboersma3/palm/current_version/JOBS/2turb_matlab/MONITORING/2turb_matlab_turbine_parameters02
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS03  does not exist
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS04  does not exist
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS05  does not exist
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS06  does not exist
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS07  does not exist
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS08  does not exist
+
+  +++ temporary OUTPUT-file  TURBINE_PARAMETERS09  does not exist
+
+  ----------------------------------------------------------------------------
+  *** all OUTPUT-files saved 
+
+
+ --> all actions finished
+
+     Bye, bye sboersma3 !!
+
++ ls -al
+total 188
+drwxr-x--- 3 sboersma3 domain users     87 Aug 22 13:16 .
+drwxr-x--- 4 sboersma3 domain users     62 Aug 22 13:16 ..
+-rw-r----- 1 sboersma3 domain users  14939 Aug 21 23:41 .mrun.config
+drwxr-x--- 2 sboersma3 domain users     85 Aug 21 23:41 SOURCES_FOR_RUN_2turb_matlab
+-rwxr----- 1 sboersma3 domain users 174160 Aug 21 23:41 mrun
+++ pwd
++ echo /home/sboersma3/palm/current_version/tmp/sboersma3.25163
+/home/sboersma3/palm/current_version/tmp/sboersma3.25163
++ cd /home/sboersma3
