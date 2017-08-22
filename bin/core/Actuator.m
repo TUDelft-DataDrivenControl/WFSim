@@ -209,8 +209,8 @@ for kk=1:N
 end
 
 %% Write to outputs
-sol.turbine.power    = Power;
-sol.turbine.CT_prime = CT;
+sol.turbine.power(:,1)    = Power;
+sol.turbine.CT_prime(:,1) = CT;
 
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)
