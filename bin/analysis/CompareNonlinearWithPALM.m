@@ -12,10 +12,10 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-Wp.name             = '2turb_adm';
+Wp.name             = '2turb_matlab';
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 50;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -61,7 +61,7 @@ if Animate > 0
 end
 
 %% Loop
-for k=1:size(u,1) %350 (for wake cross)
+for k=1:size(u,1) 
     
     it        = 0;
     eps       = 1e19;
@@ -196,44 +196,46 @@ plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
+Nt = 1750;
+
 figure(3);clf
-plot(Wp.sim.time(1:1750),sum(Power(:,1:1750)),'k','Linewidth',1);hold on;
-plot(Wp.sim.time(1:1750),sum(PowerPALM(:,1:1750)),'b--');
+plot(Wp.sim.time(1:Nt),sum(Power(:,1:Nt)),'k','Linewidth',1);hold on;
+plot(Wp.sim.time(1:Nt),sum(PowerPALM(:,1:Nt)),'b--');
 grid;xlabel('$t [s]$','interpreter','latex');
 ylabel('$P$ [W]','interpreter','latex');
 title('Wind farm power: WFSim (black) PALM (blue dashed)','interpreter','latex');
-
+xlim([0 Nt])
 if Wp.turbine.N==2
     figure(4);clf
-    plot(Wp.sim.time(1:1750),CT(1,1:1750));hold on
-    plot(Wp.sim.time(1:1750),CT(2,1:1750),'r');
+    plot(Wp.sim.time(1:Nt),CT(1,1:Nt));hold on
+    plot(Wp.sim.time(1:Nt),CT(2,1:Nt),'r');
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t [s]$','interpreter','latex');
     title('$T_1$ (blue), $T_2$ (red) ','interpreter','latex');
-    axis([0,Wp.sim.time(size(u,1)) 0 max(max(CT(:,1:size(u,1))))+.2]);
+    axis([0,Wp.sim.time(Nt) 0 max(max(CT(:,1:Nt)))+.2]);
     grid;hold off;xlim([0 1750]);ylim([0 1.8])
 elseif Wp.turbine.N==9
     figure(4);clf;
     subplot(1,3,1)
-    plot(Wp.sim.time(1:size(u,1)),CT(1,1:size(u,1)),'b');hold on;
-    plot(Wp.sim.time(1:size(u,1)),CT(2,1:size(u,1)),'k');
-    plot(Wp.sim.time(1:size(u,1)),CT(3,1:size(u,1)),'r');grid;
-    xlim([0 Wp.sim.time(size(u,1))])
+    plot(Wp.sim.time(1:Nt),CT(1,1:Nt),'b');hold on;
+    plot(Wp.sim.time(1:Nt),CT(2,1:Nt),'k');
+    plot(Wp.sim.time(1:Nt),CT(3,1:Nt),'r');grid;
+    xlim([0 Wp.sim.time(Nt)])
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t$ [s]','interpreter','latex');
     title('$CT^{\prime}_1$ (blue), $CT^{\prime}_2$ (black), $CT^{\prime}_3$ (red)','interpreter','latex')
     subplot(1,3,2)
-    plot(Wp.sim.time(1:size(u,1)),CT(4,1:size(u,1)),'b');hold on;
-    plot(Wp.sim.time(1:size(u,1)),CT(5,1:size(u,1)),'k');
-    plot(Wp.sim.time(1:size(u,1)),CT(6,1:size(u,1)),'r');grid;
-    xlim([0 Wp.sim.time(size(u,1))])
+    plot(Wp.sim.time(1:Nt),CT(4,1:Nt),'b');hold on;
+    plot(Wp.sim.time(1:Nt),CT(5,1:Nt),'k');
+    plot(Wp.sim.time(1:Nt),CT(6,1:Nt),'r');grid;
+    xlim([0 Wp.sim.time(Nt)])
     xlabel('$t$ [s]','interpreter','latex');
     title('$CT^{\prime}_4$ (blue), $CT^{\prime}_5$ (black), $CT^{\prime}_6$ (red)','interpreter','latex')
     subplot(1,3,3)
-    plot(Wp.sim.time(1:size(u,1)),CT(7,1:size(u,1)),'b');hold on;
-    plot(Wp.sim.time(1:size(u,1)),CT(8,1:size(u,1)),'k');
-    plot(Wp.sim.time(1:size(u,1)),CT(9,1:size(u,1)),'r');grid;
-    xlim([0 Wp.sim.time(size(u,1))])
+    plot(Wp.sim.time(1:Nt),CT(7,1:Nt),'b');hold on;
+    plot(Wp.sim.time(1:Nt),CT(8,1:Nt),'k');
+    plot(Wp.sim.time(1:Nt),CT(9,1:Nt),'r');grid;
+    xlim([0 Wp.sim.time(Nt)])
     title('$CT^{\prime}_7$ (blue), $CT^{\prime}_8$ (black), $CT^{\prime}_9$ (red)','interpreter','latex')
     xlabel('$t$ [s]','interpreter','latex');
 end
@@ -256,7 +258,7 @@ for k=indices
     VAF(:,k)     = vaf(upPALM(:,k),up(:,k));
 end
 
-%%
+%
 figure(5);clf;
 subplot(2,2,1)
 plot(Wp.mesh.ldxx2(:,1)',up(:,indices(1)),'k','Linewidth',1);hold on;
@@ -311,7 +313,7 @@ if Wp.turbine.N==9
     text( -1800, 20.4, 'First row: WFSim (black) and PALM (blue dashed)','interpreter','latex') ;
     %suptitle('First row: WFSim (black) and PALM (blue)')
 end
-%%
+%
 if Wp.turbine.N==9
     
     yline    = Wp.mesh.yline{4};
@@ -426,51 +428,51 @@ if Wp.turbine.N==9
     figure(10);clf;
     subplot(3,3,1)
     plot(Power(1,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(1,1:end),'b--');
+    plot(PowerPALM(1,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
-    grid;ylabel('$P_1$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(size(u,1))])
+    grid;ylabel('$P_1$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,2)
     plot(Power(2,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(2,1:end),'b--');
+    plot(PowerPALM(2,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
-    grid;ylabel('$P_2$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(size(u,1))])
+    grid;ylabel('$P_2$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,3)
     plot(Power(3,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(3,1:end),'b--');
+    plot(PowerPALM(3,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
-    grid;ylabel('$P_3$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(size(u,1))])
+    grid;ylabel('$P_3$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,4)
     plot(Power(4,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(4,1:end),'b--');
+    plot(PowerPALM(4,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
-    grid;ylabel('$P_4$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(size(u,1))])
+    grid;ylabel('$P_4$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,5)
     plot(Power(5,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(5,1:end),'b--');
-    grid;ylabel('$P_5$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(size(u,1))])
+    plot(PowerPALM(5,1:Nt),'b--');
+    grid;ylabel('$P_5$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     subplot(3,3,6)
     plot(Power(6,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(6,1:end),'b--');
-    grid;ylabel('$P_6$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(size(u,1))])
+    plot(PowerPALM(6,1:Nt),'b--');
+    grid;ylabel('$P_6$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     subplot(3,3,7)
     plot(Power(7,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(7,1:end),'b--');
+    plot(PowerPALM(7,1:Nt),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$P_7$','interpreter','latex');ylim([0 n*10^6])
-    xlim([0 Wp.sim.time(size(u,1))])
+    xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,8)
     plot(Power(8,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(8,1:end),'b--');
+    plot(PowerPALM(8,1:Nt),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$P_8$','interpreter','latex');ylim([0 n*10^6]);
-    xlim([0 Wp.sim.time(size(u,1))])
+    xlim([0 Wp.sim.time(Nt)])
     set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
     subplot(3,3,9)
     plot(Power(9,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(9,1:end),'b--');
+    plot(PowerPALM(9,1:Nt),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$P_9$','interpreter','latex');ylim([0 n*10^6]);
     set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
-    xlim([0 Wp.sim.time(size(u,1))])
+    xlim([0 Wp.sim.time(Nt)])
 end
 %%
 % uPALM = zeros(5,size(u,4),size(u,3));

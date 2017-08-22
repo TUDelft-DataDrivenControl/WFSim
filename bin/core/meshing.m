@@ -169,7 +169,7 @@ switch lower(Wp.name)
         n        = 2;
         m        = 4;
         
-        case lower('9turb_adm_turbulence')
+        case lower('9turb_adm_turb')
         type   = 'lin';                     % Meshing type ('lin' or 'exp')
         Lx     = 2800;                      % Domain length in x-direction (m)
         Ly     = 1360;                      % Domain length in y-direction (m)
@@ -199,7 +199,7 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 120;    % Turbine rotor diameter in (m)
-        powerscale  = .43;    % Turbine powerscaling
+        powerscale  = .9;    % Turbine powerscaling
         forcescale  = 2.0;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
@@ -213,7 +213,7 @@ switch lower(Wp.name)
         lmu      = .8;         % Mixing length in x-direction (m)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
-        m        = 2;
+        m        = 4;
         
         % Wind farms for which SOWFA data is available
     case lower('YawCase3_50x50_lin_OBS')
@@ -568,8 +568,8 @@ switch lower(Wp.name)
         type   = 'lin';          % Meshing type ('lin' or 'exp')
         Lx     = 2232.0623;
         Ly     = 1400;
-        Nx     = sqrt(Wp.ll)*50;
-        Ny     = sqrt(Wp.ll)*25;
+        Nx     = sqrt(Wp.ll)*50*50;
+        Ny     = sqrt(Wp.ll)*25*50;
         Crx    = [400 1032.062];
         Cry    = [700 700];
         
@@ -580,6 +580,7 @@ switch lower(Wp.name)
             input{j}.t    = loadedinput.input.t(j);
             input{j}.beta = [.5;.5];%loadedinput.input.beta(j,:)';
             input{j}.phi  = loadedinput.input.phi(j,:)';
+            input{j}.CT  = [.5;.5];
         end;
         
         % Calculate delta inputs
@@ -593,7 +594,7 @@ switch lower(Wp.name)
         forcescale  = 1.2;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 30;      % Simulation length (s)
+        L        = 5;      % Simulation length (s)
         mu       = 0*18e-5;   % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
