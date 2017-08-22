@@ -34,7 +34,8 @@ pk = Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
 % load turbine settings
 % Mi = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]
 for kk=1:Wp.turbine.N
-    M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+    M{kk} = dlmread(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt'],'',1,0);
+    %load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
 end
 filename = ['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_m01.nc'];
 

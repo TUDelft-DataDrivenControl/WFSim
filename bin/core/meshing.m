@@ -122,17 +122,16 @@ switch lower(Wp.name)
         turbul   = true;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 4;
-        
-     case lower('9turb_adm')
+  case lower('2turb_adm')
         type   = 'lin';                     % Meshing type ('lin' or 'exp')
-        Lx     = 1900-100;                      % Domain length in x-direction (m)
-        Ly     = 1260-100;                      % Domain length in y-direction (m)
-        Nx     = 100;                       % Number of grid points in x-direction
-        Ny     = 50;                        % Number of grid points in y-direction
-        Cry    = [300.0, 300.0, 300.0, 680.0, 680.0, 680.0, 1060.0, 1060.0, 1060.0]-100;% Turbine locations in x-direction (m)
-        Crx    = [300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0, 300.0, 930.0, 1560.0]-100;% Turbine locations in y-direction (m)
+        Lx     = 7500-5500;                % Domain length in x-direction (m)
+        Ly     = 1460-900;                % Domain length in y-direction (m)
+        Nx     = 50;                       % Number of grid points in x-direction
+        Ny     = 25;                        % Number of grid points in y-direction
+        Crx    = [5700, 6456]-5500;        % Turbine locations in x-direction (m)
+        Cry    = [1175, 1175]-900;        % Turbine locations in y-direction (m)
         
-        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
+       %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
         for kk=1:length(Crx)
             M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
         end
@@ -140,10 +139,54 @@ switch lower(Wp.name)
         % Correctly format inputs (temporary function)
         for j = 1:length(M{1})
             input{j}.t    = M{1}(j,1);
-            input{j}.beta = [M{1}(j,5);M{2}(j,5);M{3}(j,5);M{4}(j,5);M{5}(j,5);M{6}(j,5);M{7}(j,5);M{8}(j,5);M{9}(j,5)]...
-                            ./(1-[M{1}(j,5);M{2}(j,5);M{3}(j,5);M{4}(j,5);M{5}(j,5);M{6}(j,5);M{7}(j,5);M{8}(j,5);M{9}(j,5)]);
-            input{j}.phi  = [M{1}(j,6);M{2}(j,6);M{3}(j,6);M{4}(j,6);M{5}(j,6);M{6}(j,6);M{7}(j,6);M{8}(j,6);M{9}(j,6)];
-            input{j}.CT   = [M{1}(j,4);M{2}(j,4);M{3}(j,4);M{4}(j,4);M{5}(j,4);M{6}(j,4);M{7}(j,4);M{8}(j,4);M{9}(j,4)];
+            input{j}.beta = [M{1}(j,5);M{2}(j,5)]...
+                            ./(1-[M{1}(j,5);M{2}(j,5)]);
+            input{j}.phi  = [M{1}(j,6);M{2}(j,6)];
+            input{j}.CT   = [M{1}(j,4);M{2}(j,4)];
+        end;
+        
+        % Calculate delta inputs 
+        for j = 1:length(M{1})-1
+            input{j}.dbeta = input{j+1}.beta-input{j}.beta;
+            input{j}.dphi  = input{j+1}.phi-input{j}.phi ;
+        end;
+        
+        Drotor      = 126;    % Turbine rotor diameter in (m)
+        powerscale  = 1;    % Turbine powerscaling
+        forcescale  = 1.9;    % Turbine force scaling
+        
+        h        = 1;         % Sampling time (s)
+        L        = floor(M{1}(end-1,1));% Simulation length (s)
+        mu       = 0*18e-5;     % Dynamic flow viscosity
+        Rho      = 1.20;      % Flow density (kg m-3)
+        u_Inf    = mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
+        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
+        p_init   = 0.0;       % Initial values for pressure terms (Pa)
+        
+        lmu      = .4;         % Mixing length in x-direction (m)
+        turbul   = true;      % Use mixing length turbulence model (true/false)
+        n        = 2;
+        m        = 4;
+        
+     case lower('2turb')
+        type   = 'lin';                     % Meshing type ('lin' or 'exp')
+        Lx     = 1900-100;                      % Domain length in x-direction (m)
+        Ly     = 1260-200;                      % Domain length in y-direction (m)
+        Nx     = 50;                       % Number of grid points in x-direction
+        Ny     = 25;                        % Number of grid points in y-direction
+        Cry    = [900, 900]-100;
+        Crx    = [500, 1258]-200;
+        
+        for kk=1:length(Crx)
+            M{kk} = dlmread(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt'],'',1,0);
+        end
+                 
+        % Correctly format inputs (temporary function)
+        for j = 1:length(M{1})
+            input{j}.t    = M{1}(j,1);
+            input{j}.beta = [.3;.3];
+            input{j}.phi  = [M{1}(j,11);M{2}(j,11)];
+            input{j}.CT   = [8/9;8/9];
         end;
         
         % Calculate delta inputs 
