@@ -838,6 +838,6 @@ Wp.mesh    = struct('Lx',Lx,'Ly',Ly,'Nx',Nx,'Ny',Ny,'ldxx',ldxx,'ldyy',ldyy,'ldx
 
 
 %% Construct mu if no turbulence
-if turbul==0; mu = ConstructMu(Wp); Wp.site(:).mu = mu; end
+if turbul==0; ConstructMu; Wp.site(:).mu = mu; end
 
 end

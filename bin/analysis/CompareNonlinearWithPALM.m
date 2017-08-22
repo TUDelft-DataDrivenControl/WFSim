@@ -12,7 +12,7 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-Wp.name             = '2turb_matlab';
+Wp.name             = '2turb_adm';
 Wp.Turbulencemodel  = 'WFSim3';
 
 Animate       = 50;                      % Show 2D flow fields every x iterations (0: no plots)
