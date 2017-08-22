@@ -513,7 +513,7 @@ if isfield(SOWFAdata,'power')
     end
     %%
     figure(11);clf
-    plot(2.5*sum(Power),'k','Linewidth',1);hold on;
+    plot(sum(Power),'k','Linewidth',1);hold on;
     plot(sum(Powersowfa),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$\Sigma P$ [W]','interpreter','latex');
     title('WF Power: SOWFA (blue dashed), WFSim (black) ','interpreter','latex');
