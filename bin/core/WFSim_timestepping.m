@@ -9,11 +9,16 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOpt
     sol_out.vk   = sol_in.v;
     
     % Copy relevant system matrices from previous time
-    sys_out      = struct('B1',sys_in.B1,'B2',sys_in.B2,'bc',sys_in.bc,'pRCM',sys_in.pRCM); 
+    sys_out = struct('B1',sys_in.B1,'B2',sys_in.B2,'bc',sys_in.bc,'pRCM',sys_in.pRCM); 
     if scriptOptions.Projection
         sys_out.Qsp = sys_in.Qsp;
         sys_out.Bsp = sys_in.Bsp;
     end;
+    
+    % Check if pRCM is properly defined
+    if length(sys_out.pRCM) <= 0 && sol_out.k > 1
+        error('pRCM not assigned. Please run [sol,sys] = WFSim_timestepping(..) at sol.k = 1 to determine pRCM.'); 
+    end
     
     % Load convergence settings
     conv_eps = scriptOptions.conv_eps;
