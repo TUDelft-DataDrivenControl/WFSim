@@ -15,7 +15,7 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 Wp.name             = '2turb_adm';
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 50;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -171,11 +171,18 @@ for k=1:size(u,1)
                 
                 subplot(2,3,6)
                 xwakeind = ceil((Wp.turbine.Crx + 5*Wp.turbine.Drotor)/Wp.mesh.dxx(1));                
-                plot(Wp.mesh.ldyy(1,:),sol.u(xwakeind(2),:) );hold on
-                plot(Wp.mesh.ldyy(1,:),uPALM(xwakeind(2),:),'r' );
+                
+                wfsim_cross1(k,:) = sol.u(xwakeind(1),:);
+                palm_cross1(k,:)  = uPALM(xwakeind(1),:); 
+                wfsim_cross2(k,:) = sol.u(xwakeind(2),:);
+                palm_cross2(k,:)  = uPALM(xwakeind(2),:); 
+                
+                plot(Wp.mesh.ldyy(1,:),wfsim_cross2(k,:));hold on
+                plot(Wp.mesh.ldyy(1,:),palm_cross2(k,:),'r' );
                 ylabel('$u$','interpreter','latex');xlabel('$y$','interpreter','latex');
                 title('wake cross-section','interpreter','latex');
                 axis tight;axis([0,Wp.mesh.ldyy(1,end) 2 9]); grid;hold off;
+                               
                 
 %                 subplot(2,3,6)
 %                 plot(Wp.sim.time(1:k),sum(PowerPALM(:,1:k)),'b--');hold on
@@ -188,6 +195,12 @@ for k=1:size(u,1)
         drawnow
         
     end;
+    xwakeind = ceil((Wp.turbine.Crx + 5*Wp.turbine.Drotor)/Wp.mesh.dxx(1));                
+    wfsim_cross1(k,:) = sol.u(xwakeind(1),:);
+    palm_cross1(k,:)  = uPALM(xwakeind(1),:);
+    wfsim_cross2(k,:) = sol.u(xwakeind(2),:);
+    palm_cross2(k,:)  = uPALM(xwakeind(2),:);
+
 end;
 
 %%
@@ -197,7 +210,7 @@ plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-Nt = 1750;
+Nt = 890;
 
 figure(3);clf
 plot(Wp.sim.time(1:Nt),sum(Power(:,1:Nt)),'k','Linewidth',1);hold on;

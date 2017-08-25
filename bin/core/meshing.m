@@ -88,7 +88,8 @@ switch lower(Wp.name)
         
        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
         for kk=1:length(Crx)
-            M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+            %M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
+            M{kk} = dlmread(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt'],'',1,0);
         end
                  
         % Correctly format inputs (temporary function)
@@ -107,59 +108,14 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = 1;    % Turbine powerscaling
-        forcescale  = 1.9;    % Turbine force scaling
+        powerscale  = .95;    % Turbine powerscaling
+        forcescale  = 1.7;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
         L        = floor(M{1}(end-1,1));% Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
-        v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
-        p_init   = 0.0;       % Initial values for pressure terms (Pa)
-        
-        lmu      = .4;         % Mixing length in x-direction (m)
-        turbul   = true;      % Use mixing length turbulence model (true/false)
-        n        = 2;
-        m        = 4;
-  case lower('2turb_adm')
-        type   = 'lin';                     % Meshing type ('lin' or 'exp')
-        Lx     = 7500-5500;                % Domain length in x-direction (m)
-        Ly     = 1460-900;                % Domain length in y-direction (m)
-        Nx     = 50;                       % Number of grid points in x-direction
-        Ny     = 25;                        % Number of grid points in y-direction
-        Crx    = [5700, 6456]-5500;        % Turbine locations in x-direction (m)
-        Cry    = [1175, 1175]-900;        % Turbine locations in y-direction (m)
-        
-       %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
-        for kk=1:length(Crx)
-            M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
-        end
-                 
-        % Correctly format inputs (temporary function)
-        for j = 1:length(M{1})
-            input{j}.t    = M{1}(j,1);
-            input{j}.beta = [M{1}(j,5);M{2}(j,5)]...
-                            ./(1-[M{1}(j,5);M{2}(j,5)]);
-            input{j}.phi  = [M{1}(j,6);M{2}(j,6)];
-            input{j}.CT   = [M{1}(j,4);M{2}(j,4)];
-        end;
-        
-        % Calculate delta inputs 
-        for j = 1:length(M{1})-1
-            input{j}.dbeta = input{j+1}.beta-input{j}.beta;
-            input{j}.dphi  = input{j+1}.phi-input{j}.phi ;
-        end;
-        
-        Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = 1;    % Turbine powerscaling
-        forcescale  = 1.9;    % Turbine force scaling
-        
-        h        = 1;         % Sampling time (s)
-        L        = floor(M{1}(end-1,1));% Simulation length (s)
-        mu       = 0*18e-5;     % Dynamic flow viscosity
-        Rho      = 1.20;      % Flow density (kg m-3)
-        u_Inf    = mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
+        u_Inf    = 8;%mean(M{1}(:,3));   % Freestream flow velocity x-direction (m/s)
         v_Inf    = 0.0;       % Freestream flow velocity y-direction (m/s)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
@@ -580,7 +536,8 @@ switch lower(Wp.name)
         for j = 1:length(loadedinput.input.t)
             input{j}.t    = loadedinput.input.t(j);
             input{j}.beta = 1/3;%loadedinput.input.beta(j,1)';%+.6;
-            input{j}.phi  = 0*loadedinput.input.phi(j,1)';
+            input{j}.phi  = 35+0*loadedinput.input.phi(j,1)';
+            input{j}.CT   = 8/9;
         end;
         
         % Calculate delta inputs
@@ -594,7 +551,7 @@ switch lower(Wp.name)
         forcescale  = 2.5;    % Turbine force scaling
         
         h        = 1.0;       % Sampling time (s)
-        L        = 50;         % Simulation length (s)
+        L        = 500;         % Simulation length (s)
         mu       = 0*18e-5;     % Dynamic flow viscosity
         Rho      = 1.20;      % Flow density (kg m-3)
         u_Inf    = 8.0;       % Freestream flow velocity x-direction (m/s)
