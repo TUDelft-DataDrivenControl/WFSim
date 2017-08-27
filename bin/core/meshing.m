@@ -21,62 +21,107 @@ switch lower(scenarioName)
     % Wind farms for which PALM data is available        
     case lower('2turb_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
-        load(meshFn);             % Load the LES meshing file
-        Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
-        powerscale  = .85;        % Turbine power scaling
-        forcescale  = 1.6;        % Turbine force scaling
-        p_init      = 0.0;        % Initial values for pressure terms (Pa)
-        turbul   = true;          % Use mixing length turbulence model (true/false)        
-        turbModel  = 'WFSim3';    % Turbulence model of choice
-        lmu      = .2;            % Mixing length in x-direction (m)
-        mu       = 0*18e-5;       % Dynamic flow viscosity        
-        n        = 4;             % Turbulence model gridding property
-        m        = 5;             % Turbulence model gridding property
+        load(meshFn);            % Load the LES meshing file
+        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale = .85;        % Turbine power scaling
+        forcescale = 1.6;        % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice
+        lmu        = .2;         % Mixing length in x-direction (m)
+        mu         = 0*18e-5;    % Dynamic flow viscosity        
+        m          = 5;          % Turbulence model gridding property        
+        n          = 4;          % Turbulence model gridding property
            
     case lower('2turb_adm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
-        load(meshFn);             % Load the LES meshing file
-        Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
-        powerscale  = .85;        % Turbine power scaling
-        forcescale  = 1.6;        % Turbine force scaling
-        p_init      = 0.0;        % Initial values for pressure terms (Pa)
-        turbul   = true;          % Use mixing length turbulence model (true/false)        
-        turbModel  = 'WFSim3';    % Turbulence model of choice   
-        lmu      = 0.3;           % Mixing length in x-direction (m)
-        mu       = 0.0;           % Dynamic flow viscosity
-        n        = 4;             % Turbulence model gridding property
-        m        = 1;             % Turbulence model gridding property
+        load(meshFn);            % Load the LES meshing file
+        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale = .85;        % Turbine power scaling
+        forcescale = 1.6;        % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice   
+        lmu        = 0.3;        % Mixing length in x-direction (m)
+        mu         = 0.0;        % Dynamic flow viscosity
+        m          = 1;          % Turbulence model gridding property        
+        n          = 4;          % Turbulence model gridding property
+        
+    case lower('2turb_yaw_adm_noturb')
+        [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
+        load(meshFn);            % Load the LES meshing file
+        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale = .95;        % Turbine power scaling
+        forcescale = 1.7;        % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice   
+        lmu        = 0.3;        % Mixing length in x-direction (m)
+        mu         = 0.0;        % Dynamic flow viscosity
+        m          = 4;          % Turbulence model gridding property        
+        n          = 2;          % Turbulence model gridding property
+        
         
     % Wind farms for which SOWFA data is available
     case lower('2turb_alm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
-        load(meshFn);             % Load the LES meshing file
-        Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
-        powerscale  = 0.95;       % Turbine power scaling
-        forcescale  = 1.40;       % Turbine force scaling
-        p_init   = 0.0;           % Initial values for pressure terms (Pa)
-        turbul    = true;         % Use mixing length turbulence model (true/false)        
-        turbModel = 'WFSim3';     % Turbulence model of choice   
-        lmu       = 1.7;          % Mixing length in x-direction (m)
-        mu       = 0*18e-5;       % Dynamic flow viscosity        
-        n         = 4;            % Turbulence model gridding property
-        m         = 1;            % Turbulence model gridding property
+        load(meshFn);            % Load the LES meshing file
+        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale = 0.95;       % Turbine power scaling
+        forcescale = 1.40;       % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice   
+        lmu        = 1.7;        % Mixing length in x-direction (m)
+        mu         = 0*18e-5;    % Dynamic flow viscosity        
+        m          = 1;          % Turbulence model gridding property        
+        n          = 4;          % Turbulence model gridding property
                  
     case lower('2turb_alm_turb')
+        [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
+        load(meshFn);            % Load the LES meshing file
+        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale = 0.95;       % Turbine power scaling
+        forcescale = 1.4;        % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice   
+        lmu        = 1.4;        % Mixing length in x-direction (m)
+        mu         = 0*18e-5;    % Dynamic flow viscosity
+        m          = 1;          % Turbulence model gridding property        
+        n          = 3;          % Turbulence model gridding property
+
+    case lower('apc_9turb_alm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);             % Load the LES meshing file
         Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale  = 1.0;        % Turbine power scaling
-        forcescale  = 1.2;        % Turbine force scaling
+        forcescale  = 2.2;        % Turbine force scaling
         p_init   = 0.0;           % Initial values for pressure terms (Pa)
         turbul   = true;          % Use mixing length turbulence model (true/false)        
         turbModel  = 'WFSim3';    % Turbulence model of choice   
-        lmu      = 2;             % Mixing length in x-direction (m)
-        mu       = 0*18e-5;       % Dynamic flow viscosity
-        n        = 2;             % Turbulence model gridding property
-        m        = 8;             % Turbulence model gridding property
-
+        lmu      = 1.4;           % Mixing length in x-direction (m)
+        mu       = 0*18e-5;       % Dynamic flow viscosity        
+        m        = 8;             % Turbulence model gridding property          
+        n        = 3;             % Turbulence model gridding property
+        
+    case lower('yaw_2turb_alm_noturb')
+        error('This case has not yet been tuned/validated. Remove this message manually in meshing.m to continue.');
+        [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
+        load(meshFn);             % Load the LES meshing file
+        Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale  = 0.95;        % Turbine power scaling
+        forcescale  = 1.4;        % Turbine force scaling
+        p_init   = 0.0;           % Initial values for pressure terms (Pa)
+        turbul   = true;          % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';    % Turbulence model of choice   
+        lmu      = 1.0;           % Mixing length in x-direction (m)
+        mu       = 0*18e-5;       % Dynamic flow viscosity        
+        m        = 2;             % Turbulence model gridding property        
+        n        = 1;             % Turbulence model gridding property
+                
     case lower('yaw_2turb_alm_turb')
+        error('This case has not yet been tuned/validated. Remove this message manually in meshing.m to continue.');
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);             % Load the LES meshing file
         Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
@@ -87,23 +132,10 @@ switch lower(scenarioName)
         turbModel  = 'WFSim3';    % Turbulence model of choice   
         lmu      = 1.0;           % Mixing length in x-direction (m)
         mu       = 0*18e-5;       % Dynamic flow viscosity        
+        m        = 8;             % Turbulence model gridding property        
         n        = 2;             % Turbulence model gridding property
-        m        = 8;             % Turbulence model gridding property
-        
-    case lower('apc_9turb_alm_turb')
-        [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
-        load(meshFn);             % Load the LES meshing file
-        Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
-        powerscale  = 1.1;        % Turbine power scaling
-        forcescale  = 2.5;        % Turbine force scaling
-        p_init   = 0.0;           % Initial values for pressure terms (Pa)
-        turbul   = true;          % Use mixing length turbulence model (true/false)        
-        turbModel  = 'WFSim3';    % Turbulence model of choice   
-        lmu      = 1.5;           % Mixing length in x-direction (m)
-        mu       = 0*18e-5;       % Dynamic flow viscosity        
-        n        = 2;             % Turbulence model gridding property
-        m        = 3;             % Turbulence model gridding property  
-        
+       
+
     otherwise
         error('No valid meshing specified. Please take a look at Wp.name.');
 end;

@@ -18,7 +18,7 @@ Derivatives     = options.Derivatives;
 
 %%
 Ar              = pi*(0.5*Drotor)^2;
-scale           = 3;                                  % To scale the force in the y-direction
+scale           = 1.0;%3;                                  % To scale the force in the y-direction
 
 [Sm.x,Sm.dx]    = deal(sparse(Nx-3,Ny-2));            % Input x-mom nonlinear and linear
 [Sm.y,Sm.dy]    = deal(sparse(Nx-2,Ny-3));            % Input y-mom nonlinear and linear
@@ -54,7 +54,8 @@ for kk=1:N
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
     phi{kk}       = atan(vv./uu);
-    Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
+    %Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
+    Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});
     dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
     CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
@@ -77,9 +78,9 @@ for kk=1:N
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
     
     %%
-    pp = 1.88; % Loss factor for yawing a turbine
-    Power(kk) = powerscale*mean(.5*Rho*Ar*Ue{kk}.^3*CT(kk)*cos(input.phi(kk)*pi/180)^pp);    
-
+    pp = 1.88; % Loss factor for yawing a turbine  
+    Power(kk) = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3)*cos(input.phi(kk)*pi/180)^pp;    
+    
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           
     Sm.y(x-1,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';                                               % Input y-mom nonlinear
@@ -211,6 +212,7 @@ end
 %% Write to outputs
 sol.turbine.power(:,1)    = Power;
 sol.turbine.CT_prime(:,1) = CT;
+% sol.turbine.UrMean(:,1)   = UrMean;
 
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)
