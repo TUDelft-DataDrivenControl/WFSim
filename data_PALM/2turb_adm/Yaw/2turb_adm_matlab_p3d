@@ -1,0 +1,54 @@
+ &inipar nx = 1919, ny = 255, nz = 128,
+ 
+         dx = 10.0, dy = 10.0, dz = 15.0,
+
+         bc_lr = 'cyclic',
+         bc_ns = 'cyclic',
+
+         initializing_actions = 'set_constant_profiles',
+         ug_surface = 8.0, vg_surface = 0.0, 
+
+         bc_uv_b = 'neumann',
+         fft_method = 'temperton-algorithm',
+         
+         constant_flux_layer = .F., /
+
+ &d3par  end_time = 1000.0,
+
+         npex = 4, npey = 4,
+
+         termination_time_needed = 3600.0,
+         
+         create_disturbances = .F.,
+         
+         dt_run_control = 1.,
+           
+         mask_x_loop(1,:) = 5500.0, 7500.0, 10.0,
+         mask_y_loop(1,:) = 900.0, 1460.0, 10.0,
+         mask_z_loop(1,:) = 0.0, 120.0, 30.0,
+         
+         data_output_masks(1,:) = 'u', 'v','w',
+         
+         dt_domask = 1.,
+         /
+
+ &wind_turbine_par
+         time_turbine_on  = 0.0,
+         
+         turb_mod = 'adm'
+
+         nturbines = 2,
+         rcx =   5700.0, 6456.0 
+         rcy =   1175.0, 1175.0,
+         rcz =   90.0, 90.0, 
+         rr  =    63.0, 63.0,
+         rnac =    1.5, 1.5,
+         dtow =    4.0, 4.0,
+         
+         phi_yaw = 0.0, 0.0,
+         tilt = 0.0, 0.0,
+        
+         turb_cd_nacelle = 0.85,
+         turb_cd_tower   = 1.2, /
+
+! mrun -d 2turb_adm_matlab -h lchpc06 -K parallel -X 16 -T 8 -t 3600000 -m 64000 -v -b -q dcsc -r "d3# ma# restart"

@@ -82,9 +82,9 @@ for kk=1:N
     Fx              = Fthrust.*cos((phi{kk}+input.phi(kk))*pi/180);
     Fy              = Fthrust.*sin((phi{kk}+input.phi(kk))*pi/180);
     
-    Ueffect(kk)     = meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
+    Ueffect(kk)     = mean(Ur);%meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     %Ueffect(kk)     = mean(Ur)/(1-a(kk));     % Estimation effective wind speed
-    Power(kk)       = cp*mean(.5*Rho*Ar*(Ur).^3*CT(kk)*cos(input.phi(kk)*pi/180)^.75);    
+    Power(kk)       = cp*mean(.5*Rho*Ar*(Ur).^3*CT(kk));%*cos(input.phi(kk)*pi/180)^.75);    
 
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear

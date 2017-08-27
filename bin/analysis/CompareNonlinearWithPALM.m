@@ -107,13 +107,15 @@ for k=1:size(u,1)
     ev                    = vec(sol.v-vPALM); ev(isnan(ev)) = [];
     RMSE(k)               = rms([eu;ev]);
     [maxe(k),maxeloc(k)]  = max(abs(eu));
-        
+    
+    Urpalm(:,k) = [mean(uPALM(Wp.mesh.xline(1),Wp.mesh.yline{1}));
+        mean(uPALM(Wp.mesh.xline(2),Wp.mesh.yline{2}))];
     if Animate > 0
         if ~rem(k,Animate)
             
             turb_coords = .5*Wp.turbine.Drotor*exp(1i*input{k}.phi*pi/180);  % Yaw angles
             
-            subplot(2,3,1);
+            subplot(2,4,1);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u,'Linecolor','none');  colormap(hot);
             caxis([min(min(sol.u)) max(max(sol.u))]);  hold all; colorbar;
             axis equal; axis tight;
@@ -127,7 +129,7 @@ for k=1:size(u,1)
             title('WFSim u [m/s]');
             hold off;
             
-            subplot(2,3,2);
+            subplot(2,4,2);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',uPALM,'Linecolor','none');  colormap(hot);
             caxis([min(min(uPALM)) max(max(uPALM))]);  hold all; colorbar;
             axis equal; axis tight;
@@ -139,7 +141,7 @@ for k=1:size(u,1)
             title('PALM u [m/s]');
             hold off;
             
-            subplot(2,3,3);
+            subplot(2,4,3);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u-uPALM,'Linecolor','none');  colormap(hot);
             caxis([min(min(sol.u-uPALM)) max(max(sol.u-uPALM))]);  hold all; colorbar;
             axis equal; axis tight;
@@ -153,7 +155,7 @@ for k=1:size(u,1)
             title('error [m/s]');
             hold off;
             
-            subplot(2,3,4);
+            subplot(2,4,5);
             plot(Wp.sim.time(1:k),PowerPALM(1,1:k));hold on
             plot(Wp.sim.time(1:k),Power(1,1:k),'r');
             axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5])
@@ -161,7 +163,7 @@ for k=1:size(u,1)
             grid;hold off;
             
             if Wp.turbine.N>1
-                subplot(2,3,5);
+                subplot(2,4,6);
                 plot(Wp.sim.time(1:k),PowerPALM(2,1:k));hold on
                 plot(Wp.sim.time(1:k),Power(2,1:k),'r');
                 title('$P$ [W]','interpreter','latex');
@@ -169,7 +171,7 @@ for k=1:size(u,1)
                 title('$T_2$: blue PALM, red WFSim', 'interpreter','latex')
                 grid;hold off;
                 
-                subplot(2,3,6)
+                subplot(2,4,4)
                 xwakeind = ceil((Wp.turbine.Crx + 5*Wp.turbine.Drotor)/Wp.mesh.dxx(1));                
                 
                 wfsim_cross1(k,:) = sol.u(xwakeind(1),:);
@@ -182,14 +184,21 @@ for k=1:size(u,1)
                 ylabel('$u$','interpreter','latex');xlabel('$y$','interpreter','latex');
                 title('wake cross-section','interpreter','latex');
                 axis tight;axis([0,Wp.mesh.ldyy(1,end) 2 9]); grid;hold off;
-                               
+                 
+                subplot(2,4,7)
+                plot(Wp.sim.time(1:k),Urpalm(1,1:k));hold on
+                plot(Wp.sim.time(1:k),Ueffect(1,1:k),'r');
+                axis([0,Wp.sim.time(size(u,1)) 0 Wp.site.u_Inf]);
+                title('$U_r^1$ [m/s] blue PALM, red WFSim', 'interpreter','latex')
+                grid;hold off;                
                 
-%                 subplot(2,3,6)
-%                 plot(Wp.sim.time(1:k),sum(PowerPALM(:,1:k)),'b--');hold on
-%                 plot(Wp.sim.time(1:k),sum(Power(:,1:k)),'k');
-%                 title('WF power [W]','interpreter','latex');
-%                 axis([0,Wp.sim.time(size(u,1)) min(min(sum(PowerPALM(:,1:k))))-10^3 max(max(sum(PowerPALM(:,1:k))))+10^3]);
-%                 grid;hold off;
+                subplot(2,4,8)
+                plot(Wp.sim.time(1:k),Urpalm(2,1:k));hold on
+                plot(Wp.sim.time(1:k),Ueffect(2,1:k),'r');
+                axis([0,Wp.sim.time(size(u,1)) 0 Wp.site.u_Inf]);
+                title('$U_r^2$ [m/s] blue PALM, red WFSim', 'interpreter','latex')
+                grid;hold off; 
+               
             end
         end
         drawnow
@@ -210,7 +219,7 @@ plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-Nt = 890;
+Nt = 1750;
 
 figure(3);clf
 plot(Wp.sim.time(1:Nt),sum(Power(:,1:Nt)),'k','Linewidth',1);hold on;
@@ -221,13 +230,22 @@ title('Wind farm power: WFSim (black) PALM (blue dashed)','interpreter','latex')
 xlim([0 Nt])
 if Wp.turbine.N==2
     figure(4);clf
-    plot(Wp.sim.time(1:Nt),CT(1,1:Nt));hold on
-    plot(Wp.sim.time(1:Nt),CT(2,1:Nt),'r');
+    subplot(2,1,1)
+    plot(Wp.sim.time(1:Nt),CT(1,1:Nt),'linewidth',1.5);hold on
+    plot(Wp.sim.time(1:Nt),CT(2,1:Nt),'r--','linewidth',1.5);
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t [s]$','interpreter','latex');
-    title('$T_1$ (blue), $T_2$ (red) ','interpreter','latex');
+    title('$T_1$ (blue), $T_2$ (red dashed) ','interpreter','latex');
     axis([0,Wp.sim.time(Nt) 0 max(max(CT(:,1:Nt)))+.2]);
-    grid;hold off;xlim([0 1750]);ylim([0 1.8])
+    grid;hold off;xlim([0 Nt]);
+    subplot(2,1,2)
+    plot(Wp.sim.time(1:Nt),Phi(1,1:Nt));hold on
+    plot(Wp.sim.time(1:Nt),Phi(2,1:Nt),'r');
+    ylabel('$\gamma$','interpreter','latex');
+    xlabel('$t [s]$','interpreter','latex');
+    title('$T_1$ (blue), $T_2$ (red) ','interpreter','latex');
+    axis([0,Wp.sim.time(Nt) min(min(Phi(:,1:Nt)))-5 max(max(Phi(:,1:Nt)))+5]);
+    grid;hold off;  
 elseif Wp.turbine.N==9
     figure(4);clf;
     subplot(1,3,1)
