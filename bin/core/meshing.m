@@ -108,7 +108,7 @@ switch lower(Wp.name)
         end;
         
         Drotor      = 126;    % Turbine rotor diameter in (m)
-        powerscale  = .9;    % Turbine powerscaling
+        powerscale  = .95;    % Turbine powerscaling
         forcescale  = 1.7;    % Turbine force scaling
         
         h        = 1;         % Sampling time (s)
