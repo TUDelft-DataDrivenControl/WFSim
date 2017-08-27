@@ -100,10 +100,10 @@ switch lower(scenarioName)
         p_init   = 0.0;           % Initial values for pressure terms (Pa)
         turbul   = true;          % Use mixing length turbulence model (true/false)        
         turbModel  = 'WFSim3';    % Turbulence model of choice   
-        lmu      = 1.4;           % Mixing length in x-direction (m)
+        lmu      = 1.3;           % Mixing length in x-direction (m)
         mu       = 0*18e-5;       % Dynamic flow viscosity        
-        m        = 8;             % Turbulence model gridding property          
-        n        = 3;             % Turbulence model gridding property
+        m        = 7;             % Turbulence model gridding property          
+        n        = 1;             % Turbulence model gridding property
         
     case lower('yaw_2turb_alm_noturb')
         error('This case has not yet been tuned/validated. Remove this message manually in meshing.m to continue.');
