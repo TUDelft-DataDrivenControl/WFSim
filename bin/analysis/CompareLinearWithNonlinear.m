@@ -14,6 +14,9 @@ options.exportPressures= ~options.Projection;   % Calculate pressure fields
 Wp.name             = 'Andreas';   % Meshing name (see "\bin\core\meshing.m")
 Wp.Turbulencemodel  = 'WFSim3';
 
+Wp.Turbulencemodel  = 'WFSim3';
+
+
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -54,7 +57,7 @@ end;
 
 %% Simulate linear and nonlinear model with same delta perturbation
 Linearversion = 0;
-Animate       = 5;
+Animate       = 10;
 
 L       = 250;
 h       = Wp.sim.h;

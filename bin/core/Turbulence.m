@@ -2,14 +2,6 @@
 if N==1
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-    %y                = [zeros(1,yline{1}(1)+3) ones(1,length(yline{1})-4) zeros(1,Ny-yline{1}(end))] ;
-%    y1               = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-%    y2               = [zeros(1,yline{1}(1)) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-1)] ;
-%    y3               = [zeros(1,yline{1}(1)+1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-2)] ;
-%    y4               = [zeros(1,yline{1}(1)+2) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-3)] ;
-%    y5               = [zeros(1,yline{1}(1)+3) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end)-4)] ;
-%    y                = [repmat(y1,20,1);repmat(y2,20,1);repmat(y3,10,1)];
-%    mixing_length    = (repmat(x,1,Ny).*y)*0.5*Drotor;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 elseif N==2
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
@@ -28,9 +20,9 @@ elseif N==9
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
     x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
     x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
-    y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{4}(1)-yline{1}(end)-1) ...
-        ones(1,length(yline{4})) zeros(1,yline{7}(1)-yline{4}(end)-1) ...
-        ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
+    y                = [zeros(1,yline{3}(1)-1) ones(1,length(yline{3})) zeros(1,yline{5}(1)-yline{3}(end)-1) ...
+                        ones(1,length(yline{5})) zeros(1,yline{7}(1)-yline{5}(end)-1) ...
+                        ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 else
     mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
@@ -43,7 +35,7 @@ if size(mixing_length,1)>1
     mixing_length    = filter2(H,mixing_length);
 end
 
-switch lower(Wp.Turbulencemodel)
+switch lower(Wp.site.Turbulencemodel)
     
     case lower('WFSim5')
         
@@ -399,6 +391,5 @@ switch lower(Wp.Turbulencemodel)
             day.E(1:Nx,2:Ny)   = day.E(1:Nx,2:Ny)   + ay.Tey(1:Nx,2:Ny) ;
             day.W(1:Nx,1:Ny-1) = day.W(1:Nx,1:Ny-1) + ay.Twy(1:Nx,1:Ny-1);
             day.P(1:Nx,1:Ny-1) = day.P(1:Nx,1:Ny-1) + ay.Tey(1:Nx,1:Ny-1) + ay.Twy(1:Nx,1:Ny-1) ;
-        end;
-        
+        end;      
 end

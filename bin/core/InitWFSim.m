@@ -1,40 +1,38 @@
-function [Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] = InitWFSim(Wp,options,plotMesh)
+function [Wp,sol,sys] = InitWFSim(Wp,options)
+%INITWFSIM  Initializes the WFSim model
 
-sys    = struct;
-sol    = struct;
+    % Create empty structs
+    sys = struct; % This struct will contain all the system matrices at time k
+    sol = struct; % This struct will contain the solution (flowfields, power, ...) at time k
+    
+    % Import simulation scenario (meshing, atmospheric properties, turbine settings)
+    [Wp] = meshing(Wp.name,options.plotMesh,options.plotMesh); 
 
-Projection    = options.Projection;
-Linearversion = options.Linearversion;
+    % Initialize time vector for sol at time k = 0
+    sol = struct('k',0,'time',Wp.sim.time(1));
+    
+    % Initialize flow fields as uniform ('no turbines present yet')
+    [sol.u,sol.uu] = deal( Wp.site.u_Inf *  ones(Wp.mesh.Nx,Wp.mesh.Ny) );  
+    [sol.v,sol.vv] = deal( Wp.site.v_Inf *  ones(Wp.mesh.Nx,Wp.mesh.Ny) );  
+    [sol.p,sol.pp] = deal( Wp.site.p_init * ones(Wp.mesh.Nx,Wp.mesh.Ny) ); 
 
-% Create meshing and import control settings
-[Wp,input]   = meshing(Wp,plotMesh,0); 
+    % Initialize the linearized solution variables, if necessary
+    if options.Linearversion
+        sol.ul = sol.u;
+        sol.vl = sol.v;
+        sol.pl = sol.p;
+        [sol.du,sol.dv,sol.dp]  = deal(zeros(Wp.mesh.Nx,Wp.mesh.Ny));
+    end;
 
-% Initial flow fields
-%u0 = load('data_WFSim\u0.mat');
-%[sol.u,sol.uu] = deal(struct2cell(u0));  
-[sol.u,sol.uu] = deal(Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny));  
-[sol.v,sol.vv] = deal(Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny));  
-[sol.p,sol.pp] = deal(Wp.site.p_init*ones(Wp.mesh.Nx,Wp.mesh.Ny)); 
-
-
-if Linearversion
-    sol.ul = sol.u;
-    sol.vl = sol.v;
-    sol.pl = sol.p;
-    [sol.du,sol.dv,sol.dp]  = deal(zeros(Wp.mesh.Nx,Wp.mesh.Ny));
-end;
-
-% Initialize parameters are empty matrices
-[Power,CT,Ueffect,a] = deal(zeros(Wp.turbine.N,Wp.sim.NN)); 
-
-% Compute boundary conditions and matrices B1, B2
-[B1,B2,bc]           = Compute_B1_B2_bc(Wp);
-
-% Compute projection matrices Qsp and Bsp
-if Projection
-    [sys.Qsp, sys.Bsp]  = Solution_space(B1,B2,bc); % Projection matrices
-    Wp.Nalpha           = size(sys.Qsp,2);
-end;
-
+    % Compute boundary conditions and system matrices B1, B2.
+    [sys.B1,sys.B2,sys.bc]  = Compute_B1_B2_bc(Wp);
+    sys.pRCM                = []; % Load empty vector
+    
+    % Compute projection matrices Qsp and Bsp. These are only necessary if
+    % the continuity equation is projected away (2015 ACC paper, Boersma).
+    if options.Projection
+        [sys.Qsp, sys.Bsp]  = Solution_space(sys.B1,sys.B2,sys.bc);
+        Wp.Nalpha           = size(sys.Qsp,2);
+    end
 end
 

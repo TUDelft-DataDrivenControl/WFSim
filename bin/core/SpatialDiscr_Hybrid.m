@@ -1,4 +1,4 @@
-function [output] = SpatialDiscr_Hybrid(Wp,u,v,Linearversion)
+function [output] = SpatialDiscr_Hybrid(Wp,sol,Linearversion)
 % dxx   = \Delta x_{I,I+1}
 % dyy   = \Delta y_{J,J+1}
 % dxx2  = \Delta x_{i,i+1}
@@ -26,6 +26,9 @@ n      = Wp.site.n;
 
 Drotor = Wp.turbine.Drotor;
 N      = Wp.turbine.N;
+
+u      = sol.u;
+v      = sol.v;
 
 % Init
 [ax.aE,ax.aW,ax.aS,ax.aN,ax.aP]         = deal(zeros(Nx,Ny));
