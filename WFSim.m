@@ -16,16 +16,16 @@ options.Projection     = 0;                      % Use projection (true/false)
 options.Linearversion  = 0;                      % Provide linear variant of WFSim (true/false)
 options.exportLinearSol= 0;                      % Calculate linear solution of WFSim
 options.Derivatives    = 0;                      % Compute derivatives
-options.startUniform   = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
+options.startUniform   = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;    % Calculate pressure fields
   
 %Wp.name             = 'WP_CPUTime';      % Meshing name (see "\bin\core\meshing.m")
 %Wp.name             = 'WP_CPUTime';
-Wp.name             = 'SingleTurbine_50x50_lin';
+Wp.name             = '2turb_adm';
 
-Wp.Turbulencemodel  = 'WFSim3';
+Wp.Turbulencemodel  = 'WFSim4';
 
-Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 0;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -65,6 +65,8 @@ for k=1:Wp.sim.NN
     epss      = 1e20;
     sol.uk    = sol.u; 
     sol.vk    = sol.v;
+    u(:,:,k)  = sol.u;
+    v(:,:,k)  = sol.v;
     
     while ( eps>conv_eps && it<max_it && eps<epss );
         it   = it+1;
@@ -82,14 +84,13 @@ for k=1:Wp.sim.NN
         display(['k ',num2str(k,'%-1000.1f'),', It ',num2str(it,'%-1000.0f'),]);
     end
     CPUTime(k) = toc;
-  
+    
     %if k==50
         %Wp.site.u_Inf           = 12;
         %[B1,B2,bc]              = Compute_B1_B2_bc(Wp);
         %sol.u(1:2,1:Wp.mesh.Ny) = Wp.site.u_Inf;
         %Wp.site.v_Inf           = 2;    
         %sol.v(1:2,1:Wp.mesh.Ny) = Wp.site.v_Inf;
-
     %end
     
     if Animate > 0
@@ -104,6 +105,7 @@ for k=1:Wp.sim.NN
     
     %frame = getframe(gcf);
     %writeVideo(vid,frame);
+    q(k,:) = sys.q;
 end
 %close(vid);
 
