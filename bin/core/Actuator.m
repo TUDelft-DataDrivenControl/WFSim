@@ -79,13 +79,9 @@ for kk=1:N
     Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
     
     %%
-    pp = 1.88; % Loss factor for yawing a turbine  
-    Power(kk) = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3)*cos(input.phi(kk)*pi/180)^pp;    
+    pp          = 1.88; % Loss factor for yawing a turbine  
+    Power(kk)   = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3)*cos(input.phi(kk)*pi/180)^pp;    
     
-    Ueffect(kk)     = mean(Ur);%meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
-    %Ueffect(kk)     = mean(Ur)/(1-a(kk));     % Estimation effective wind speed
-    Power(kk)       = cp*mean(.5*Rho*Ar*(Ur).^3*CT(kk));%*cos(input.phi(kk)*pi/180)^.75);    
-
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           
     Sm.y(x-1,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';                                               % Input y-mom nonlinear
