@@ -12,10 +12,10 @@ options.Derivatives   = 0;                      % Compute derivatives
 options.startUniform  = 1;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
 options.exportPressures= ~options.Projection;   % Calculate pressure fields
 
-Wp.name             = '2turb_adm';
+Wp.name             = '9turb_adm';
 Wp.Turbulencemodel  = 'WFSim3';
 
-Animate       = 100;                      % Show 2D flow fields every x iterations (0: no plots)
+Animate       = 0;                      % Show 2D flow fields every x iterations (0: no plots)
 plotMesh      = 0;                      % Show meshing and turbine locations
 conv_eps      = 1e-6;                   % Convergence threshold
 max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
@@ -105,6 +105,9 @@ for k=1:size(u,1)
     
     eu                    = vec(sol.u-uPALM); eu(isnan(eu)) = [];
     ev                    = vec(sol.v-vPALM); ev(isnan(ev)) = [];
+    ep                    = Power(:,k)-PowerPALM(:,k);
+    
+    RMSEp(:,k)            = rms(ep,2);
     RMSE(k)               = rms([eu;ev]);
     [maxe(k),maxeloc(k)]  = max(abs(eu));
     
@@ -219,7 +222,7 @@ plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-Nt = 1750;
+Nt = 850;
 
 figure(3);clf
 plot(Wp.sim.time(1:Nt),sum(Power(:,1:Nt)),'k','Linewidth',1);hold on;
@@ -468,6 +471,7 @@ if Wp.turbine.N==9
     plot(PowerPALM(2,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     grid;ylabel('$P_2$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
+    title('Power: WFSim (black) PALM (dashed blue)','interpreter','latex')
     subplot(3,3,3)
     plot(Power(3,1:end),'k','Linewidth',1);hold on;
     plot(PowerPALM(3,1:Nt),'b--');
@@ -506,7 +510,7 @@ if Wp.turbine.N==9
     set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
     xlim([0 Wp.sim.time(Nt)])
 end
-%%
+%
 % uPALM = zeros(5,size(u,4),size(u,3));
 % figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
 %     [0 0 1 1],'ToolBar','none','visible', 'on');
@@ -524,3 +528,23 @@ end
 %     end
 %    
 % end
+
+% Individual powers
+figure(101);
+subplot(2,1,1)
+plot(Wp.sim.time(1:Nt),PowerPALM(1,1:Nt),'b--');hold on
+plot(Wp.sim.time(1:Nt),Power(1,1:Nt),'k');
+axis([0,Wp.sim.time(Nt) 0 max(max(PowerPALM(:,1:end)))+10^5])
+ylabel('$P_1$ [W]', 'interpreter','latex')
+xlabel('$t [s]$','interpreter','latex');
+title('$T_1$: WFSim (black) PALM (blue dashed)', 'interpreter','latex')
+grid;hold off;
+
+subplot(2,1,2)
+plot(Wp.sim.time(1:Nt),PowerPALM(2,1:Nt),'b--');hold on
+plot(Wp.sim.time(1:Nt),Power(2,1:Nt),'k');
+axis([0,Wp.sim.time(Nt) 0 max(max(PowerPALM(:,1:end)))+10^5])
+ylabel('$P_2$ [W]', 'interpreter','latex')
+xlabel('$t [s]$','interpreter','latex');
+title('$T_2$: WFSim (black) PALM (blue dashed)', 'interpreter','latex')
+grid;hold off;

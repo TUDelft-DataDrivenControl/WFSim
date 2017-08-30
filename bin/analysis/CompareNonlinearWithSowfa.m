@@ -295,8 +295,8 @@ end
 if Wp.turbine.N==2
     figure(9);clf;
     subplot(2,1,1)
-    plot(Wp.sim.time(1:end-1),a(1,:),'b');hold on;
-    plot(Wp.sim.time(1:end-1),a(2,:),'k');grid;
+    plot(Wp.sim.time(1:end-1),a(1,:),'b--');hold on;
+    plot(Wp.sim.time(1:end-1),a(2,:),'k+');grid;
     ylabel('$a$','interpreter','latex');
     title('$a^1$ (blue), $a^2$ (black)','interpreter','latex')
     %legend({'$a_1$','$a_2$'},'interpreter','latex')

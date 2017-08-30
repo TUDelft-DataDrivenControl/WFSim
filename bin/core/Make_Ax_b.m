@@ -31,9 +31,9 @@ switch lower(Wp.Turbulencemodel)
         
     case lower('WFSim4')
         sys.A = [Ax StrucDiscretization.Axo B1;StrucDiscretization.Ayo Ay B2;B1' 2*B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
-    
+        sys.q = full([max(max(abs(Ax))) max(max(abs(StrucDiscretization.Axo))) max(max(abs(Ay))) max(max(abs(StrucDiscretization.Ayo))) mean(mean(abs(Ax))) mean(mean(abs(StrucDiscretization.Axo))) mean(mean(abs(Ay))) mean(mean(abs(StrucDiscretization.Ayo)))]);    
     case lower('WFSim5')
-        sys.A = [Ax StrucDiscretization.Axo B1;StrucDiscretization.Ayo Ay B2;B1' 2*B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];
+        sys.A = [Ax StrucDiscretization.Axo B1;StrucDiscretization.Ayo Ay B2;B1' 2*B2' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))]; 
 end
 
 sys.M = blkdiag(...

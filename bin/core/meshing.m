@@ -88,8 +88,8 @@ switch lower(Wp.name)
         
        %M = [Time   UR  Uinf  Ct_adm  a Yaw Thrust Power  WFPower]       
         for kk=1:length(Crx)
-            %M{kk} = load(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt']);
             M{kk} = dlmread(['../../Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt'],'',1,0);
+            %M{kk} = dlmread(['Data_PALM/' char(Wp.name) '/' char(Wp.name) '_matlab_turbine_parameters0' num2str(kk) '.txt'],'',1,0);
         end
                  
         % Correctly format inputs (temporary function)
@@ -168,10 +168,10 @@ switch lower(Wp.name)
         n        = 2;
         m        = 4;
         
-        case lower('9turb_adm_turb')
+        case lower('9turb_adm')
         type   = 'lin';                     % Meshing type ('lin' or 'exp')
         Lx     = 2800;                      % Domain length in x-direction (m)
-        Ly     = 1360;                      % Domain length in y-direction (m)
+        Ly     = 1340;                      % Domain length in y-direction (m)
         Nx     = 100;                       % Number of grid points in x-direction
         Ny     = 50;                        % Number of grid points in y-direction
         Cry    = [300.0, 300.0, 300.0, 680.0, 680.0, 680.0, 1060.0, 1060.0, 1060.0];% Turbine locations in x-direction (m)
@@ -210,7 +210,7 @@ switch lower(Wp.name)
         p_init   = 0.0;       % Initial values for pressure terms (Pa)
         
         lmu      = .8;         % Mixing length in x-direction (m)
-        turbul   = true;      % Use mixing length turbulence model (true/false)
+        turbul   = false;      % Use mixing length turbulence model (true/false)
         n        = 2;
         m        = 4;
         
