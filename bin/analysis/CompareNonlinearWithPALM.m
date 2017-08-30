@@ -29,7 +29,7 @@ scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
 %% Script core
 % WFSim: call initialization script
-Wp.name      = '2turb_adm';
+Wp.name      = '2turb_adm_noturb';
 
 run('../../WFSim_addpaths'); % Add paths
 [Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
@@ -43,61 +43,28 @@ if scriptOptions.Animate > 0
         [0 0 1 1],'ToolBar','none','visible', 'on');
 end
 
-% Initialize variables and figure specific to this script
-uk = Wp.site.u_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-vk = Wp.site.v_Inf*ones(Wp.mesh.Nx,Wp.mesh.Ny,Wp.sim.NN);
-
-x        = double(nc_varget(filename,'x'));
-y        = double(nc_varget(filename,'y'));
-xu       = double(nc_varget(filename,'xu'));
-yv       = double(nc_varget(filename,'yv'));
-zw_3d    = double(nc_varget(filename,'zw_3d'));
-nz       = 4;
-
-uPALM                 = reshape(u(1,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)
-vPALM                 = reshape(v(1,nz,:,:),size(v,3),size(v,4))';
-targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
-sourceSize            = size(uPALM);
-[X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
-uPALM                 = interp2(uPALM, X_samples, Y_samples);
-vPALM                 = interp2(vPALM, X_samples, Y_samples);
-sol.u                 = uPALM;
-sol.v                 = vPALM;
+load(Wp.sim.measurementFile)
+sol.u = squeeze(u(1,:,:));
+sol.v = squeeze(v(1,:,:));
 
 % Performing timestepping until end
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
 %% Loop
-while sol.k < size(u,1)
+Wp.sim.NN = 900;
+while sol.k < Wp.sim.NN
     tic;         % Intialize timer
     
     [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep with WFSim
     CPUTime(sol.k) = toc; % Take time
     
-    % Write flow field solutions to a 3D matrix
-    uk(:,:,sol.k)         = sol.u;
-    vk(:,:,sol.k)         = sol.v;
-    a(:,sol.k)            = sol.turbine.a;
-    Power(:,sol.k)        = sol.turbine.power;
-    Phi(:,sol.k)          = Wp.turbine.input{sol.k}.phi;
-    
-    uPALM                 = reshape(u(sol.k,nz,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)
-    vPALM                 = reshape(v(sol.k,nz,:,:),size(v,3),size(v,4))';
-    % Project PALM data on WFSim grid
-    targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
-    sourceSize            = size(uPALM);
-    [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
-    uPALM                 = interp2(uPALM, X_samples, Y_samples);
-    vPALM                 = interp2(vPALM, X_samples, Y_samples);
-    
-    eu                            = vec(sol.u-uPALM); eu(isnan(eu)) = [];
-    ev                            = vec(sol.v-vPALM); ev(isnan(ev)) = [];
+    eu                            = vec(sol.u-squeeze(u(sol.k,:,:))); eu(isnan(eu)) = [];
+    ev                            = vec(sol.v-squeeze(v(sol.k,:,:))); ev(isnan(ev)) = [];
     RMSE(sol.k)                   = rms([eu;ev]);
     [maxe(sol.k),maxeloc(sol.k)]  = max(abs(eu));
-    
-    PowerPALM(:,sol.k)            = [M1(sol.k,8);M2(sol.k,8)];
-    
+       
     % Save sol to a cell array
     sol_array{sol.k} = sol;
+    Power(:,sol.k)   = sol_array{sol.k}.turbine.power;
     
     % Display progress and animations
     if scriptOptions.printProgress
@@ -107,15 +74,15 @@ while sol.k < size(u,1)
     if scriptOptions.Animate > 0
         if ~rem(sol.k,scriptOptions.Animate)
             
-            yaw_angles = .5*Wp.turbine.Drotor*exp(1i*Wp.turbine.input{sol.k}.phi*pi/180);  % Yaw angles
+            turb_coord = .5*Wp.turbine.Drotor*exp(1i*turbData.phi(sol.k,:)*pi/180);  % Yaw angles
             
             subplot(2,3,1);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u,'Linecolor','none');  colormap(hot);
             caxis([min(min(sol.u)) max(max(sol.u))]);  hold all; colorbar;
             axis equal; axis tight;
             for ll=1:Wp.turbine.N
-                Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-                Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
+                Qy     = (Wp.turbine.Cry(ll)-real(turb_coord(ll))):1:(Wp.turbine.Cry(ll)+real(turb_coord(ll)));
+                Qx     = linspace(Wp.turbine.Crx(ll)-imag(turb_coord(ll)),Wp.turbine.Crx(ll)+imag(turb_coord(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
             text(0,Wp.mesh.ldxx2(end,end)+250,['Time ', num2str(Wp.sim.time(sol.k),'%.1f'), 's']);
@@ -123,35 +90,35 @@ while sol.k < size(u,1)
             title('WFSim u [m/s]');
             hold off;
             subplot(2,3,2);
-            contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',uPALM,'Linecolor','none');  colormap(hot);
-            caxis([min(min(uPALM)) max(max(uPALM))]);  hold all; colorbar;
+            contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',squeeze(u(sol.k,:,:)),'Linecolor','none');  colormap(hot);
+            caxis([min(min(squeeze(u(sol.k,:,:)))) max(max(squeeze(u(sol.k,:,:))))]);  hold all; colorbar;
             axis equal; axis tight;
             for ll=1:Wp.turbine.N
-                Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-                Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
+                Qy     = (Wp.turbine.Cry(ll)-real(turb_coord(ll))):1:(Wp.turbine.Cry(ll)+real(turb_coord(ll)));
+                Qx     = linspace(Wp.turbine.Crx(ll)-imag(turb_coord(ll)),Wp.turbine.Crx(ll)+imag(turb_coord(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
             title('PALM u [m/s]');
             hold off;
             
             subplot(2,3,3);
-            contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u-uPALM,'Linecolor','none');  colormap(hot);
-            caxis([min(min(sol.u-uPALM)) max(max(sol.u-uPALM))]);  hold all; colorbar;
+            contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',sol.u-squeeze(u(sol.k,:,:)),'Linecolor','none');  colormap(hot);
+            caxis([min(min(sol.u-squeeze(u(sol.k,:,:)))) max(max(sol.u-squeeze(u(sol.k,:,:))))]);  hold all; colorbar;
             axis equal; axis tight;
             ldyyv = Wp.mesh.ldyy(:); ldxx2v = Wp.mesh.ldxx2(:);
             plot(ldyyv(maxeloc(sol.k)),ldxx2v(maxeloc(sol.k)),'whiteo','LineWidth',1,'MarkerSize',8,'DisplayName','Maximum error location');
             for ll=1:Wp.turbine.N
-                Qy     = (Wp.turbine.Cry(ll)-real(yaw_angles(ll))):1:(Wp.turbine.Cry(ll)+real(yaw_angles(ll)));
-                Qx     = linspace(Wp.turbine.Crx(ll)-imag(yaw_angles(ll)),Wp.turbine.Crx(ll)+imag(yaw_angles(ll)),length(Qy));
+                Qy     = (Wp.turbine.Cry(ll)-real(turb_coord(ll))):1:(Wp.turbine.Cry(ll)+real(turb_coord(ll)));
+                Qx     = linspace(Wp.turbine.Crx(ll)-imag(turb_coord(ll)),Wp.turbine.Crx(ll)+imag(turb_coord(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
             title('error [m/s]');
             hold off;           
             subplot(2,3,4);
-            plot(Wp.sim.time(1:sol.k),PowerPALM(1,1:sol.k));hold on
-            plot(Wp.sim.time(1:sol.k),PowerPALM(2,1:sol.k),'r');
+            plot(Wp.sim.time(1:sol.k),turbData.power(1:sol.k,1));hold on
+            plot(Wp.sim.time(1:sol.k),turbData.power(1:sol.k,2),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5])
+            axis([0,Wp.sim.NN 0 max(max(turbData.power(1:end,:)))+10^5])
             title('Power PALM')
             grid;hold off;
             drawnow
@@ -160,16 +127,16 @@ while sol.k < size(u,1)
             plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k));hold on
             plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k),'r');
             title('$P$ [W]','interpreter','latex');
-            axis([0,Wp.sim.time(size(u,1)) 0 max(max(PowerPALM(:,1:end)))+10^5]);
+            axis([0,Wp.sim.NN 0 max(max(turbData.power(1:end,1)))+10^5]);
             title('Power WFSim')
             grid;hold off;
             drawnow
             
             subplot(2,3,6)
-            plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k)-PowerPALM(1,1:sol.k));hold on
-            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k)-PowerPALM(2,1:sol.k),'r');
+            plot(Wp.sim.time(1:sol.k),Power(1,1:sol.k)'-turbData.power(1:sol.k,1));hold on
+            plot(Wp.sim.time(1:sol.k),Power(2,1:sol.k)'-turbData.power(1:sol.k,2),'r');
             title('error [W]','interpreter','latex');
-            axis([0,Wp.sim.time(size(u,1)) min(min(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))-.2 max(max(Power(:,1:sol.k)-PowerPALM(:,1:sol.k)))+.2]);
+            axis([0,Wp.sim.NN min(min(Power(:,1:sol.k)'-turbData.power(1:sol.k,:)))-.2 max(max(Power(:,1:sol.k)'-turbData.power(1:sol.k,:)))+.2]);
             grid;hold off;
         end
         drawnow
@@ -177,11 +144,11 @@ while sol.k < size(u,1)
     end;
 
 end;
-
+turbData.power = turbData.power';
 %%
 figure(2);clf
-plot(Wp.sim.time(1:size(u,1)),RMSE);hold on;
-plot(Wp.sim.time(1:size(u,1)),maxe,'r');grid;
+plot(Wp.sim.time(1:Wp.sim.NN),RMSE);hold on;
+plot(Wp.sim.time(1:Wp.sim.NN),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
@@ -189,7 +156,7 @@ Nt = 850;
 
 figure(3);clf
 plot(Wp.sim.time(1:Nt),sum(Power(:,1:Nt)),'k','Linewidth',1);hold on;
-plot(Wp.sim.time(1:Nt),sum(PowerPALM(:,1:Nt)),'b--');
+plot(Wp.sim.time(1:Nt),sum(turbData.power(:,1:Nt)),'b--');
 grid;xlabel('$t [s]$','interpreter','latex');
 ylabel('$P$ [W]','interpreter','latex');
 title('Wind farm power: WFSim (black) PALM (blue dashed)','interpreter','latex');
@@ -197,42 +164,42 @@ xlim([0 Nt])
 if Wp.turbine.N==2
     figure(4);clf
     subplot(2,1,1)
-    plot(Wp.sim.time(1:Nt),CT(1,1:Nt),'linewidth',1.5);hold on
-    plot(Wp.sim.time(1:Nt),CT(2,1:Nt),'r--','linewidth',1.5);
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,1),'linewidth',1.5);hold on
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,2),'r--','linewidth',1.5);
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t [s]$','interpreter','latex');
     title('$T_1$ (blue), $T_2$ (red dashed) ','interpreter','latex');
-    axis([0,Wp.sim.time(Nt) 0 max(max(CT(:,1:Nt)))+.2]);
+    axis([0,Wp.sim.time(Nt) 0 max(max(turbData.CT(1:Nt,:)))+.2]);
     grid;hold off;xlim([0 Nt]);
     subplot(2,1,2)
-    plot(Wp.sim.time(1:Nt),Phi(1,1:Nt));hold on
-    plot(Wp.sim.time(1:Nt),Phi(2,1:Nt),'r');
+    plot(Wp.sim.time(1:Nt),turbData.phi(1:Nt,1));hold on
+    plot(Wp.sim.time(1:Nt),turbData.phi(1:Nt,1),'r');
     ylabel('$\gamma$','interpreter','latex');
     xlabel('$t [s]$','interpreter','latex');
     title('$T_1$ (blue), $T_2$ (red) ','interpreter','latex');
-    axis([0,Wp.sim.time(Nt) min(min(Phi(:,1:Nt)))-5 max(max(Phi(:,1:Nt)))+5]);
+    axis([0,Wp.sim.time(Nt) min(min(turbData.phi(1:Nt,:)))-5 max(max(turbData.phi(1:Nt,:)))+5]);
     grid;hold off;  
 elseif Wp.turbine.N==9
     figure(4);clf;
     subplot(1,3,1)
-    plot(Wp.sim.time(1:Nt),CT(1,1:Nt),'b');hold on;
-    plot(Wp.sim.time(1:Nt),CT(2,1:Nt),'k');
-    plot(Wp.sim.time(1:Nt),CT(3,1:Nt),'r');grid;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,:),'b');hold on;
+    plot(Wp.sim.time(1:Nt),turbData.CT(2:Nt,:),'k');
+    plot(Wp.sim.time(1:Nt),turbData.CT(3:Nt,:),'r');grid;
     xlim([0 Wp.sim.time(Nt)])
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t$ [s]','interpreter','latex');
     title('$CT^{\prime}_1$ (blue), $CT^{\prime}_2$ (black), $CT^{\prime}_3$ (red)','interpreter','latex')
     subplot(1,3,2)
-    plot(Wp.sim.time(1:Nt),CT(4,1:Nt),'b');hold on;
-    plot(Wp.sim.time(1:Nt),CT(5,1:Nt),'k');
-    plot(Wp.sim.time(1:Nt),CT(6,1:Nt),'r');grid;
+    plot(Wp.sim.time(1:Nt),turbData.CT(4:Nt,:),'b');hold on;
+    plot(Wp.sim.time(1:Nt),turbData.CT(5:Nt,:),'k');
+    plot(Wp.sim.time(1:Nt),turbData.CT(6:Nt,:),'r');grid;
     xlim([0 Wp.sim.time(Nt)])
     xlabel('$t$ [s]','interpreter','latex');
     title('$CT^{\prime}_4$ (blue), $CT^{\prime}_5$ (black), $CT^{\prime}_6$ (red)','interpreter','latex')
     subplot(1,3,3)
-    plot(Wp.sim.time(1:Nt),CT(7,1:Nt),'b');hold on;
-    plot(Wp.sim.time(1:Nt),CT(8,1:Nt),'k');
-    plot(Wp.sim.time(1:Nt),CT(9,1:Nt),'r');grid;
+    plot(Wp.sim.time(1:Nt),turbData.CT(7:Nt,:),'b');hold on;
+    plot(Wp.sim.time(1:Nt),turbData.CT(8:Nt,:),'k');
+    plot(Wp.sim.time(1:Nt),turbData.CT(9:Nt,:),'r');grid;
     xlim([0 Wp.sim.time(Nt)])
     title('$CT^{\prime}_7$ (blue), $CT^{\prime}_8$ (black), $CT^{\prime}_9$ (red)','interpreter','latex')
     xlabel('$t$ [s]','interpreter','latex');
@@ -243,15 +210,8 @@ D_ind    = Wp.mesh.yline{1};
 indices  = [300 400 700 800];
 
 for k=indices
-    up(:,k)      = mean(uk(:,D_ind,k),2);
-    uPALM        = reshape(u(k,nz,:,:),size(u,3),size(u,4))';
-    
-    % Interpolate PALM data on WFSim grid
-    targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
-    sourceSize            = size(uPALM);
-    [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
-    uPALM                 = interp2(uPALM, X_samples, Y_samples);
-    
+    up(:,k)      = mean(sol_array{k}.u(:,D_ind),2); 
+    uPALM        = squeeze(u(k,:,:));   
     upPALM(:,k)  = mean(uPALM(:,D_ind),2);
     VAF(:,k)     = vaf(upPALM(:,k),up(:,k));
 end
@@ -325,15 +285,10 @@ if Wp.turbine.N==9
     
     clear up upPALM
     for k=indices
-        up(:,k)       = mean(uk(:,D_ind,k),2);
-        uPALM         = reshape(u(k,nz,:,:),size(u,3),size(u,4))';
-        % Interpolate PALM data on WFSim grid
-        targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
-        sourceSize            = size(uPALM);
-        [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
-        uPALM                 = interp2(uPALM, X_samples, Y_samples);
+        up(:,k)      = mean(sol_array{k}.u(:,D_ind),2);
+        uPALM        = squeeze(u(k,:,:));
         upPALM(:,k)  = mean(uPALM(:,D_ind),2);
-        VAF_2(:,k)     = vaf(upPALM(:,k),up(:,k));
+        VAF_2(:,k)   = vaf(upPALM(:,k),up(:,k));
     end
     
     figure(6);clf;
@@ -379,15 +334,10 @@ if Wp.turbine.N==9
     
     clear up upPALM
     for k=indices
-        up(:,k)               = mean(uk(:,D_ind,k),2);
-        uPALM                 = reshape(u(k,nz,:,:),size(u,3),size(u,4))';
-        % Interpolate PALM data on WFSim grid
-        targetSize            = [Wp.mesh.Nx Wp.mesh.Ny];
-        sourceSize            = size(uPALM);
-        [X_samples,Y_samples] = meshgrid(linspace(1,sourceSize(2),targetSize(2)), linspace(1,sourceSize(1),targetSize(1)));
-        uPALM                 = interp2(uPALM, X_samples, Y_samples);
-        upPALM(:,k)           = mean(uPALM(:,D_ind),2);
-        VAF_3(:,k)            = vaf(upPALM(:,k),up(:,k));
+    up(:,k)      = mean(sol_array{k}.u(:,D_ind),2); 
+    uPALM        = squeeze(u(k,:,:));   
+    upPALM(:,k)  = mean(uPALM(:,D_ind),2);
+    VAF_3(:,k)   = vaf(upPALM(:,k),up(:,k));
     end
     
     figure(7);clf;
@@ -425,87 +375,69 @@ if Wp.turbine.N==9
     figure(10);clf;
     subplot(3,3,1)
     plot(Power(1,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(1,1:Nt),'b--');
+    plot(turbData.power(1,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     grid;ylabel('$P_1$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,2)
     plot(Power(2,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(2,1:Nt),'b--');
+    plot(turbData.power(2,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     grid;ylabel('$P_2$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     title('Power: WFSim (black) PALM (dashed blue)','interpreter','latex')
     subplot(3,3,3)
     plot(Power(3,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(3,1:Nt),'b--');
+    plot(turbData.power(3,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     grid;ylabel('$P_3$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,4)
     plot(Power(4,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(4,1:Nt),'b--');
+    plot(turbData.power(4,1:Nt),'b--');
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     grid;ylabel('$P_4$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,5)
     plot(Power(5,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(5,1:Nt),'b--');
+    plot(turbData.power(5,1:Nt),'b--');
     grid;ylabel('$P_5$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     subplot(3,3,6)
     plot(Power(6,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(6,1:Nt),'b--');
+    plot(turbData.power(6,1:Nt),'b--');
     grid;ylabel('$P_6$','interpreter','latex');ylim([0 n*10^6]);xlim([0 Wp.sim.time(Nt)])
     set(gca, 'XTickLabelMode', 'manual', 'XTickLabel', []);
     subplot(3,3,7)
     plot(Power(7,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(7,1:Nt),'b--');
+    plot(turbData.power(7,1:Nt),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$P_7$','interpreter','latex');ylim([0 n*10^6])
     xlim([0 Wp.sim.time(Nt)])
     subplot(3,3,8)
     plot(Power(8,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(8,1:Nt),'b--');
+    plot(turbData.power(8,1:Nt),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$P_8$','interpreter','latex');ylim([0 n*10^6]);
     xlim([0 Wp.sim.time(Nt)])
     set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
     subplot(3,3,9)
     plot(Power(9,1:end),'k','Linewidth',1);hold on;
-    plot(PowerPALM(9,1:Nt),'b--');
+    plot(turbData.power(9,1:Nt),'b--');
     grid;xlabel('$t [s]$','interpreter','latex');ylabel('$P_9$','interpreter','latex');ylim([0 n*10^6]);
     set(gca, 'YTickLabelMode', 'manual', 'YTickLabel', []);
     xlim([0 Wp.sim.time(Nt)])
 end
-%
-% uPALM = zeros(5,size(u,4),size(u,3));
-% figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
-%     [0 0 1 1],'ToolBar','none','visible', 'on');
-% 
-% for k=300:size(u,1)
-%     for l=1:5
-%         uPALM(l,:,:) = reshape(u(k,l,:,:),size(u,3),size(u,4))';  % u(k,z,y,x)    
-%     end
-%     
-%     for ii=1:5
-%       subplot(3,2,ii)
-%       mesh(squeeze(uPALM(ii,:,:)))
-%       view(0,0);zlim([0 9])
-%       drawnow
-%     end
-%    
-% end
 
 % Individual powers
 figure(101);
 subplot(2,1,1)
-plot(Wp.sim.time(1:Nt),PowerPALM(1,1:Nt),'b--');hold on
+plot(Wp.sim.time(1:Nt),turbData.power(1,1:Nt),'b--');hold on
 plot(Wp.sim.time(1:Nt),Power(1,1:Nt),'k');
-axis([0,Wp.sim.time(Nt) 0 max(max(PowerPALM(:,1:end)))+10^5])
+axis([0,Wp.sim.time(Nt) 0 max(max(turbData.power(:,1:end)))+10^5])
 ylabel('$P_1$ [W]', 'interpreter','latex')
 xlabel('$t [s]$','interpreter','latex');
 title('$T_1$: WFSim (black) PALM (blue dashed)', 'interpreter','latex')
 grid;hold off;
 
 subplot(2,1,2)
-plot(Wp.sim.time(1:Nt),PowerPALM(2,1:Nt),'b--');hold on
+plot(Wp.sim.time(1:Nt),turbData.power(2,1:Nt),'b--');hold on
 plot(Wp.sim.time(1:Nt),Power(2,1:Nt),'k');
-axis([0,Wp.sim.time(Nt) 0 max(max(PowerPALM(:,1:end)))+10^5])
+axis([0,Wp.sim.time(Nt) 0 max(max(turbData.power(:,1:end)))+10^5])
 ylabel('$P_2$ [W]', 'interpreter','latex')
 xlabel('$t [s]$','interpreter','latex');
 title('$T_2$: WFSim (black) PALM (blue dashed)', 'interpreter','latex')
