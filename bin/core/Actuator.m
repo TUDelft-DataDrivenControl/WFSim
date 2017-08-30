@@ -1,27 +1,24 @@
-function [output,Ueffect,a,Power,CT] = Actuator(Wp,input,sol,options)
-
-Nx         = Wp.mesh.Nx;
-Ny         = Wp.mesh.Ny;
-dyy2       = Wp.mesh.dyy2;
-xline      = Wp.mesh.xline;
-yline      = Wp.mesh.yline;
-ylinev     = Wp.mesh.ylinev;
-
-Rho        = Wp.site.Rho;
-
-Drotor     = Wp.turbine.Drotor;
-cp         = Wp.turbine.powerscale;
-N          = Wp.turbine.N;
-cf         = Wp.turbine.forcescale; 
-
-
-Projection    = options.Projection;
-Linearversion = options.Linearversion;
-Derivatives   = options.Derivatives;
+function [output,sol] = Actuator(Wp,sol,options)
+% Import variables
+Nx              = Wp.mesh.Nx;
+Ny              = Wp.mesh.Ny;
+dyy2            = Wp.mesh.dyy2;
+xline           = Wp.mesh.xline;
+yline           = Wp.mesh.yline;
+ylinev          = Wp.mesh.ylinev;
+Rho             = Wp.site.Rho;
+Drotor          = Wp.turbine.Drotor;
+powerscale      = Wp.turbine.powerscale;
+N               = Wp.turbine.N;
+F               = Wp.turbine.forcescale; 
+input           = Wp.turbine.input(sol.k);
+Projection      = options.Projection;
+Linearversion   = options.Linearversion;
+Derivatives     = options.Derivatives;
 
 %%
 Ar              = pi*(0.5*Drotor)^2;
-scale           = 1;                                  % To scale the force in the y-direction
+scale           = 1.0;                                % To scale the force in the y-direction
 
 [Sm.x,Sm.dx]    = deal(sparse(Nx-3,Ny-2));            % Input x-mom nonlinear and linear
 [Sm.y,Sm.dy]    = deal(sparse(Nx-2,Ny-3));            % Input y-mom nonlinear and linear
@@ -56,17 +53,16 @@ for kk=1:N
     vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); % Bart: this can be fixed!
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
-    phi{kk}       = atan(sol.v(1,1)/sol.u(1,1));%atan(vv./uu);
+    phi{kk}       = atan(vv./uu);
+    %Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
     Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});
-    
-    dUedPhi{kk}   = -1/180*pi*sin(input.phi(kk)/180*pi).*U{kk} ;
-   
-    a(kk)         = input.beta(kk)/(input.beta(kk)+1);
-    CT(kk)        = input.CT(kk)/(1-a(kk))^2; % Note that this is CT'
-    
-    %% Thrust force      
-    % With the following, we only take middle velocity component 
+    dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
+    CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
+       
+ %% Thrust force      
+    % With the following, we only take middle velocity component and
+    % apply this on the rotor cells 
     m = size(Ue{kk},2);
     if rem(m,2)
        ind  = ceil(m/2); 
@@ -78,16 +74,20 @@ for kk=1:N
        Ur   = repmat(mean(temp(ind)),1,m);
     end    
 
-    Fthrust         = cf*1/2*Rho*Ur.^2*CT(kk);
-    Fx              = Fthrust.*cos((phi{kk}+input.phi(kk))*pi/180);
-    Fy              = Fthrust.*sin((phi{kk}+input.phi(kk))*pi/180);
+    Fthrust         = F*1/2*Rho*Ue{kk}.^2*CT(kk); % Using CT_prime
+    Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
+    Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
+    
+    %%
+    pp = 1.88; % Loss factor for yawing a turbine  
+    Power(kk) = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3)*cos(input.phi(kk)*pi/180)^pp;    
     
     Ueffect(kk)     = mean(Ur);%meanUe{kk}/(1-a(kk));     % Estimation effective wind speed
     %Ueffect(kk)     = mean(Ur)/(1-a(kk));     % Estimation effective wind speed
     Power(kk)       = cp*mean(.5*Rho*Ar*(Ur).^3*CT(kk));%*cos(input.phi(kk)*pi/180)^.75);    
 
     %% Input to Ax=b
-    Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           % Input x-mom linear
+    Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           
     Sm.y(x-1,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';                                               % Input y-mom nonlinear
     
     if Linearversion
@@ -95,13 +95,13 @@ for kk=1:N
         tempdy = sparse(Nx-2,Ny-3);
         
         dFthrustdbeta   = 1/2*Rho*Ue{kk}.^2*(CT(kk)*2*(input.beta(kk)+1)+dCTdbeta(kk)*(input.beta(kk)+1).^2);
-        dFxdbeta        = dFthrustdbeta.*cos(input.phi(kk)*pi/180+0*phi{kk});
-        dFydbeta        = dFthrustdbeta.*sin(input.phi(kk)*pi/180+0*phi{kk});
+        dFxdbeta        = dFthrustdbeta.*cos(input.phi(kk)*pi/180);
+        dFydbeta        = dFthrustdbeta.*sin(input.phi(kk)*pi/180);
         
         %% Gradient of the thrust with respect to yaw angle
         dFthrustdPhi    = Rho*CT(kk)*Ue{kk}.*(input.beta(kk)+1).^2.*dUedPhi{kk};
-        dFxdPhi         = dFthrustdPhi.*cos(input.phi(kk)*pi/180+0*phi{kk}) - pi/180*Fthrust.*sin(input.phi(kk)*pi/180+0*phi{kk});
-        dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180+0*phi{kk});
+        dFxdPhi         = dFthrustdPhi.*cos(input.phi(kk)*pi/180+0*phi{kk}) - pi/180*Fthrust.*sin(input.phi(kk)*pi/180);
+        dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180);
         
         Sm.dx(x-2,y-1)          = -(dFxdbeta'*input.dbeta(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
         Sm.dy(x-1,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
@@ -204,9 +204,12 @@ for kk=1:N
     end
 end
 
-% Write to output
+%% Write to outputs
+sol.turbine.power(:,1)    = Power;
+sol.turbine.CT_prime(:,1) = CT;
+% sol.turbine.UrMean(:,1)   = UrMean;
+
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)
     output.dSm = dSm;
 end
-

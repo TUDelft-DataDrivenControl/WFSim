@@ -4,8 +4,7 @@ Nx     = Wp.mesh.Nx;
 Ny     = Wp.mesh.Ny;
 dxx2   = Wp.mesh.dxx2;
 dyy2   = Wp.mesh.dyy2;
-
-Rho    = 1;%Wp.site.Rho; % Changed by SB on 10-1-2017
+Rho    = 1;%Wp.site.Rho;
 u_Inf  = Wp.site.u_Inf;
 
 Bm1                  = Rho*(spdiags(-ones((Nx-2)*(Ny-2),1).*vec(dyy2(2:end-1,2:end-1)'),0,(Nx-3)*(Ny-2),(Nx-2)*(Ny-2))+...
