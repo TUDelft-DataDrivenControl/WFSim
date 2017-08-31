@@ -50,35 +50,20 @@ for kk=1:N
     y  = yline{kk};    % Turbine y-pos in field
     yv = ylinev{kk};   % Corrected turbine y-pos in field
     
-    vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); % Bart: this can be fixed!
+    vv            = 0.5*diff(sol.v(x,yv))+sol.v(x,yv(1:end-1)); 
     uu            = sol.u(x,y);
     U{kk}         = sqrt(uu.^2+vv.^2);
-    phi{kk}       = atan(vv./uu);
-    %Ue{kk}        = cos(phi{kk}+input.phi(kk)/180*pi).*U{kk};
+    phi{kk}       = atan(sol.v(1,1)/sol.u(1,1));
     Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
-    meanUe{kk}    = mean(Ue{kk});
-    dUedPhi{kk}   = -1/180*pi*sin(phi{kk} + input.phi(kk)/180*pi).*U{kk} ;
+    meanUe{kk}    = mean(Ue{kk});  
     CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
        
- %% Thrust force      
-    % With the following, we only take middle velocity component and
-    % apply this on the rotor cells 
-    m = size(Ue{kk},2);
-    if rem(m,2)
-       ind  = ceil(m/2); 
-       temp = Ue{kk};
-       Ur   = repmat(temp(ind),1,m);
-    else
-       ind  = [m/2 m/2+1]; 
-       temp = Ue{kk};
-       Ur   = repmat(mean(temp(ind)),1,m);
-    end    
-
+    %% Thrust force       
     Fthrust         = F*1/2*Rho*Ue{kk}.^2*CT(kk); % Using CT_prime
-    Fx              = Fthrust.*cos(input.phi(kk)*pi/180);
-    Fy              = Fthrust.*sin(input.phi(kk)*pi/180);
+    Fx              = Fthrust.*cos(phi{kk}+input.phi(kk)*pi/180);
+    Fy              = Fthrust.*sin(phi{kk}+input.phi(kk)*pi/180);
     
-    %%
+    %% Power
     pp          = 1.88; % Loss factor for yawing a turbine  
     Power(kk)   = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3)*cos(input.phi(kk)*pi/180)^pp;    
     
@@ -89,25 +74,25 @@ for kk=1:N
     if Linearversion
         tempdx = sparse(Nx-3,Ny-2);
         tempdy = sparse(Nx-2,Ny-3);
+
+        dUedPhi{kk}     = -1/180*pi*sin(input.phi(kk)/180*pi).*U{kk} ;
         
-        dFthrustdbeta   = 1/2*Rho*Ue{kk}.^2*(CT(kk)*2*(input.beta(kk)+1)+dCTdbeta(kk)*(input.beta(kk)+1).^2);
-        dFxdbeta        = dFthrustdbeta.*cos(input.phi(kk)*pi/180);
-        dFydbeta        = dFthrustdbeta.*sin(input.phi(kk)*pi/180);
+        dFthrustdCT     = F*1/2*Rho*Ue{kk}.^2;
+        dFxdCT          = dFthrustdCT.*cos(phi{kk}+input.phi(kk)*pi/180);
+        dFydCT          = dFthrustdCT.*sin(phi{kk}+input.phi(kk)*pi/180);
+        dFthrustdPhi    = F*Rho*Ue{kk}*CT(kk)*dUedPhi{kk};      
+        dFxdPhi         = dFthrustdPhi.*cos(phi{kk}+input.phi(kk)*pi/180) - pi/180*Fthrust.*sin(phi{kk}+input.phi(kk)*pi/180);
+        dFydPhi         = dFthrustdPhi.*sin(phi{kk}+input.phi(kk)*pi/180) + pi/180*Fthrust.*cos(phi{kk}+input.phi(kk)*pi/180);
+          
+        Sm.dx(x-2,y-1)          = -(dFxdCT'*input.dCT(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
+        Sm.dy(x-1,y(2:end)-2)   = scale*(dFydCT(2:end)'*input.dCT(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
         
-        %% Gradient of the thrust with respect to yaw angle
-        dFthrustdPhi    = Rho*CT(kk)*Ue{kk}.*(input.beta(kk)+1).^2.*dUedPhi{kk};
-        dFxdPhi         = dFthrustdPhi.*cos(input.phi(kk)*pi/180+0*phi{kk}) - pi/180*Fthrust.*sin(input.phi(kk)*pi/180);
-        dFydPhi         = dFthrustdPhi.*sin(input.phi(kk)*pi/180+0*phi{kk}) + pi/180*Fthrust.*cos(input.phi(kk)*pi/180);
+        tempdx(x-2,y-1)         = -dFxdCT'.*dyy2(1,y)';
+        Sm.dxx(:,kk)            =  vec(tempdx');           % Input matrix (beta) x-mom linear
+        tempdx(x-2,y-1)         = -dFxdPhi'.*dyy2(1,y)';
+        Sm.dxx(:,N+kk)          =  vec(tempdx');           % Input matrix (yaw) x-mom linear
         
-        Sm.dx(x-2,y-1)          = -(dFxdbeta'*input.dbeta(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
-        Sm.dy(x-1,y(2:end)-2)   = scale*(dFydbeta(2:end)'*input.dbeta(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
-        
-        tempdx(x-2,y-1) = -dFxdbeta'.*dyy2(1,y)';
-        Sm.dxx(:,kk)    =  vec(tempdx');           % Input matrix (beta) x-mom linear
-        tempdx(x-2,y-1) = -dFxdPhi'.*dyy2(1,y)';
-        Sm.dxx(:,N+kk)  =  vec(tempdx');           % Input matrix (yaw) x-mom linear
-        
-        tempdy(x-1,y(2:end)-2)  = dFydbeta(2:end)'.*dyy2(1,y(2:end))';
+        tempdy(x-1,y(2:end)-2)  = dFydCT(2:end)'.*dyy2(1,y(2:end))';
         Sm.dyy(:,kk)            = scale*vec(tempdy');                   % Input (beta) y-mom linear qlpv
         tempdy(x-1,y(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
         Sm.dyy(:,N+kk)          = scale*vec(tempdy');                   % Input (yaw) y-mom linear qlpv
@@ -116,7 +101,7 @@ for kk=1:N
     if Projection
         %% Input to qLPV
         tempx(x-2,y-1)          = -Fx'.*dyy2(1,y)';
-        Sm.xx(:,kk)             = vec(tempx')/input.beta(kk);
+        Sm.xx(:,kk)             = vec(tempx')/input.CT(kk);
         Sm.xx(:,N+kk)           = vec(tempx');
         if input.phi(kk)~=0
             Sm.xx(:,kk)         = Sm.xx(:,kk)/2;
@@ -124,7 +109,7 @@ for kk=1:N
         end
         
         tempy(x-1,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';
-        Sm.yy(:,kk)             = scale*vec(tempy')/input.beta(kk);
+        Sm.yy(:,kk)             = scale*vec(tempy')/input.CT(kk);
         Sm.yy(:,N+kk)           = scale*vec(tempy');
         if input.phi(kk)~=0
             Sm.yy(:,kk)         = Sm.yy(:,kk)/2;
@@ -134,8 +119,8 @@ for kk=1:N
     end;
     
     if Linearversion
-        dFu           = 4*input.beta(kk)*Rho*uu*cos(input.phi(kk)*pi/180);
-        dFv           = 4*input.beta(kk)*Rho*sol.v(x,y)*sin(input.phi(kk)*pi/180);      % SB: why here original v and not vv?
+        dFu           = 4*input.CT(kk)*Rho*uu*cos(input.phi(kk)*pi/180);
+        dFv           = 4*input.CT(kk)*Rho*sol.v(x,y)*sin(input.phi(kk)*pi/180);      % SB: why here original v and not vv?
         Smdu(x-2,y-1) = -dFu'.*dyy2(1,y)';
         Smdv(x-1,y-2) =  dFv'.*dyy2(1,y)';
         
@@ -147,6 +132,9 @@ for kk=1:N
         dvvdv         = 1/2*diag(sign(ylinev{kk}))+1/2*diag(sign(ylinev{kk}(1:end-1)),1); dvvdv(end,:)=[];
         dUdv(kk,:)    =  vv./U{kk};
         dUdu(kk,:)    =  uu./U{kk};
+        
+        
+        %% Here we are
         
         dUedv(kk,:)=-sin(atan(vv./(uu)) + input.phi(kk)/180*pi)./((uu).*...
             (vv.^2./(uu).^2 + 1)).*U{kk}+cos(atan(vv./(uu))+input.phi(kk)/180*pi).*dUdv(kk,:); %% diff Ue wrt v
@@ -187,8 +175,8 @@ for kk=1:N
         dSmxdphikk  = sparse(Nx-3,Ny-2);
         dSmydphikk  = sparse(Nx-2,Ny-3);
         
-        dSmxdbetakk(xline(kk,:)-2,yline{kk}-1)        =  -(dFxdbeta.*dyy2(1,yline{kk}))';  %JW changed definition of force and location (need correction for yaw
-        dSmydbetakk(xline(kk,:)-1,yline{kk}(2:end)-2) = scale*(dFydbeta(2:end).*dyy2(1,yline{kk}(2:end)))'; %% JW made this 0
+        dSmxdbetakk(xline(kk,:)-2,yline{kk}-1)        =  -(dFxdCT.*dyy2(1,yline{kk}))';  %JW changed definition of force and location (need correction for yaw
+        dSmydbetakk(xline(kk,:)-1,yline{kk}(2:end)-2) = scale*(dFydCT(2:end).*dyy2(1,yline{kk}(2:end)))'; %% JW made this 0
         dSm.dbeta(:,kk)                               = [vec(dSmxdbetakk');vec(dSmydbetakk')];
         
         dSmxdphikk(xline(kk,:)-2,yline{kk}-1)         = -dFxdPhi'.*dyy2(1,yline{kk})';
