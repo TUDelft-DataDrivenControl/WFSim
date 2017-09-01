@@ -146,6 +146,9 @@ for kk=1:N
         % Derivatives Thrust with respect to the state
         dFxdU = Rho*CT(kk)*Ue{kk}*((input.beta(kk)+1)).^2*cos((mean(0*phi{kk})+input.phi(kk))*pi/180);
         dFydU = Rho*CT(kk)*Ue{kk}*((input.beta(kk)+1)).^2*sin((mean(0*phi{kk})+input.phi(kk))*pi/180);
+        
+        
+        
         dSm.xdu((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-3)*(Ny-2)+yline{kk}-1) = diag((-dFxdU.*dUedu(kk,:).*dyy2(1,yline{kk})));
         dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-2) = 1/2*diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})));
         dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-1) = dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-1)+ 1/2*diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})));
