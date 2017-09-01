@@ -50,7 +50,7 @@ sol.v = squeeze(v(1,:,:));
 % Performing timestepping until end
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
 %% Loop
-Wp.sim.NN = 900;
+Wp.sim.NN = 590;
 while sol.k < Wp.sim.NN
     tic;         % Intialize timer
     
@@ -152,7 +152,7 @@ plot(Wp.sim.time(1:Wp.sim.NN),maxe,'r');grid;
 ylabel('RMSE and max');
 title(['{\color{blue}{RMSE}}, {\color{red}{max}} and meanRMSE = ',num2str(mean(RMSE),3)])
 
-Nt = 850;
+Nt = Wp.sim.NN; % until what time you want to plot
 
 figure(3);clf
 plot(Wp.sim.time(1:Nt),sum(Power(:,1:Nt)),'k','Linewidth',1);hold on;
@@ -208,6 +208,7 @@ end
 % Wake centreline
 D_ind    = Wp.mesh.yline{1};
 indices  = [300 400 700 800];
+%indices  = [200 300 400 500];
 
 for k=indices
     up(:,k)      = mean(sol_array{k}.u(:,D_ind),2); 
