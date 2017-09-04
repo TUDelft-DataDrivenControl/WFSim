@@ -30,7 +30,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     time   = Wp.sim.time;
     k      = sol.k;
     
-    yaw_angles = .5*Dr*exp(1i*input.phi*pi/180);  % Yaw angles
+    turb_coord = .5*Dr*exp(1i*input.phi*pi/180);  % Yaw angles
 
     %% Create figure window, if not yet available
     if nargin <= 2
@@ -87,8 +87,8 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
 
     % Plot the turbines in the field
     for kk=1:N
-        Qy     = (Cry(kk)-real(yaw_angles(kk))):1:(Cry(kk)+real(yaw_angles(kk)));
-        Qx     = linspace(Crx(kk)-imag(yaw_angles(kk)),Crx(kk)+imag(yaw_angles(kk)),length(Qy));
+        Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
+        Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
         plot(Qy,Qx,'k','linewidth',1)
     end
     text(0,ldxx2(end,end)+80,['Time ', num2str(time(k),'%.1f'), 's']);
@@ -103,8 +103,8 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     % contourf(ldyy(1,:),ldxx2(:,1)',min(v,u_Inf*1.2),'Linecolor','none');  colormap(hot);   hold all
     colorbar;
     for kk=1:N
-        Qy     = (Cry(kk)-real(yaw_angles(kk))):1:(Cry(kk)+real(yaw_angles(kk)));
-        Qx     = linspace(Crx(kk)-imag(yaw_angles(kk)),Crx(kk)+imag(yaw_angles(kk)),length(Qy));
+        Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
+        Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
         plot(Qy,Qx,'k','linewidth',1)
     end
     axis equal; axis tight
@@ -112,7 +112,6 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     ylabel('x [m]');
     title('v [m/s]')
     hold off;
-    drawnow;
 
     %% Wake mean centreline first turbine
     D_ind    = yline{1};
