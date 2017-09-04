@@ -41,10 +41,7 @@ if Linearversion
 end;
 
 for kk=1:N
-    % Clear for multiple turbine case
-    tempx = sparse(Nx-3,Ny-2);
-    tempy = sparse(Nx-2,Ny-3);
-    
+   
     x  = xline(kk,:);  % Turbine x-pos in field
     y  = yline{kk};    % Turbine y-pos in field
     yv = ylinev{kk};   % Corrected turbine y-pos in field
@@ -99,6 +96,9 @@ for kk=1:N
     
     if Projection
         %% Input to qLPV
+        % Clear for multiple turbine case
+        tempx                   = sparse(Nx-3,Ny-2);
+        tempy                   = sparse(Nx-2,Ny-3);
         tempx(x-2,y-1)          = -Fx'.*dyy2(1,y)';
         Sm.xx(:,kk)             = vec(tempx')/CT(kk);
         Sm.xx(:,N+kk)           = vec(tempx');
