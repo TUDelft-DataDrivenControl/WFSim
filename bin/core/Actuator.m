@@ -18,7 +18,6 @@ Derivatives     = options.Derivatives;
 
 %%
 Ar              = pi*(0.5*Drotor)^2;
-scale           = 1.0;                                % To scale the force in the y-direction
 
 [Sm.x,Sm.dx]    = deal(sparse(Nx-3,Ny-2));            % Input x-mom nonlinear and linear
 [Sm.y,Sm.dy]    = deal(sparse(Nx-2,Ny-3));            % Input y-mom nonlinear and linear
@@ -57,104 +56,87 @@ for kk=1:N
     Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});  
     CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
-       
+    dCT(kk)       = input.dCT_prime(kk); 
+    Phi(kk)       = input.phi(kk);
+    
     %% Thrust force       
     Fthrust         = F*1/2*Rho*Ue{kk}.^2*CT(kk); % Using CT_prime
-    Fx              = Fthrust.*cos(phi{kk}+input.phi(kk)*pi/180);
-    Fy              = Fthrust.*sin(phi{kk}+input.phi(kk)*pi/180);
+    Fx              = Fthrust.*cos(phi{kk}+Phi(kk)*pi/180);
+    Fy              = Fthrust.*sin(phi{kk}+Phi(kk)*pi/180);
     
     %% Power
-    pp          = 1.88; % Loss factor for yawing a turbine  
-    Power(kk)   = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3)*cos(input.phi(kk)*pi/180)^pp;    
+    Power(kk)   = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3);    
     
     %% Input to Ax=b
-    Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';                                                                  % Input x-mom nonlinear                           
-    Sm.y(x-1,y(2:end)-2)    = scale*Fy(2:end)'.*dyy2(1,y(2:end))';                                               % Input y-mom nonlinear
+    Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';               % Input x-mom nonlinear                           
+    Sm.y(x-1,y(2:end)-2)    = Fy(2:end)'.*dyy2(1,y(2:end))';  % Input y-mom nonlinear
     
+    % Matrices for linear version
     if Linearversion
-        tempdx = sparse(Nx-3,Ny-2);
-        tempdy = sparse(Nx-2,Ny-3);
-
-        dUedPhi{kk}     = -1/180*pi*sin(input.phi(kk)/180*pi).*U{kk} ;
+              
+        dFthrustdCT             = F*1/2*Rho*Ue{kk}.^2;
+        dFxdCT                  = dFthrustdCT.*cos(phi{kk}+Phi(kk)*pi/180);
+        dFydCT                  = dFthrustdCT.*sin(phi{kk}+Phi(kk)*pi/180);
+         
+        Sm.dx(x-2,y-1)          = -dFxdCT'*dCT(kk).*dyy2(1,y)';
+        Sm.dy(x-1,y(2:end)-2)   = dFydCT(2:end)'*dCT(kk).*dyy2(1,y(2:end))';  
+               
+        dFdu                    = F*Rho*cos(Phi(kk)*pi/180)^2*CT(kk)*uu;
+        dFdv                    = F*Rho*cos(Phi(kk)*pi/180)^2*CT(kk)*vv;     
+        Smdu(x-2,y-1)           = -dFdu'.*dyy2(1,y)';
+        Smdv(x-1,y-2)           =  dFdv'.*dyy2(1,y)';
         
-        dFthrustdCT     = F*1/2*Rho*Ue{kk}.^2;
-        dFxdCT          = dFthrustdCT.*cos(phi{kk}+input.phi(kk)*pi/180);
-        dFydCT          = dFthrustdCT.*sin(phi{kk}+input.phi(kk)*pi/180);
-        dFthrustdPhi    = F*Rho*Ue{kk}*CT(kk)*dUedPhi{kk};      
-        dFxdPhi         = dFthrustdPhi.*cos(phi{kk}+input.phi(kk)*pi/180) - pi/180*Fthrust.*sin(phi{kk}+input.phi(kk)*pi/180);
-        dFydPhi         = dFthrustdPhi.*sin(phi{kk}+input.phi(kk)*pi/180) + pi/180*Fthrust.*cos(phi{kk}+input.phi(kk)*pi/180);
-          
-        Sm.dx(x-2,y-1)          = -(dFxdCT'*input.dCT(kk) + dFxdPhi'*input.dphi(kk)).*dyy2(1,y)';
-        Sm.dy(x-1,y(2:end)-2)   = scale*(dFydCT(2:end)'*input.dCT(kk) + dFydPhi(2:end)'*input.dphi(kk)).*dyy2(1,y(2:end))';  % Input y-mom linear
+        dSm.dx                  = blkdiag(diag(vec(Smdu')'),diag(vec(Smdv')'),sparse((Ny-2)*(Nx-2),(Ny-2)*(Nx-2)));
         
+        % following for projection
+        tempdx                  = sparse(Nx-3,Ny-2);
+        tempdy                  = sparse(Nx-2,Ny-3);
         tempdx(x-2,y-1)         = -dFxdCT'.*dyy2(1,y)';
-        Sm.dxx(:,kk)            =  vec(tempdx');           % Input matrix (beta) x-mom linear
-        tempdx(x-2,y-1)         = -dFxdPhi'.*dyy2(1,y)';
-        Sm.dxx(:,N+kk)          =  vec(tempdx');           % Input matrix (yaw) x-mom linear
-        
+        Sm.dxx(:,kk)            =  vec(tempdx');                  % Input matrix (beta) x-mom linear       
         tempdy(x-1,y(2:end)-2)  = dFydCT(2:end)'.*dyy2(1,y(2:end))';
-        Sm.dyy(:,kk)            = scale*vec(tempdy');                   % Input (beta) y-mom linear qlpv
-        tempdy(x-1,y(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,y(2:end))';
-        Sm.dyy(:,N+kk)          = scale*vec(tempdy');                   % Input (yaw) y-mom linear qlpv
+        Sm.dyy(:,kk)            = vec(tempdy');                   % Input (beta) y-mom linear qlpv
     end;
     
     if Projection
         %% Input to qLPV
         tempx(x-2,y-1)          = -Fx'.*dyy2(1,y)';
-        Sm.xx(:,kk)             = vec(tempx')/input.CT(kk);
+        Sm.xx(:,kk)             = vec(tempx')/CT(kk);
         Sm.xx(:,N+kk)           = vec(tempx');
         if input.phi(kk)~=0
             Sm.xx(:,kk)         = Sm.xx(:,kk)/2;
-            Sm.xx(:,N+kk)       = Sm.xx(:,N+kk)/(2*input.phi(kk));         % Input x-mom nonlinear qlpv
+            Sm.xx(:,N+kk)       = Sm.xx(:,N+kk)/(2*Phi(kk));         % Input x-mom nonlinear qlpv
         end
         
         tempy(x-1,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';
-        Sm.yy(:,kk)             = scale*vec(tempy')/input.CT(kk);
-        Sm.yy(:,N+kk)           = scale*vec(tempy');
+        Sm.yy(:,kk)             = vec(tempy')/CT(kk);
+        Sm.yy(:,N+kk)           = vec(tempy');
         if input.phi(kk)~=0
             Sm.yy(:,kk)         = Sm.yy(:,kk)/2;
-            Sm.yy(:,N+kk)       = Sm.yy(:,N+kk)/(2*input.phi(kk));         % Input y-mom nonlinear qlpv
+            Sm.yy(:,N+kk)       = Sm.yy(:,N+kk)/(2*Phi(kk));         % Input y-mom nonlinear qlpv
         end
         
     end;
-    
-    if Linearversion
-        dFu           = 4*input.CT(kk)*Rho*uu*cos(input.phi(kk)*pi/180);
-        dFv           = 4*input.CT(kk)*Rho*sol.v(x,y)*sin(input.phi(kk)*pi/180);      % SB: why here original v and not vv?
-        Smdu(x-2,y-1) = -dFu'.*dyy2(1,y)';
-        Smdv(x-1,y-2) =  dFv'.*dyy2(1,y)';
-        
-        dSm.dx = blkdiag(diag(vec(Smdu')'),diag(vec(Smdv')'),sparse((Ny-2)*(Nx-2),(Ny-2)*(Nx-2)));
-    end;
-    
-    if Derivatives
-        
+      
+    % Did not look at derivatives yet
+    if Derivatives     
         dvvdv         = 1/2*diag(sign(ylinev{kk}))+1/2*diag(sign(ylinev{kk}(1:end-1)),1); dvvdv(end,:)=[];
         dUdv(kk,:)    =  vv./U{kk};
         dUdu(kk,:)    =  uu./U{kk};
+               
+        dUedv(kk,:)= cos(input.phi(kk)*pi/180)*v./U{kk};
+        dUedu(kk,:)= cos(input.phi(kk)*pi/180)*u./U{kk};
         
-        
-        %% Here we are
-        
-        dUedv(kk,:)=-sin(atan(vv./(uu)) + input.phi(kk)/180*pi)./((uu).*...
-            (vv.^2./(uu).^2 + 1)).*U{kk}+cos(atan(vv./(uu))+input.phi(kk)/180*pi).*dUdv(kk,:); %% diff Ue wrt v
-        dUedv(kk,:)=-uu.*sin(atan(vv./uu) + input.phi(kk)/180*pi)./(vv.^2+uu.^2).*U{kk}+cos(atan(vv./(uu))+...
-            input.phi(kk)/180*pi).*dUdv(kk,:); %% diff Ue wrt v
-        dUedu(kk,:)=(vv.*sin(atan(vv./(uu)) + input.phi(kk)/180*pi))./((vv.^2 + (uu).^2)).*...
-            U{kk}+cos(atan(vv./(uu))+input.phi(kk)/180*pi).*dUdu(kk,:); %% diff Ue wrt u
-        
-        % Derivatives Thrust with respect to the state
-        dFxdU = Rho*CT(kk)*Ue{kk}*((input.beta(kk)+1)).^2*cos((mean(0*phi{kk})+input.phi(kk))*pi/180);
-        dFydU = Rho*CT(kk)*Ue{kk}*((input.beta(kk)+1)).^2*sin((mean(0*phi{kk})+input.phi(kk))*pi/180);
-        
-        
-        
+        % Derivatives Thrust with respect to the state (SB: are these
+        % correct? Not wrt u and v?
+        dFxdU = Rho*CT(kk)*Ue{kk}*cos(input.phi(kk)*pi/180);
+        dFydU = Rho*CT(kk)*Ue{kk}*sin(input.phi(kk)*pi/180);
+              
         dSm.xdu((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-3)*(Ny-2)+yline{kk}-1) = diag((-dFxdU.*dUedu(kk,:).*dyy2(1,yline{kk})));
         dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-2) = 1/2*diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})));
         dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-1) = dSm.xdv((xline(kk,:)-3)*(Ny-2)+yline{kk}-1,(xline(kk,:)-2)*(Ny-3)+yline{kk}-1)+ 1/2*diag((-dFxdU.*dUedv(kk,:).*dyy2(1,yline{kk})));
-        dSm.ydu((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-3)*(Ny-2)+yline{kk}(2:end)-1) = diag(scale*(dFydU(2:end).*dUedu(kk,2:end).*dyy2(1,yline{kk}(2:end))));
-        dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2) = 1/2*diag(scale*(dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))));
-        dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-1) =   dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-1)+ 1/2*diag(scale*(dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))));
+        dSm.ydu((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-3)*(Ny-2)+yline{kk}(2:end)-1) = diag((dFydU(2:end).*dUedu(kk,2:end).*dyy2(1,yline{kk}(2:end))));
+        dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2) = 1/2*diag((dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))));
+        dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-1) =   dSm.ydv((xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-2,(xline(kk,:)-2)*(Ny-3)+yline{kk}(2:end)-1)+ 1/2*diag((dFydU(2:end).*dUedv(kk,2:end).*dyy2(1,yline{kk}(2:end))));
         
         
         dSm.dbetadPower_in(kk) = 1/(1/cf*cp*2*Rho*pi*(0.5*Drotor)^2*mean(Ue{kk}).^3);
@@ -179,11 +161,11 @@ for kk=1:N
         dSmydphikk  = sparse(Nx-2,Ny-3);
         
         dSmxdbetakk(xline(kk,:)-2,yline{kk}-1)        =  -(dFxdCT.*dyy2(1,yline{kk}))';  %JW changed definition of force and location (need correction for yaw
-        dSmydbetakk(xline(kk,:)-1,yline{kk}(2:end)-2) = scale*(dFydCT(2:end).*dyy2(1,yline{kk}(2:end)))'; %% JW made this 0
+        dSmydbetakk(xline(kk,:)-1,yline{kk}(2:end)-2) = (dFydCT(2:end).*dyy2(1,yline{kk}(2:end)))'; %% JW made this 0
         dSm.dbeta(:,kk)                               = [vec(dSmxdbetakk');vec(dSmydbetakk')];
         
         dSmxdphikk(xline(kk,:)-2,yline{kk}-1)         = -dFxdPhi'.*dyy2(1,yline{kk})';
-        dSmydphikk(xline(kk,:)-1,yline{kk}(2:end)-2)  = scale*dFydPhi(2:end)'.*dyy2(1,yline{kk}(2:end))';
+        dSmydphikk(xline(kk,:)-1,yline{kk}(2:end)-2)  = dFydPhi(2:end)'.*dyy2(1,yline{kk}(2:end))';
         dSm.dphi(:,kk)                                = [vec(dSmxdphikk');vec(dSmydphikk')];
         
         dSm.dPower_in(:,kk)                           = [vec(dSmxdbetakk');vec(dSmydbetakk')].*dSm.dbetadPower_in(kk);
@@ -194,7 +176,6 @@ end
 %% Write to outputs
 sol.turbine.power(:,1)    = Power;
 sol.turbine.CT_prime(:,1) = CT;
-% sol.turbine.UrMean(:,1)   = UrMean;
 
 output.Sm  = Sm;
 if (Derivatives>0 || Linearversion>0)

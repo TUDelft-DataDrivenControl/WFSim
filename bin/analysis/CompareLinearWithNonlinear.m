@@ -3,58 +3,130 @@
 % with equivalent delta perturbations.
 clear; clc; close all;
 
-%% Initialize script
-options.Projection    = 0;                      % Use projection (true/false)
-options.Linearversion = 1;                      % Provide linear variant of WFSim (true/false)
-options.exportLinearSol= 1;                     % Calculate linear solution of WFSim
-options.Derivatives   = 0;                      % Compute derivatives
-options.startUniform  = 0;                      % Start from a uniform flowfield (true) or a steady-state solution (false)
-options.exportPressures= ~options.Projection;   % Calculate pressure fields
+Wp.name      = '2turb_adm_noturb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
 
-Wp.name             = 'Andreas';   % Meshing name (see "\bin\core\meshing.m")
-Wp.Turbulencemodel  = 'WFSim3';
+% Model settings (recommended: leave default)
+scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
+scriptOptions.Linearversion     = 1;        % Calculate linear system matrices of WFSim (bool).              Default: false.
+scriptOptions.exportLinearSol   = 1;        % Calculate linear solution of WFSim (bool).                     Default: false.
+scriptOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
+scriptOptions.startUniform      = 1;        % Start with a uniform flowfield (true) or with fully developed wakes (false).
+scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
 
-Wp.Turbulencemodel  = 'WFSim3';
-
-
-plotMesh      = 0;                      % Show meshing and turbine locations
-conv_eps      = 1e-6;                   % Convergence threshold
-max_it_dyn    = 1;                      % Maximum number of iterations for k > 1
-
-if options.startUniform==1
-    max_it = 1;
+% Convergence settings (recommended: leave default)
+scriptOptions.conv_eps          = 1e-6;     % Convergence threshold. Default: 1e-6.
+scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1. Default: 1.
+if scriptOptions.startUniform==1
+    scriptOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
 else
-    max_it = 50;
+    scriptOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
 end
 
-% WFSim general initialization script
-[Wp,sol,sys,Power,CT,a,Ueffect,input,B1,B2,bc] ...
-    = InitWFSim(Wp,options,plotMesh);
+% Display and visualization settings
+scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
+scriptOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
+scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
-%% Loop to get state-space matrices linear model 
-for k=1:2
-    tic
-    it        = 0;
-    eps       = 1e19;
-    epss      = 1e20;
+%% Script core functions
+run('../../WFSim_addpaths.m');                    % Add essential paths to MATLABs environment
+[Wp,sol,sys] = InitWFSim(Wp,scriptOptions); % Initialize WFSim model
+
+% Initialize variables and figure specific to this script
+sol_array = {}; % Create empty array to save 'sol' to at each time instant
+CPUTime   = zeros(Wp.sim.NN,1); % Create empty matrix to save CPU timings
+if scriptOptions.Animate > 0 % Create empty figure if Animation is on
+    hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
+           [0 0 1 1],'ToolBar','none','visible', 'on');
+end
+
+% Performing forward time propagations
+disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
+Wp.sim.NN  = 100;
+while sol.k < Wp.sim.NN
+    tic;                    % Start stopwatch
+    [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep: x_k+1 = f(x_k)
+    CPUTime(sol.k) = toc;   % Stop stopwatch
     
-    while ( eps>conv_eps && it<max_it && eps<epss );
-        it   = it+1;
-        epss = eps;
-        
-        if k>1
-            max_it = max_it_dyn;
-        end
-        
-        [sys,Power(:,k),Ueffect(:,k),a(:,k),CT(:,k)] = ...
-            Make_Ax_b(Wp,sys,sol,input{k},B1,B2,bc,k,options); % Create system matrices
-        [sol,sys] = Computesol(sys,input{k},sol,k,it,options);                   % Compute solution
-        [sol,eps] = MapSolution(Wp.mesh.Nx,Wp.mesh.Ny,sol,k,it,options);         % Map solution to field
-        
-    end
+    % Save sol to cell array
+    sol_array{sol.k} = sol; 
     
+    % Print progress, if necessary
+    if scriptOptions.printProgress
+        disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ...
+              ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
+    end;
+    
+    % Plot animations, if necessary
+    if scriptOptions.Animate > 0
+        if ~rem(sol.k,scriptOptions.Animate)
+            hfig = WFSim_linear_animation(Wp,sol,hfig); 
+        end; 
+    end; 
 end;
+disp(['Completed ' num2str(Wp.sim.NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
 
+%% Propagate the linear model forward in time
+close all;
+L       = 250;
+h       = 1;
+time    = (0:h:L);
+NN      = length(time);
+
+A       = sys.A\sys.Al;
+B       = sys.A\sys.Bl;
+nx      = size(A,1);
+nw      = size(B,2);
+
+x       = zeros(nx,NN);             % State
+w       = zeros(nw,NN);             % Input
+w(1,:)  = 0;
+w(2,:)  = 0.1;
+
+Nx    = Wp.mesh.Nx;
+Ny    = Wp.mesh.Ny;
+Dr    = Wp.turbine.Drotor;
+ldyy  = Wp.mesh.ldyy;
+ldxx2 = Wp.mesh.ldxx2;
+u_Inf = Wp.site.u_Inf;
+N     = Wp.turbine.N;
+Crx   = Wp.turbine.Crx;
+Cry   = Wp.turbine.Cry;
+
+[du,dv] = deal(zeros(Nx,Ny));
+
+for k=1:NN
+ 
+    x(:,k+1)             = A*x(:,k) + B*w(:,k);
+    du(3:end-1,2:end-1)  = reshape(x(1:(Nx-3)*(Ny-2),k),Ny-2,Nx-3)';
+    dv(2:end-1,3:end-1)  = reshape(x((Nx-3)*(Ny-2)+1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3),k),Ny-3,Nx-2)';
+    
+    turb_coord = .5*Dr*exp(1i*[0;0]*pi/180);  % Yaw angles
+    contourf(ldyy(1,:),ldxx2(:,1)',du,'Linecolor','none');  colormap(hot); caxis([-.2 .2]);  hold all; colorbar;
+    colorbar;
+    for kk=1:N
+        Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
+        Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
+        plot(Qy,Qx,'k','linewidth',1)
+    end
+    axis equal; axis tight
+    xlabel('y [m]')
+    ylabel('x [m]');
+    title('\delta u [m/s]')
+    hold off;
+    drawnow  
+end   
+
+
+
+
+
+return
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Below needs to be adapted
 %% Simulate linear and nonlinear model with same delta perturbation
 Linearversion = 0;
 Animate       = 10;

@@ -139,12 +139,17 @@ switch lower(scenarioName)
         error('No valid meshing specified. Please take a look at Wp.name.');
 end;
 
-%% Calculate time
+% calculate time
 time = 0:h:L;          % time vector for simulation
 NN   = length(time)-1; % Total number of simulation steps
 
+% compute input to linear model
+for kk=2:length(time)
+    turbInput(kk-1).dCT_prime = turbInput(kk).CT_prime - turbInput(kk-1).CT_prime; 
+end
+turbInput(end).dCT_prime = turbInput(end-1).dCT_prime;
 
-% linear gridding
+% construct grid
 ldx  = linspace(0,Lx,Nx);
 ldy  = linspace(0,Ly,Ny);
 
