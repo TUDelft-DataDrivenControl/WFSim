@@ -13,5 +13,5 @@ if exist(fn1) ~= 2 | exist(fn2) ~= 2
         error('Could not download LES data from URL. Check your internet settings.');
     end
 end
-disp('Found the necessary LES files.');
+% disp('Found the necessary LES files.');
 end
