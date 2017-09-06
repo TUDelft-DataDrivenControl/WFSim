@@ -19,7 +19,7 @@ WFSimfolder = binloc(1:strbslash(end)+6);
 switch lower(scenarioName)    
     
     % Wind farms for which PALM data is available        
-    case lower('2turb_adm_noturb')
+    case lower('2turb_adm_noturb') 
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
@@ -32,7 +32,11 @@ switch lower(scenarioName)
         mu         = 0*18e-5;    % Dynamic flow viscosity        
         m          = 5;          % Turbulence model gridding property        
         n          = 1;          % Turbulence model gridding property
-                   
+        
+        % Tuning notes '2turb_adm_noturb' (Sep 5th, 2017): 
+        % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
+        % Note:   gridsearched with wrong Drotor, corrected afterwards.
+        
     case lower('2turb_adm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
@@ -52,15 +56,19 @@ switch lower(scenarioName)
         load(meshFn);            % Load the LES meshing file
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = .95;        % Turbine power scaling
-        forcescale = 1.7;        % Turbine force scaling
+        forcescale = 1.6;        % Turbine force scaling
         p_init     = 0.0;        % Initial values for pressure terms (Pa)
         turbul     = true;       % Use mixing length turbulence model (true/false)        
         turbModel  = 'WFSim3';   % Turbulence model of choice   
-        lmu        = 0.3;        % Mixing length in x-direction (m)
+        lmu        = 0.6;        % Mixing length in x-direction (m)
         mu         = 0.0;        % Dynamic flow viscosity
-        m          = 4;          % Turbulence model gridding property        
-        n          = 2;          % Turbulence model gridding property
-        
+        m          = 1;          % Turbulence model gridding property        
+        n          = 4;          % Turbulence model gridding property
+
+        % Tuning notes '2turb_yaw_adm_noturb' (Sep 5th, 2017): 
+        % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
+        % Note:   gridsearched with wrong Drotor, corrected afterwards.
+
     case lower('apc_9turb_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
@@ -89,7 +97,11 @@ switch lower(scenarioName)
         mu         = 0*18e-5;    % Dynamic flow viscosity        
         m          = 1;          % Turbulence model gridding property        
         n          = 4;          % Turbulence model gridding property
-                 
+
+        % Tuning notes '2turb_alm_noturb' (Sep 5th, 2017): 
+        % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
+        % Note:   Seems to reach m/n limits. Could be improved?
+                  
     case lower('2turb_alm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
