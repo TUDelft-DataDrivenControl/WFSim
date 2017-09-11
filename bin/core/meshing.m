@@ -51,10 +51,9 @@ switch lower(scenarioName)
         mu         = 0.0;        % Dynamic flow viscosity
         m          = 1;          % Turbulence model gridding property        
         n          = 4;          % Turbulence model gridding property
-
-        % Tuning notes '2turb_yaw_adm_noturb' (Sep 5th, 2017): 
+        
+        % Tuning notes '2turb_yaw_adm_noturb' (Sep 7th, 2017): 
         % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
-        % Note:   gridsearched with wrong Drotor, corrected afterwards.
 
     case lower('apc_9turb_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
@@ -69,6 +68,9 @@ switch lower(scenarioName)
         mu         = 0.0;        % Dynamic flow viscosity
         m          = 4;          % Turbulence model gridding property        
         n          = 2;          % Turbulence model gridding property        
+        
+        % Tuning notes 'apc_9turb_adm_noturb' (Sep 10th, 2017): 
+        % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
         
     % Wind farms for which SOWFA data is available
     case lower('2turb_alm_noturb')
@@ -109,15 +111,18 @@ switch lower(scenarioName)
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);             % Load the LES meshing file
         Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
-        powerscale  = 1.0;        % Turbine power scaling
-        forcescale  = 2.2;        % Turbine force scaling
+        powerscale  = 0.97;        % Turbine power scaling
+        forcescale  = 2.0;        % Turbine force scaling
         p_init   = 0.0;           % Initial values for pressure terms (Pa)
         turbul   = true;          % Use mixing length turbulence model (true/false)        
         turbModel  = 'WFSim3';    % Turbulence model of choice   
-        lmu      = 1.3;           % Mixing length in x-direction (m)
+        lmu      = 1.20;          % Mixing length in x-direction (m)
         mu       = 0*18e-5;       % Dynamic flow viscosity        
         m        = 7;             % Turbulence model gridding property          
         n        = 1;             % Turbulence model gridding property
+        
+        % Tuning notes 'apc_9turb_alm_turb' (Sep 11th, 2017): 
+        % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.5, m = 1:8, n = 1:4
         
     case lower('yaw_2turb_alm_noturb')
         error('This case has not yet been tuned/validated. Remove this message manually in meshing.m to continue.');
