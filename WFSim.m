@@ -86,7 +86,7 @@ end
 % Display and visualization settings
 scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
 scriptOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
-scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+scriptOptions.Animate           = 100;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 

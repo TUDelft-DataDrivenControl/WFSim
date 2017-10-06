@@ -21,7 +21,7 @@ end
 % Display and visualization settings
 scriptOptions.printProgress     = 1;  % Print progress every timestep
 scriptOptions.printConvergence  = 1;  % Print convergence parameters every timestep
-scriptOptions.Animate           = 10;  % Show 2D flow fields every x iterations (0: no plots)
+scriptOptions.Animate           = 0;  % Show 2D flow fields every x iterations (0: no plots)
 scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
 
@@ -29,7 +29,7 @@ scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
 %% Script core
 % WFSim: call initialization script
-Wp.name      = '2turb_adm_noturb';
+Wp.name      = '6turb_adm_turb';
 
 run('../../WFSim_addpaths'); % Add paths
 [Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
