@@ -62,7 +62,7 @@ switch lower(scenarioName)
         powerscale = .95;        % Turbine power scaling
         forcescale = 1.5;        % Turbine force scaling
         p_init     = 0.0;        % Initial values for pressure terms (Pa)
-        turbul     = false;       % Use mixing length turbulence model (true/false)        
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
         turbModel  = 'WFSim3';   % Turbulence model of choice   
         lmu        = 0.6;        % Mixing length in x-direction (m)
         mu         = 0.0;        % Dynamic flow viscosity
