@@ -21,7 +21,7 @@ end
 % Display and visualization settings
 scriptOptions.printProgress     = 1;  % Print progress every timestep
 scriptOptions.printConvergence  = 1;  % Print convergence parameters every timestep
-scriptOptions.Animate           = 0;  % Show 2D flow fields every x iterations (0: no plots)
+scriptOptions.Animate           = 100;  % Show 2D flow fields every x iterations (0: no plots)
 scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
 
@@ -480,44 +480,16 @@ if Wp.turbine.N==9
     %suptitle('First row: WFSim (black) and PALM (blue)')
 end
 
-
-%% Plot cross-sections
-% if Wp.turbine.N==2
-% indices  = [250 500 750 999];
-%
-% for k=indices
-%     SOWFAdata     = load([sourcepath num2str(list{k})]);
-%     usowfa(:,:,k) = SOWFAdata.uq;
-%     VAF(k)        = vaf(usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,k),...
-%     uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,k));
-% end
-%
-% figure(6);clf;
-% subplot(2,2,1)
-% plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'k','Linewidth',1);hold on;
-% plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(1)),'b','Linewidth',1);grid;
-% vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
-% ylabel('$u$ [m/s]','interpreter','latex');
-% %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
-% title( ['VAF = ',num2str(VAF(indices(1)),3), '\% at $k$ = ', num2str(indices(1)), ' [s]'] , 'interpreter','latex')
-% subplot(2,2,2)
-% plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(2)),'k','Linewidth',1);hold on;
-% plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(2)),'b','Linewidth',1);grid;
-% vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
-% %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
-% title( ['VAF = ',num2str(VAF(indices(2)),3), '\% at $k$ = ', num2str(indices(2)), ' [s]'] , 'interpreter','latex')
-% subplot(2,2,3)
-% plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(3)),'k','Linewidth',1);hold on;
-% plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(3)),'b','Linewidth',1);grid;
-% vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
-% xlabel('$y$ [m]','interpreter','latex');ylabel('$u$ [m/s]','interpreter','latex');
-% %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
-% title( ['VAF = ',num2str(VAF(indices(3)),3), '\% at $k$ = ', num2str(indices(3)), ' [s]'] , 'interpreter','latex')
-% subplot(2,2,4)
-% plot(Wp.mesh.ldyy2(1,:)',uk(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(4)),'k','Linewidth',1);hold on;
-% plot(Wp.mesh.ldyy2(1,:)',usowfa(Wp.mesh.xline(1)+round(5*length(Wp.mesh.yline{1})),:,indices(4)),'b','Linewidth',1);grid;
-% vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(1)));vline(Wp.mesh.ldyy2(1,Wp.mesh.yline{1}(end)))
-% xlabel('$y$ [m]','interpreter','latex');
-% %ylim([3 Wp.site.u_Inf+1]);xlim([Wp.mesh.ldxx2(1,1) Wp.mesh.ldxx2(end,1)]);
-% title( ['VAF = ',num2str(VAF(indices(4)),3), '\% at $k$ = ', num2str(indices(4)), ' [s]'] , 'interpreter','latex')
-% end
+if Wp.turbine.N==6
+    figure(100);clf
+    for kk=1:6
+        subplot(3,2,kk)
+        plot(Wp.sim.time(1:Nt),turbData.power(kk,1:Nt),'b--');hold on
+        plot(Wp.sim.time(1:Nt),Power(kk,1:Nt),'k');
+        axis([0,Wp.sim.time(Nt) 0 max(max(turbData.power(:,1:end)))+10^5])
+        ylabel('$P$ [W]', 'interpreter','latex')
+        xlabel('$t [s]$','interpreter','latex');
+        title('WFSim (black) PALM (blue dashed)', 'interpreter','latex')
+        grid;hold off;
+    end
+end
