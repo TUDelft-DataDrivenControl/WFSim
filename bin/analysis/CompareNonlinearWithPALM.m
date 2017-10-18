@@ -45,7 +45,7 @@ end
 
 load(Wp.sim.measurementFile)
 sol.u = squeeze(u(1,:,:));
-sol.v = squeeze(v(1,:,:));
+sol.v = 0*squeeze(v(1,:,:));
 
 % Performing timestepping until end
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
