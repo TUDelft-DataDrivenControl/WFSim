@@ -160,7 +160,7 @@ plot(Wp.sim.time(1:Nt),sum(turbData.power(:,1:Nt)),'b--');
 grid;xlabel('$t [s]$','interpreter','latex');
 ylabel('$P$ [W]','interpreter','latex');
 title('Wind farm power: WFSim (black) PALM (blue dashed)','interpreter','latex');
-xlim([0 Nt])
+xlim([0 Wp.sim.time(Nt)])
 
 % wind turbine powers
 n = size(unique(Wp.mesh.xline),1);
