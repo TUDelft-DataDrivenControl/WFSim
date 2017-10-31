@@ -11,11 +11,8 @@ if nargin <= 1; plotMesh = true;                         end;
 if nargin <= 2; PrintGridMismatch = true;                end;
 
 % Some pre-processing to determine correct input file location
-binloc  = which('meshing.m');
-if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end; % Compatible with both UNIX and PC
-strbslash   = strfind(binloc ,[slashSymbol 'WFSim']);
-WFSimfolder = binloc(1:strbslash(end)+6);
-
+coreloc = fileparts(mfilename('fullpath'));
+WFSimfolder = [coreloc(1:end-9) filesep];
 switch lower(scenarioName)    
     
     % Wind farms for which PALM data is available        
