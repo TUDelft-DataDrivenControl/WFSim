@@ -22,6 +22,7 @@ switch lower(scenarioName)
     case{lower('2turb_adm_turb'),lower('2turb_adm_noturb')}
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = 1.0;        % Turbine power scaling
         forcescale = 1.7;        % Turbine force scaling
@@ -41,6 +42,7 @@ switch lower(scenarioName)
     case lower('2turb_yaw_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = .95;        % Turbine power scaling
         forcescale = 1.6;        % Turbine force scaling
@@ -58,6 +60,7 @@ switch lower(scenarioName)
     case lower('6turb_adm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = .95;        % Turbine power scaling
         forcescale = 1.5;        % Turbine force scaling
@@ -75,6 +78,7 @@ switch lower(scenarioName)
     case lower('6turb_adm_partial')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = .95;        % Turbine power scaling
         forcescale = 1.5;        % Turbine force scaling
@@ -92,6 +96,7 @@ switch lower(scenarioName)
     case lower('apc_9turb_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = .90;        % Turbine power scaling
         forcescale = 1.6;        % Turbine force scaling
@@ -110,6 +115,7 @@ switch lower(scenarioName)
     case lower('2turb_alm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = 0.95;       % Turbine power scaling
         forcescale = 1.40;       % Turbine force scaling
@@ -127,6 +133,7 @@ switch lower(scenarioName)
     case lower('2turb_alm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale = 0.95;       % Turbine power scaling
         forcescale = 1.4;        % Turbine force scaling
@@ -144,6 +151,7 @@ switch lower(scenarioName)
     case lower('apc_9turb_alm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);             % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale  = 0.97;        % Turbine power scaling
         forcescale  = 2.0;        % Turbine force scaling
@@ -162,6 +170,7 @@ switch lower(scenarioName)
         error('This case has not yet been tuned/validated. Remove this message manually in meshing.m to continue.');
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);             % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale  = 0.95;        % Turbine power scaling
         forcescale  = 1.4;        % Turbine force scaling
@@ -177,6 +186,7 @@ switch lower(scenarioName)
         error('This case has not yet been tuned/validated. Remove this message manually in meshing.m to continue.');
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);             % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
         Drotor      = Drotor(1);  % WFSim only supports a uniform Drotor for now
         powerscale  = 1.0;        % Turbine power scaling
         forcescale  = 1.2;        % Turbine force scaling
@@ -300,7 +310,7 @@ end;
 
 %% Export to Wp and input
 Wp         = struct('Nu',Nu,'Nv',Nv,'Np',Np,'name',scenarioName);
-Wp.sim     = struct('h',h,'time',time,'L',L,'NN',NN);
+Wp.sim     = struct('h',h,'time',time,'L',L,'NN',NN,'startUniform',startUniform);
 Wp.turbine = struct('Drotor',Drotor,'powerscale',powerscale,'forcescale',forcescale, ...
     'N',length(Crx),'Crx',Crx,'Cry',Cry);
 Wp.turbine.input = turbInput; % System inputs too

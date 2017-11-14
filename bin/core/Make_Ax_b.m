@@ -4,7 +4,7 @@ Nx    = Wp.mesh.Nx;
 Ny    = Wp.mesh.Ny;
 
 % Decide whether to start from uniform flow field or steady state
-if sol.k == 1 && options.startUniform == 0
+if sol.k == 1 && Wp.sim.startUniform == 0
     dt = Inf;
 else
     dt = Wp.sim.h;
