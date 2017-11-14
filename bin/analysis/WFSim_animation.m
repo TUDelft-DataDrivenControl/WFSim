@@ -90,11 +90,13 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
         Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
         Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
         plot(Qy,Qx,'k','linewidth',1)
+        str = strcat('$T_',num2str(kk),'$');
+        text(Cry(kk)+80,Crx(kk),str,'interpreter','latex')
     end
-    text(0,ldxx2(end,end)+80,['Time ', num2str(time(k),'%.1f'), 's']);
-    xlabel('y [m]')
-    ylabel('x [m]');
-    title('u [m/s]');
+    text(-70,ldxx2(end,end)+80,['$t=~$ ', num2str(time(k),'%.1f'), '[s]'],'interpreter','latex');
+    xlabel('$y$ [m]','interpreter','latex')
+    ylabel('$x$ [m]','interpreter','latex');
+    title('$u$ [m/s]','interpreter','latex');
     hold off;
 
     %% Plot the v velocity flow component
@@ -108,9 +110,9 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
         plot(Qy,Qx,'k','linewidth',1)
     end
     axis equal; axis tight
-    xlabel('y [m]')
-    ylabel('x [m]');
-    title('v [m/s]')
+    xlabel('$y$ [m]','interpreter','latex')
+    ylabel('$x$ [m]','interpreter','latex');
+    title('$v$ [m/s]','interpreter','latex')
     hold off;
 
     %% Wake mean centreline first turbine
@@ -121,11 +123,11 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     set(0,'CurrentFigure',hfig);
     subplot(2,2,4)
     plot(ldxx2(:,1)',up(:,k),'k','Linewidth',2);
-    xlabel('x [m]');ylabel('U_c [m/s]');grid;
+    xlabel('$x$ [m]','interpreter','latex');ylabel('$U_c$ [m/s]','interpreter','latex');grid;
     ylim([0 u_Inf+1]);xlim([ldxx2(1,1) ldxx2(end,1)]);
     for kk=1:N
         vline(Crx(kk),'r--')
-        vline(Crx(kk)+6*Dr,'b:','6D')
+        vline(Crx(kk)+3*Dr,'b:','3D')
     end
     if N==1
         hline(u_Inf,'k--','u_b');
