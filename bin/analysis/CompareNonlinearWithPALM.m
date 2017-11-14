@@ -6,17 +6,11 @@ scriptOptions.Projection        = 0;        % Use projection (true/false)
 scriptOptions.Linearversion     = 0;        % Provide linear variant of WFSim (true/false)
 scriptOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim
 scriptOptions.Derivatives       = 0;        % Compute derivatives
-scriptOptions.startUniform      = 1;        % Start from a uniform flowfield (true) or a steady-state solution (false)
 scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields
 
 % Convergence settings
 scriptOptions.conv_eps          = 1e-6;     % Convergence threshold
 scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1
-if scriptOptions.startUniform==1
-    scriptOptions.max_it = 1;
-else
-    scriptOptions.max_it = 50;
-end
 
 % Display and visualization settings
 scriptOptions.printProgress     = 1;  % Print progress every timestep
@@ -41,6 +35,11 @@ if scriptOptions.Animate > 0
     %scrsz = get(0,'ScreenSize');
     hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
         [0 0 1 1],'ToolBar','none','visible', 'on');
+end
+if Wp.sim.startUniform==1
+    scriptOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
+else
+    scriptOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
 end
 
 load(Wp.sim.measurementFile)
@@ -84,9 +83,10 @@ while sol.k < Wp.sim.NN
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(turb_coord(ll)),Wp.turbine.Crx(ll)+imag(turb_coord(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
-            text(0,Wp.mesh.ldxx2(end,end)+250,['Time ', num2str(Wp.sim.time(sol.k),'%.1f'), 's']);
-            ylabel('x [m]');
-            title('WFSim u [m/s]');
+            str = strcat('$t=~$ ', num2str(Wp.sim.time(sol.k),'%.1f'), '[s]');
+            text(0,Wp.mesh.ldxx2(end,end)+250,str,'interpreter','latex');
+            ylabel('$x$ [m]','interpreter','latex');
+            title('WFSim $u$ [m/s]','interpreter','latex');
             hold off;
             subplot(2,3,2);
             contourf(Wp.mesh.ldyy(1,:),Wp.mesh.ldxx2(:,1)',squeeze(u(sol.k,:,:)),'Linecolor','none');  colormap(hot);
@@ -97,7 +97,7 @@ while sol.k < Wp.sim.NN
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(turb_coord(ll)),Wp.turbine.Crx(ll)+imag(turb_coord(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
-            title('PALM u [m/s]');
+            title('PALM $u$ [m/s]','interpreter','latex');
             hold off;
             
             subplot(2,3,3);
@@ -111,7 +111,7 @@ while sol.k < Wp.sim.NN
                 Qx     = linspace(Wp.turbine.Crx(ll)-imag(turb_coord(ll)),Wp.turbine.Crx(ll)+imag(turb_coord(ll)),length(Qy));
                 plot(Qy,Qx,'k','linewidth',1)
             end
-            title('error [m/s]');
+            title('error [m/s]','interpreter','latex');
             hold off;           
             subplot(2,3,4);
             plot(Wp.sim.time(1:sol.k),turbData.power(1:sol.k,1));hold on
