@@ -52,9 +52,9 @@ clear; clc; close all; %
 %         sys.A:     System matrix A in the grand picture: A*sol.x = b
 %         sys.b:     System vector b in the grand picture: A*sol.x = b
 %         sys.pRCM:  Reverse Cuthill-McKee algorithm for solving A*x=b faster.
-%         sys.B1:    Important matrix in the boundary conditions.
-%         sys.B2:    Important matrix in the boundary conditions.
-%         sys.bc:    Important vector in the boundary conditions.
+%         sys.B1:    Submatrix in the matrix sys.A.
+%         sys.B2:    Submatrix in the matrix sys.A.
+%         sys.bc:    Vector with boundary conditions of the continuity equation (part of sys.b).
 %
 %%   Debugging and contributing:
 %     - First, try to locate any errors by turning all possible outputs
@@ -64,24 +64,18 @@ clear; clc; close all; %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Define script settings
-Wp.name      = '6turb_adm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
+Wp.name      = '2turb_alm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
 scriptOptions.Linearversion     = 0;        % Calculate linear system matrices of WFSim (bool).              Default: false.
 scriptOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
 scriptOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
-scriptOptions.startUniform      = 1;        % Start with a uniform flowfield (true) or with fully developed wakes (false).
 scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
 
 % Convergence settings (recommended: leave default)
 scriptOptions.conv_eps          = 1e-6;     % Convergence threshold. Default: 1e-6.
 scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1. Default: 1.
-if scriptOptions.startUniform==1
-    scriptOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
-else
-    scriptOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
-end
 
 % Display and visualization settings
 scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
@@ -100,6 +94,11 @@ CPUTime   = zeros(Wp.sim.NN,1); % Create empty matrix to save CPU timings
 if scriptOptions.Animate > 0 % Create empty figure if Animation is on
     hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
            [0 0 1 1],'ToolBar','none','visible', 'on');
+end
+if Wp.sim.startUniform==1
+    scriptOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
+else
+    scriptOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
 end
 
 % Performing forward time propagations
