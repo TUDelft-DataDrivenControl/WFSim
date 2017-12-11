@@ -14,18 +14,10 @@ dxx    = Wp.mesh.dxx;
 dyy    = Wp.mesh.dyy;
 dxx2   = Wp.mesh.dxx2;
 dyy2   = Wp.mesh.dyy2;
-xline  = Wp.mesh.xline;
-yline  = Wp.mesh.yline;
 
 Rho    = Wp.site.Rho;
 mu     = Wp.site.mu;
-lmu    = Wp.site.lmu;
 Turb   = Wp.site.turbul;
-m      = Wp.site.m;
-n      = Wp.site.n;
-
-Drotor = Wp.turbine.Drotor;
-N      = Wp.turbine.N;
 
 u      = sol.u;
 v      = sol.v;
