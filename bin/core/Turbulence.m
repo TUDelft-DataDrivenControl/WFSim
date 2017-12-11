@@ -1,3 +1,11 @@
+m      = Wp.site.m;
+n      = Wp.site.n;
+lmu    = Wp.site.lmu;
+xline  = Wp.mesh.xline;
+yline  = Wp.mesh.yline;
+Drotor = Wp.turbine.Drotor;
+N      = Wp.turbine.N;
+
 % Define spatial varying mixing-length parameter
 if N==1
     x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
@@ -21,7 +29,7 @@ elseif N==6
     x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
     x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
     y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{2}(1)-yline{1}(end)-1)...
-                         ones(1,length(yline{2})) zeros(1,Ny-yline{2}(end))] ;
+        ones(1,length(yline{2})) zeros(1,Ny-yline{2}(end))] ;
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 elseif N==9
     xline            = sort(unique(xline));
@@ -29,14 +37,14 @@ elseif N==9
     x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
     x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
     y                = [zeros(1,yline{3}(1)-1) ones(1,length(yline{3})) zeros(1,yline{5}(1)-yline{3}(end)-1) ...
-                        ones(1,length(yline{5})) zeros(1,yline{7}(1)-yline{5}(end)-1) ...
-                        ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
+        ones(1,length(yline{5})) zeros(1,yline{7}(1)-yline{5}(end)-1) ...
+        ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
     mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
 else
     mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
 end
-    %clear mixing_length 
-    %mixing_length    = 0.5*0.5*Drotor*ones(Nx,Ny);
+
+%lmu = ConstructLmu( Wp );
 
 if size(mixing_length,1)>1
     H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
@@ -115,11 +123,11 @@ switch lower(Wp.site.Turbulencemodel)
             .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx3D(1:Nx,2:Ny)   = Rho/(Wp.turbine.Drotor)*dyy2(1:Nx,2:Ny).*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2))...
             .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-       
+        
         ax.aN             = ax.aN + ax.Tnx3D;
         ax.aS             = ax.aS + ax.Tsx3D;
         ax.aP             = ax.aP + ax.Tnx3D + ax.Tsx3D;
-           
+        
         % For v-momentum equation
         ay.Tey   = zeros(Nx,Ny);
         ay.Twy   = zeros(Nx,Ny);
@@ -351,7 +359,7 @@ switch lower(Wp.site.Turbulencemodel)
             .*abs(u(1:Nx,2:Ny)-u(1:Nx,1:Ny-1));
         ax.Tsx(1:Nx,2:Ny)   = Rho*(mixing_length(1:Nx,2:Ny).^2).*(dxx(1:Nx,2:Ny)./(dyy(1:Nx,2:Ny).^2))...
             .*abs(u(1:Nx,1:Ny-1)-u(1:Nx,2:Ny));
-                
+        
         ax.aN             = ax.aN + ax.Tnx;
         ax.aS             = ax.aS + ax.Tsx;
         ax.aP             = ax.aP + ax.Tnx + ax.Tsx;
@@ -399,5 +407,5 @@ switch lower(Wp.site.Turbulencemodel)
             day.E(1:Nx,2:Ny)   = day.E(1:Nx,2:Ny)   + ay.Tey(1:Nx,2:Ny) ;
             day.W(1:Nx,1:Ny-1) = day.W(1:Nx,1:Ny-1) + ay.Twy(1:Nx,1:Ny-1);
             day.P(1:Nx,1:Ny-1) = day.P(1:Nx,1:Ny-1) + ay.Tey(1:Nx,1:Ny-1) + ay.Twy(1:Nx,1:Ny-1) ;
-        end;      
+        end;
 end
