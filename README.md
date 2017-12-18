@@ -5,7 +5,7 @@ Developed by Boersma et al., Delft University of Technology, 2017
 
 
 ## Summary:
-WindFarmSimulator (WFSim) is a medium-fidelity, control-oriented wind farm model based on the two-dimensional Navier-Stokes equations. It is currently actively developed at the Delft University of Technology by Sjoerd Boersma and Bart Doekemeijer. The most recent publication on WFSim can be found here: https://www.wind-energ-sci-discuss.net/wes-2017-44/
+WindFarmSimulator (WFSim) is a medium-fidelity, control-oriented wind farm model based on the two-dimensional Navier-Stokes equations. It is currently actively developed at the Delft University of Technology by Sjoerd Boersma and Bart Doekemeijer. The most recent publication on WFSim can be found online: https://www.wind-energ-sci-discuss.net/wes-2017-44/
 
 ## Quick use:
 Open WFSim.m with any recent version of MATLAB. Follow the instructions therein to perform simple simulations of various wind farm scenarios. Missing files will be downloaded automatically on first run, so make sure you are connected to the internet.
