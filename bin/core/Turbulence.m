@@ -44,7 +44,7 @@ else
     mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
 end
 
-%lmu = ConstructLmu( Wp );
+lmu = ConstructLmu( Wp );
 
 if size(mixing_length,1)>1
     H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
