@@ -9,8 +9,8 @@ dprime  = Wp.site.n;
 max_lmu = Wp.site.lmu; % = ls*(d-dprime)
 
 uniqueXline = sort(unique(xline));
-for kk=1:length(yline);uniqueYline(kk,:)=yline{kk};end
-uniqueYline = unique(sort(uniqueYline),'rows');
+for kk=1:length(yline);Yline(kk,:)=yline{kk};end
+uniqueYline = unique(sort(Yline),'rows');
 
 % lmu in x-direction
 lmux    = [];
