@@ -3,7 +3,7 @@
 % with equivalent delta perturbations.
 clear; clc; close all;
 
-Wp.name      = '2turb_adm_noturb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
+Wp.name      = '6turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
@@ -26,7 +26,7 @@ end
 scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
 scriptOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
 scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
-scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
+scriptOptions.plotMesh          = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 %% Script core functions
 run('../../WFSim_addpaths.m');                    % Add essential paths to MATLABs environment
@@ -42,8 +42,11 @@ end
 
 % Performing forward time propagations
 disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
+
 Wp.sim.NN  = 100;
+
 while sol.k < Wp.sim.NN
+    
     tic;                    % Start stopwatch
     [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep: x_k+1 = f(x_k)
     CPUTime(sol.k) = toc;   % Stop stopwatch
@@ -60,28 +63,43 @@ while sol.k < Wp.sim.NN
     % Plot animations, if necessary
     if scriptOptions.Animate > 0
         if ~rem(sol.k,scriptOptions.Animate)
-            hfig = WFSim_linear_animation(Wp,sol,hfig); 
+            hfig = WFSim_animation(Wp,sol,hfig); 
         end; 
     end; 
 end;
 disp(['Completed ' num2str(Wp.sim.NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
 
+return
+
 %% Propagate the linear model forward in time
 close all;
-L       = 250;
+L       = 300;
 h       = 1;
 time    = (0:h:L);
 NN      = length(time);
 
 A       = sys.A\sys.Al;
 B       = sys.A\sys.Bl;
+C       = zeros(2,size(A,1));
+for kk=1:Wp.turbine.N
+    C(kk,(Wp.mesh.xline(kk)-3)*(Wp.mesh.Ny-2)+Wp.mesh.yline{kk}(1)-1:...
+    (Wp.mesh.xline(kk)-3)*(Wp.mesh.Ny-2)+Wp.mesh.yline{kk}(end)-1) = 1/length(Wp.mesh.yline{kk});
+end
+%%
+ny      = size(C,1);    
 nx      = size(A,1);
 nw      = size(B,2);
 
 x       = zeros(nx,NN);             % State
+y       = zeros(ny,NN);             % State
 w       = zeros(nw,NN);             % Input
-w(1,:)  = 0;
-w(2,:)  = 0.1;
+w(1,:)  = -.3;
+w(3,:)  = .0;
+w(5,:)  = .3;
+
+w(2,:)  = .0;
+w(4,:)  = -.3;
+w(6,:)  = .0;
 
 Nx    = Wp.mesh.Nx;
 Ny    = Wp.mesh.Ny;
@@ -98,25 +116,47 @@ Cry   = Wp.turbine.Cry;
 for k=1:NN
  
     x(:,k+1)             = A*x(:,k) + B*w(:,k);
+    y(:,k)               = C*x(:,k);
     du(3:end-1,2:end-1)  = reshape(x(1:(Nx-3)*(Ny-2),k),Ny-2,Nx-3)';
-    dv(2:end-1,3:end-1)  = reshape(x((Nx-3)*(Ny-2)+1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3),k),Ny-3,Nx-2)';
+    dv(2:end-1,3:end-1)  = reshape(x((Nx-3)*(Ny-2)+1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3),k),Ny-3,Nx-2)';  
     
-    turb_coord = .5*Dr*exp(1i*[0;0]*pi/180);  % Yaw angles
-    contourf(ldyy(1,:),ldxx2(:,1)',du,'Linecolor','none');  colormap(hot); caxis([-.2 .2]);  hold all; colorbar;
-    colorbar;
-    for kk=1:N
-        Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
-        Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
-        plot(Qy,Qx,'k','linewidth',1)
+    for ll=1:2
+    yw(:,k,ll)           = mean(du(:,Wp.mesh.yline{ll}),2);
     end
-    axis equal; axis tight
-    xlabel('y [m]')
-    ylabel('x [m]');
-    title('\delta u [m/s]')
-    hold off;
-    drawnow  
+%     input      = Wp.turbine.input(k);
+%     turb_coord = .5*Dr*exp(1i*input.phi*pi/180);  % Yaw angles
+%     contourf(ldyy(1,:),ldxx2(:,1)',du,'Linecolor','none');  colormap(hot); caxis([-.2 .2]);  hold all; colorbar;
+%     colorbar;
+%     for kk=1:N
+%         Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
+%         Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
+%         plot(Qy,Qx,'k','linewidth',1)
+%     end
+%     axis equal; axis tight
+%     xlabel('y [m]')
+%     ylabel('x [m]');
+%     title('\delta u [m/s]')
+%     hold off;
+%     drawnow  
 end   
 
+seq   = [2 4 6 1 3 5];
+%seq   = [1 6 3 4 1 5];
+% y(time,turbine,measurement)
+% measurement = [time, turbine_number, force, power, Ur]
+figure(2);clf
+ll = 0;
+for kk=seq
+    ll = ll + 1;
+    subplot(2,3,ll)
+    stairs(time,y(ll,:),'b');hold on; 
+    str = strcat('$U_',num2str(kk,'%.0f'),'$');
+    ylabel([str,' [m/s]'],'interpreter','latex');
+    xlabel('$t$ [s]','interpreter','latex')
+    grid;xlim([0 time(end)]);
+    if ll==2;title({'Wind velocity at the rotor';' '},'interpreter','latex');end;
+    if ll==1;annotation(gcf,'arrow',[0.017 0.08],[0.51 0.51]);end;
+end
 
 
 

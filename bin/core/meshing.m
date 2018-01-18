@@ -28,7 +28,7 @@ switch lower(scenarioName)
         forcescale = 1.7;        % Turbine force scaling
         p_init     = 0.0;        % Initial values for pressure terms (Pa)
         turbul     = true;       % Use mixing length turbulence model (true/false)        
-        turbModel  = 'WFSim3';   % Turbulence model of choice
+        turbModel  = 'WFSim4';   % Turbulence model of choice
         lmu        = 0.45;       % Mixing length in x-direction (m)
         mu         = 0*18e-5;    % Dynamic flow viscosity        
         m          = 1;          % Turbulence model gridding property        
@@ -74,7 +74,21 @@ switch lower(scenarioName)
         
         % Tuning notes '6turb_adm_turb' (Oct 06th, 2017): 
         % Ranges: lmu= xxx, f = xxx, m = xxx, n = xxx
-             
+    case lower('6turb')
+        [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
+        load(meshFn);            % Load the LES meshing file
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
+        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
+        powerscale = .95;        % Turbine power scaling
+        forcescale = 1.5;        % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice   
+        lmu        = 0.6;        % = ls*(d-dprime). Mixing length in x-direction (m)
+        mu         = 0.0;        % Dynamic flow viscosity
+        m          = 4;          % Turbulence model gridding property        
+        n          = 2;          % Turbulence model gridding property         
+        
     case lower('apc_9turb_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
