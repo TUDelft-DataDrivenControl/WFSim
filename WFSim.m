@@ -64,7 +64,7 @@ clear; clc; close all; %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Define script settings
-Wp.name      = '6turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
+Wp.name      = 'apc_9turb_alm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
