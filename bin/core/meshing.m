@@ -13,8 +13,8 @@ if nargin <= 2; PrintGridMismatch = true;                end;
 % Some pre-processing to determine correct input file location
 binloc  = which('meshing.m');
 if ispc; slashSymbol = '\'; else; slashSymbol = '/'; end; % Compatible with both UNIX and PC
-strbslash   = strfind(binloc ,[slashSymbol 'WFSim']);
-WFSimfolder = binloc(1:strbslash(end)+6);
+strbslash   = strfind(binloc ,[slashSymbol]);
+WFSimfolder = binloc(1:strbslash(end-2));
 
 switch lower(scenarioName)    
     
