@@ -57,7 +57,7 @@ switch lower(scenarioName)
         % Tuning notes '2turb_yaw_adm_noturb' (Sep 7th, 2017): 
         % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
     
-      case lower('6turb_adm')
+      case lower('6turb_adm_turb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
         startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
@@ -73,24 +73,7 @@ switch lower(scenarioName)
         n          = 2;          % Turbulence model gridding property         
          
         % Ranges: lmu= xxx, f = xxx, m = xxx, n = xxx  
-        
-    case lower('6turb')
-        [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
-        load(meshFn);            % Load the LES meshing file
-        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
-        Drotor     = Drotor(1);  % WFSim only supports a uniform Drotor for now
-        powerscale = .95;        % Turbine power scaling
-        forcescale = 1.5;        % Turbine force scaling
-        p_init     = 0.0;        % Initial values for pressure terms (Pa)
-        turbul     = true;       % Use mixing length turbulence model (true/false)        
-        turbModel  = 'WFSim3';   % Turbulence model of choice   
-        lmu        = 0.6;        % = ls*(d-dprime). Mixing length in x-direction (m)
-        mu         = 0.0;        % Dynamic flow viscosity
-        m          = 4;          % Turbulence model gridding property        
-        n          = 2;          % Turbulence model gridding property         
-         
-        % Ranges: lmu= xxx, f = xxx, m = xxx, n = xxx     
-    
+            
     case lower('apc_9turb_adm_noturb')
         [meshFn,measurementFn] = downloadLESdata( WFSimfolder, lower(scenarioName) ); % Download files
         load(meshFn);            % Load the LES meshing file
