@@ -72,6 +72,9 @@ switch lower(scenarioName)
         m          = 4;          % Turbulence model gridding property        
         n          = 2;          % Turbulence model gridding property         
          
+%         d_lower  = 73.3;  % Turbulence model gridding property (WES: d')
+%         d_upper  = 601.9; % Turbulence model gridding property (WES: d)
+%         lm_slope = 0.068; % Turbulence model gridding property (WES: l_s)
         % Ranges: lmu= xxx, f = xxx, m = xxx, n = xxx  
             
     case lower('apc_9turb_adm_noturb')
@@ -297,6 +300,13 @@ Wp.turbine = struct('Drotor',Drotor,'powerscale',powerscale,'forcescale',forcesc
 Wp.turbine.input = turbInput; % System inputs too
 Wp.site    = struct('mu',mu,'Rho',Rho,'u_Inf',u_Inf,'v_Inf',v_Inf,'p_init',p_init, ...
     'lmu',lmu,'turbul',turbul,'m',m,'n',n,'Turbulencemodel',turbModel);
+
+if exist('d_upper') == 1 % Optional inputs
+    Wp.site.d_upper  = d_upper; 
+    Wp.site.d_lower  = d_lower;
+    Wp.site.lm_slope = lm_slope;
+end
+
 Wp.mesh    = struct('Lx',Lx,'Ly',Ly,'Nx',Nx,'Ny',Ny,'ldxx',ldxx,'ldyy',ldyy,'ldxx2',...
     ldxx2,'ldyy2',ldyy2,'dxx',dxx,'dyy',dyy,'dxx2',dxx2,'dyy2',dyy2,...
     'xline',xline,'type',gridType);
