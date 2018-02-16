@@ -16,7 +16,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
 
     Rho    = Wp.site.Rho;
     mu     = Wp.site.mu;
-    lmu    = Wp.site.lmu;
+%     lmu    = Wp.site.lmu;
     Turb   = Wp.site.turbul;
     u_Inf  = Wp.site.u_Inf;
     v_Inf  = Wp.site.v_Inf;
