@@ -1,6 +1,3 @@
-m      = Wp.site.m;
-n      = Wp.site.n;
-lmu    = Wp.site.lmu;
 xline  = Wp.mesh.xline;
 yline  = Wp.mesh.yline;
 Drotor = Wp.turbine.Drotor;
@@ -14,6 +11,9 @@ if any(strcmp(fieldnames(Wp.site),'d_upper'))
                                  Wp.site.d_lower,Wp.site.d_upper,Wp.site.lm_slope);
 else
     % Otherwise fall back on the outdated methodology (for older meshes)
+    m      = Wp.site.m;
+    n      = Wp.site.n;
+    lmu    = Wp.site.lmu;
     if N==1
         x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
         y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
