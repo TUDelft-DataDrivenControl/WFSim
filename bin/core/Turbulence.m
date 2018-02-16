@@ -6,53 +6,61 @@ yline  = Wp.mesh.yline;
 Drotor = Wp.turbine.Drotor;
 N      = Wp.turbine.N;
 
-% Define spatial varying mixing-length parameter
-if N==1
-    x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
-    y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-elseif N==2
-    x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
-    x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
-    y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-elseif N==3
-    xline            = sort(unique(xline));
-    x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
-    x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
-    x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
-    y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
-    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-elseif N==6
-    xline            = sort(unique(xline));
-    x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
-    x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
-    x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
-    y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{4}(1)-yline{1}(end)-1)...
-        ones(1,length(yline{4})) zeros(1,Ny-yline{4}(end))] ;
-    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
-elseif N==9
-    xline            = sort(unique(xline));
-    x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
-    x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
-    x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
-    y                = [zeros(1,yline{3}(1)-1) ones(1,length(yline{3})) zeros(1,yline{5}(1)-yline{3}(end)-1) ...
-        ones(1,length(yline{5})) zeros(1,yline{7}(1)-yline{5}(end)-1) ...
-        ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
-    mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+% Determine mixing length distribution in the field
+if any(strcmp(fieldnames(Wp.site),'d_upper'))
+    % Use the new meshing methodology, if available
+    mixing_length = constructLmu(Wp.mesh.ldxx2,Wp.mesh.ldyy,tan(Wp.site.v_Inf/Wp.site.u_Inf),...
+                                 Wp.turbine.Crx,Wp.turbine.Cry,Wp.turbine.Drotor,...
+                                 Wp.site.d_lower,Wp.site.d_upper,Wp.site.lm_slope);
 else
-    mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
-end
-
-%lmu = ConstructLmu( Wp );
-
-if size(mixing_length,1)>1
-    H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
-    mixing_length    = filter2(H,mixing_length);
-end
-
-switch lower(Wp.site.Turbulencemodel)
+    % Otherwise fall back on the outdated methodology (for older meshes)
+    if N==1
+        x                = [zeros(1,xline(1)+n) linspace(0,lmu,Nx-xline(1)-n)]';
+        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
+        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    elseif N==2
+        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(1+1)-xline(1)-4*n)]';
+        x                = [x;zeros(4*n,1);linspace(0,lmu,Nx-xline(2)-n)'];
+        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
+        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    elseif N==3
+        xline            = sort(unique(xline));
+        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
+        x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
+        x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
+        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,Ny-yline{1}(end))] ;
+        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    elseif N==6
+        xline            = sort(unique(xline));
+        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
+        x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
+        x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
+        y                = [zeros(1,yline{1}(1)-1) ones(1,length(yline{1})) zeros(1,yline{4}(1)-yline{1}(end)-1)...
+            ones(1,length(yline{4})) zeros(1,Ny-yline{4}(end))] ;
+        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    elseif N==9
+        xline            = sort(unique(xline));
+        x                = [zeros(1,xline(1)+n) linspace(0,lmu,xline(2)-xline(1)-m)]';
+        x                = [x;zeros(m,1);linspace(0,lmu,xline(3)-xline(2)-m)'];
+        x                = [x;zeros(m,1);linspace(0,lmu,Nx-xline(3)-n)'];
+        y                = [zeros(1,yline{3}(1)-1) ones(1,length(yline{3})) zeros(1,yline{5}(1)-yline{3}(end)-1) ...
+            ones(1,length(yline{5})) zeros(1,yline{7}(1)-yline{5}(end)-1) ...
+            ones(1,length(yline{7})) zeros(1,Ny-yline{7}(end))];
+        mixing_length    = (repmat(x,1,Ny).*repmat(y,Nx,1))*0.5*Drotor;
+    else
+        mixing_length    = lmu*0.5*Drotor*ones(Nx,Ny);
+    end
     
+    if size(mixing_length,1)>1
+        H                = fspecial('disk',1); % You need Nx,Nx to keep it symmetric
+        mixing_length    = filter2(H,mixing_length);
+    end    
+end
+
+% figure; surf(Wp.mesh.ldyy2,Wp.mesh.ldxx,mixing_length); axis equal; xlabel('y'); ylabel('x');
+
+% Determine effect on flow field for specific turbulence model case
+switch lower(Wp.site.Turbulencemodel)
     case lower('WFSim5')
         
         % For u-momentum equation
