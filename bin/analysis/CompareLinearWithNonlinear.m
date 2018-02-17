@@ -72,7 +72,7 @@ while sol.k < Wp.sim.NN
 end;
 disp(['Completed ' num2str(Wp.sim.NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
 
-
+return
 %% Propagate the linear model forward in time
 close all;clc;
 disp('Wind farm in steady-state. Start linear model propagation');
@@ -194,12 +194,16 @@ for kk=seq
     ylim([-.4 .4])
 end
 
-
-
+sys     = ss(A,B,C,0,Wp.sim.h);
 
 
 return
-
+omega = logspace(-3,3,100);
+Nw    = length(omega);
+G     = zeros(ny,nw,Nw);
+for kk=1:Nw
+   G(:,:,kk) = C*( (exp(1i*omega(kk))*eye(nx)-A)\B );
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

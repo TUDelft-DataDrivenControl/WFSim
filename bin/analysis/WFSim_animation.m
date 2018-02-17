@@ -90,7 +90,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
         Qy     = (Cry(kk)-real(turb_coord(kk))):1:(Cry(kk)+real(turb_coord(kk)));
         Qx     = linspace(Crx(kk)-imag(turb_coord(kk)),Crx(kk)+imag(turb_coord(kk)),length(Qy));
         plot(Qy,Qx,'k','linewidth',1)
-        str = strcat('$T_',num2str(kk),'$');
+        str = strcat('$T_{',num2str(kk),'}$');
         text(Cry(kk)+80,Crx(kk),str,'interpreter','latex')
     end
     text(-70,ldxx2(end,end)+80,['$t=~$ ', num2str(time(k),'%.1f'), '[s]'],'interpreter','latex');
