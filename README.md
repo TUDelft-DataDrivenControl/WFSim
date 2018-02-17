@@ -1,6 +1,6 @@
 
  ##   WindFarmSimulator (WFSim)
-Developed by Boersma et al., Delft University of Technology, 2017
+Developed by Doekemeijer and Boersma, Delft University of Technology, 2017
             
 
 
