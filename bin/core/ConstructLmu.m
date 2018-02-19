@@ -1,4 +1,4 @@
-function lm=constructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
+function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
     % Check inputs
     if d_upper <= d_lower
         error('Make sure your upper bound is larger than your lower bound on the Lmu turbulence model.');
