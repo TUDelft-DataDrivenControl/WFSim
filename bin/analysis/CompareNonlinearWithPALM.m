@@ -23,7 +23,7 @@ scriptOptions.plotMesh          = 0;  % Show meshing and turbine locations
 
 %% Script core
 % WFSim: call initialization script
-Wp.name      = '6turb_adm_turb';
+Wp.name      = 'apc_9turb_adm_noturb';
 
 run('../../WFSim_addpaths'); % Add paths
 [Wp,sol,sys] = InitWFSim(Wp,scriptOptions);
@@ -181,24 +181,24 @@ if Wp.turbine.N==2
 elseif Wp.turbine.N==9
     figure(4);clf;
     subplot(1,3,1)
-    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,:),'b');hold on;
-    plot(Wp.sim.time(1:Nt),turbData.CT(2:Nt,:),'k');
-    plot(Wp.sim.time(1:Nt),turbData.CT(3:Nt,:),'r');grid;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,1),'b');hold on;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,2),'k');
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,3),'r');grid;
     xlim([0 Wp.sim.time(Nt)])
     ylabel('$CT^{\prime}$','interpreter','latex');
     xlabel('$t$ [s]','interpreter','latex');
     title('$CT^{\prime}_1$ (blue), $CT^{\prime}_2$ (black), $CT^{\prime}_3$ (red)','interpreter','latex')
     subplot(1,3,2)
-    plot(Wp.sim.time(1:Nt),turbData.CT(4:Nt,:),'b');hold on;
-    plot(Wp.sim.time(1:Nt),turbData.CT(5:Nt,:),'k');
-    plot(Wp.sim.time(1:Nt),turbData.CT(6:Nt,:),'r');grid;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,4),'b');hold on;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,5),'k');
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,6),'r');grid;
     xlim([0 Wp.sim.time(Nt)])
     xlabel('$t$ [s]','interpreter','latex');
     title('$CT^{\prime}_4$ (blue), $CT^{\prime}_5$ (black), $CT^{\prime}_6$ (red)','interpreter','latex')
     subplot(1,3,3)
-    plot(Wp.sim.time(1:Nt),turbData.CT(7:Nt,:),'b');hold on;
-    plot(Wp.sim.time(1:Nt),turbData.CT(8:Nt,:),'k');
-    plot(Wp.sim.time(1:Nt),turbData.CT(9:Nt,:),'r');grid;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,7),'b');hold on;
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,8),'k');
+    plot(Wp.sim.time(1:Nt),turbData.CT(1:Nt,9),'r');grid;
     xlim([0 Wp.sim.time(Nt)])
     title('$CT^{\prime}_7$ (blue), $CT^{\prime}_8$ (black), $CT^{\prime}_9$ (red)','interpreter','latex')
     xlabel('$t$ [s]','interpreter','latex');
