@@ -350,7 +350,42 @@ switch lower(scenarioName)
          
         d_lower  = 50;   % Turbulence model gridding property (WES: d')
         d_upper  = 700;  % Turbulence model gridding property (WES: d)
-        lm_slope = 0.05; % Turbulence model gridding property (WES: l_s)        
+        lm_slope = 0.05; % Turbulence model gridding property (WES: l_s)     
+        
+    case lower('clwindcon_windTunnel')
+        gridType    = 'lin';
+        Drotor      = 1.0;
+        Lx          = 10*Drotor;
+        Ly          = 5*Drotor;
+        Nx          = 40;
+        Ny          = 20;
+        Crx         = [2.0*Drotor 6.0*Drotor];
+        Cry         = [2.0*Drotor 2.5*Drotor];
+        h           = 0.03;
+        L           = 10;
+        
+        NT = length(Crx);
+        for i = 1:ceil(L/h+1) % Control settings
+            turbInput(i) = struct('t',h*i,...
+                                  'phi',zeros(NT,1),...
+                                  'CT_prime',2*ones(NT,1));
+        end
+            
+        u_Inf       = 5.7;
+        v_Inf       = 0.0;
+        Rho         = 1.20;
+        startUniform = true;     % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
+        powerscale = 1.0;        % Turbine power scaling
+        forcescale = 1.5;        % Turbine force scaling
+        p_init     = 0.0;        % Initial values for pressure terms (Pa)
+        turbul     = true;       % Use mixing length turbulence model (true/false)        
+        turbModel  = 'WFSim3';   % Turbulence model of choice   
+        mu         = 0.0;        % Dynamic flow viscosity
+         
+        d_lower  = 0.1;   % Turbulence model gridding property (WES: d')
+        d_upper  = 3;     % Turbulence model gridding property (WES: d)
+        lm_slope = 0.1;   % Turbulence model gridding property (WES: l_s)
+        
     otherwise
         error('No valid meshing specified. Please take a look at Wp.name.');
 end;
