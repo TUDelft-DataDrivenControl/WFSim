@@ -3,7 +3,7 @@
 % with equivalent delta perturbations.
 clear; clc; close all;
 
-Wp.name      = '6turb_adm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
+Wp.name      = '3turb_adm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.

@@ -68,7 +68,7 @@ Wp.name      = '6turb_adm_turb';    % Choose which scenario to simulate. See 'bi
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
-scriptOptions.Linearversion     = 0;        % Calculate linear system matrices of WFSim (bool).              Default: false.
+scriptOptions.Linearversion     = 1;        % Calculate linear system matrices of WFSim (bool).              Default: false.
 scriptOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
 scriptOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
 scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
@@ -80,7 +80,7 @@ scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k
 % Display and visualization settings
 scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
 scriptOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
-scriptOptions.Animate           = 100;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
