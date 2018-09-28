@@ -11,7 +11,7 @@ Drotor          = Wp.turbine.Drotor;
 powerscale      = Wp.turbine.powerscale;
 N               = Wp.turbine.N;
 F               = Wp.turbine.forcescale; 
-input           = Wp.turbine.input(sol.k);
+input           = sol.turbInput;
 Projection      = options.Projection;
 Linearversion   = options.Linearversion;
 Derivatives     = options.Derivatives;
@@ -53,7 +53,6 @@ for kk=1:N
     Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
     meanUe{kk}    = mean(Ue{kk});  
     CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
-    dCT(kk)       = input.dCT_prime(kk); 
     Phi(kk)       = input.phi(kk);
     
     %% Thrust force       
@@ -70,7 +69,8 @@ for kk=1:N
     
     % Matrices for linear version
     if Linearversion
-              
+        dCT(kk) = input.dCT_prime(kk); 
+        
         dFthrustdCT             = F*1/2*Rho*Ue{kk}.^2;
         dFxdCT                  = dFthrustdCT.*cos(phi{kk}+Phi(kk)*pi/180);
         dFydCT                  = dFthrustdCT.*sin(phi{kk}+Phi(kk)*pi/180);

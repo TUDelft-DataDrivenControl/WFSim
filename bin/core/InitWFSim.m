@@ -1,4 +1,4 @@
-function [Wp,sol,sys] = InitWFSim(Wp,options)
+function [Wp,sol,sys] = InitWFSim(Wp,options,plotMesh)
 %INITWFSIM  Initializes the WFSim model
 
     % Create empty structs
@@ -6,7 +6,7 @@ function [Wp,sol,sys] = InitWFSim(Wp,options)
     sol = struct; % This struct will contain the solution (flowfields, power, ...) at time k
     
     % Import simulation scenario (meshing, atmospheric properties, turbine settings)
-    [Wp] = meshing(Wp,options.plotMesh,options.plotMesh); 
+    [Wp] = meshing(Wp,plotMesh,plotMesh); 
 
     % Initialize time vector for sol at time k = 0
     sol = struct('k',0,'time',0);

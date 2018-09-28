@@ -25,9 +25,9 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
     N      = Wp.turbine.N;
     Cry    = Wp.turbine.Cry;
     Crx    = Wp.turbine.Crx;
-    input  = Wp.turbine.input(sol.k);
+    input  = sol.turbInput;
 
-    time   = Wp.sim.time;
+    time   = sol.time;
     k      = sol.k;
     
     turb_coord = .5*Dr*exp(1i*input.phi*pi/180);  % Yaw angles
@@ -93,7 +93,7 @@ function [hfig] = WFSim_animation( Wp,sol,hfig )
         str = strcat('$T_{',num2str(kk),'}$');
         text(Cry(kk)+80,Crx(kk),str,'interpreter','latex')
     end
-    text(-70,ldxx2(end,end)+80,['$t=~$ ', num2str(time(k),'%.1f'), '[s]'],'interpreter','latex');
+    text(-70,ldxx2(end,end)+80,['$t=~$ ', num2str(time,'%.1f'), '[s]'],'interpreter','latex');
     xlabel('$y$ [m]','interpreter','latex')
     ylabel('$x$ [m]','interpreter','latex');
     title('$u$ [m/s]','interpreter','latex');

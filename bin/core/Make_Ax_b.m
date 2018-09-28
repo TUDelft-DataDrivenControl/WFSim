@@ -20,7 +20,7 @@ end;
 Ay    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ay,2,3,1);
 Ax    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ax,3,2,1);
 
-switch lower(Wp.site.Turbulencemodel)
+switch lower(Wp.site.turbModel)
     case lower('WFSim1')
         sys.A = [blkdiag(Ax,Ay) [sys.B1;2*sys.B2]; [sys.B1;2*sys.B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];      
     case lower('WFSim2')

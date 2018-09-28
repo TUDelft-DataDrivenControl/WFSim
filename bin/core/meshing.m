@@ -8,12 +8,6 @@ if nargin <= 0; error('Please specify a meshing case.'); end;
 if nargin <= 1; plotMesh = true;                         end;
 if nargin <= 2; PrintGridMismatch = true;                end;
 
-% % compute input to linear model
-% for kk=2:length(time)
-%     turbInput(kk-1).dCT_prime = turbInput(kk).CT_prime - turbInput(kk-1).CT_prime; 
-% end
-% turbInput(end).dCT_prime = turbInput(end-1).dCT_prime;
-
 % construct grid
 ldx  = linspace(0,Wp.mesh.Lx,Wp.mesh.Nx);
 ldy  = linspace(0,Wp.mesh.Ly,Wp.mesh.Ny);

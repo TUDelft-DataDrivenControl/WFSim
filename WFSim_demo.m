@@ -65,30 +65,32 @@ clear; clc; close all; %
 
 %% Define script settings
 addpath('layoutDefinitions')
-Wp = palm_6turb_adm_turbl();    % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+Wp = palm_2turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+turbInputSet = controlSet_palm_2turb_adm_turbl(Wp); % Choose control set 
 NN = 1000; % Number of timesteps
 
+
 % Model settings (recommended: leave default)
-scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
-scriptOptions.Linearversion     = 1;        % Calculate linear system matrices of WFSim (bool).              Default: false.
-scriptOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
-scriptOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
-scriptOptions.exportPressures   = ~scriptOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
+modelOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
+modelOptions.Linearversion     = 1;        % Calculate linear system matrices of WFSim (bool).              Default: false.
+modelOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
+modelOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
+modelOptions.exportPressures   = ~modelOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
 
 % Convergence settings (recommended: leave default)
-scriptOptions.conv_eps          = 1e-6;     % Convergence threshold. Default: 1e-6.
-scriptOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1. Default: 1.
+modelOptions.conv_eps          = 1e-6;     % Convergence threshold. Default: 1e-6.
+modelOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1. Default: 1.
 
 % Display and visualization settings
 scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
-scriptOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
+modelOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
 scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
-scriptOptions.plotMesh          = 1;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
+scriptOptions.plotMesh          = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
 %% Script core functions
 run('WFSim_addpaths.m');                    % Add essential paths to MATLABs environment
-[Wp,sol,sys] = InitWFSim(Wp,scriptOptions); % Initialize WFSim model
+[Wp,sol,sys] = InitWFSim(Wp,modelOptions,scriptOptions.plotMesh); % Initialize WFSim model
 
 % Initialize variables and figure specific to this script
 sol_array = {}; % Create empty array to save 'sol' to at each time instant
@@ -98,16 +100,25 @@ if scriptOptions.Animate > 0 % Create empty figure if Animation is on
            [0 0 1 1],'ToolBar','none','visible', 'on');
 end
 if Wp.sim.startUniform==1
-    scriptOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
+    modelOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
 else
-    scriptOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
+    modelOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
 end
 
 % Performing forward time propagations
 disp(['Performing ' num2str(NN) ' forward simulations..']);
 while sol.k < NN
     tic;                    % Start stopwatch
-    [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep: x_k+1 = f(x_k)
+    
+    % Determine control setting at current time
+    turbInput = struct('t',sol.time);
+    for i = 1:Wp.turbine.N
+        turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);
+        turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
+    end
+    
+    % Propagate the WFSim model
+    [sol,sys]      = WFSim_timestepping(sol,sys,Wp,turbInput,modelOptions); % forward timestep: x_k+1 = f(x_k)
     CPUTime(sol.k) = toc;   % Stop stopwatch
     
     % Save sol to cell array
