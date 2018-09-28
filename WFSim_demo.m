@@ -64,7 +64,9 @@ clear; clc; close all; %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Define script settings
-Wp.name      = '6turb_adm_turb';    % Choose which scenario to simulate. See 'bin/core/meshing.m' for the full list.
+addpath('layoutDefinitions')
+Wp = palm_6turb_adm_turbl();    % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+NN = 1000; % Number of timesteps
 
 % Model settings (recommended: leave default)
 scriptOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
@@ -90,7 +92,7 @@ run('WFSim_addpaths.m');                    % Add essential paths to MATLABs env
 
 % Initialize variables and figure specific to this script
 sol_array = {}; % Create empty array to save 'sol' to at each time instant
-CPUTime   = zeros(Wp.sim.NN,1); % Create empty matrix to save CPU timings
+CPUTime   = []; % Create empty matrix to save CPU timings
 if scriptOptions.Animate > 0 % Create empty figure if Animation is on
     hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
            [0 0 1 1],'ToolBar','none','visible', 'on');
@@ -102,8 +104,8 @@ else
 end
 
 % Performing forward time propagations
-disp(['Performing ' num2str(Wp.sim.NN) ' forward simulations..']);
-while sol.k < Wp.sim.NN
+disp(['Performing ' num2str(NN) ' forward simulations..']);
+while sol.k < NN
     tic;                    % Start stopwatch
     [sol,sys]      = WFSim_timestepping(sol,sys,Wp,scriptOptions); % forward timestep: x_k+1 = f(x_k)
     CPUTime(sol.k) = toc;   % Stop stopwatch

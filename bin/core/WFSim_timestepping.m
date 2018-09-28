@@ -4,7 +4,7 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, scriptOpt
     % Import necessary information from sol_in (previous timestep)
     sol_out      = sol_in;
     sol_out.k    = sol_in.k + 1;            % Propagate forward in time
-    sol_out.time = Wp.sim.time(sol_in.k+2); % Propagate forward in time
+    sol_out.time = sol_in.time + Wp.sim.h; % Propagate forward in time
     sol_out.uk   = sol_in.u;
     sol_out.vk   = sol_in.v;
     

@@ -60,7 +60,7 @@ end
 % figure; surf(Wp.mesh.ldyy2,Wp.mesh.ldxx,mixing_length); axis equal; xlabel('y'); ylabel('x');
 
 % Determine effect on flow field for specific turbulence model case
-switch lower(Wp.site.Turbulencemodel)
+switch lower(Wp.site.turbModel)
     case lower('WFSim5')
         
         % For u-momentum equation
