@@ -2,8 +2,8 @@ clear; clc; close all; %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%      WIND FARM SIMULATOR (WFSIM) by S. Boersma and B. Doekemeijer
-%                 Delft University of Technology, 2017
-%              Repo: https://github.com/Bartdoekemeijer/WFSim
+%                 Delft University of Technology, 2018
+%          Repo: https://github.com/TUDelft-DataDrivenControl/WFSim
 %
 %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  % 
 %
