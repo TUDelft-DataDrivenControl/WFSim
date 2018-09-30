@@ -8,17 +8,23 @@ clear; clc; close all; %
 %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  % 
 %
 %%   Quick use:
-%     1. Specify the wind farm you would like to simulate on line 68.
+%     1. Specify the wind farm you would like to simulate on line 73.
 %        A list of all the wind farm scenarios can be found in
-%        'bin/core/meshing.m'. You can also create your own wind farm
-%        scenario here.
-%     2. Set up the scriptOptions settings in lines 71-91. Leave the
-%        default if you are unfamiliar with the code.
+%        the 'layoutDefinitions' folder. You can also create your own 
+%        wind farm scenario here.
+%     2. Either load a predefined timeseries of control inputs using line
+%        74, or alternatively add your turbine/farm controllers in lines
+%        115-119.
+%     3. Setup the model solver settings in line 75. The default selection
+%        is 'solverSet_default(Wp)', as defined in 'solverDefintions'.
+%     3. Setup the simulation settings in lines 78-81.
 %     3. Press start.
 %
 %%   Relevant input/output variables
-%     - scriptOptions: this struct contains all simulation settings, not
-%     related to the wind farm itself (solution methodology, outputs, etc.)
+%     - modelOptions: this struct contains simulation settings
+%     related to the wind farm itself (solution methodology, etc.)
+%     - scriptOptions: this struct contains simulation settings, not
+%     related to the wind farm itself (outputs, etc.)
 %
 %     - Wp: this struct contains all the simulation settings related to the
 %           wind farm, the turbine inputs, the atmospheric properties, etc.
@@ -42,11 +48,7 @@ clear; clc; close all; %
 %         sol.pp:    Same as sol.p, used for convergence
 %         sol.turbine: a struct containing relevant turbine outputs such as
 %         the ax. ind. factor, the generated power, and the ct coefficient
-%         sol.measuredData: a struct containing the true flow field and the
-%         measurements used for estimation
-%         sol.score: a struct containing estimator performance measures
-%         such as the magnitude and location of the maximum flow estimation
-%         error, the RMSE, and the computational cost (CPU time)
+%         sol.turbInput: turbine inputs at current time
 %
 %     - sys: this struct contains the system matrices at a certain timestep.
 %         sys.A:     System matrix A in the grand picture: A*sol.x = b
@@ -63,26 +65,17 @@ clear; clc; close all; %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %% Define simulation settings: layout, control inputs and simulation duration
 addpath('layoutDefinitions') % Folder with predefined wind farm layouts
 addpath('controlDefinitions') % Make use of a predefined timeseries of control inputs
-Wp = sowfa_9turb_apc_alm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
-turbInputSet = controlSet_sowfa_9turb_apc_alm_turbl(Wp); % Choose control set 
+addpath('solverDefinitions'); % Folder with model options, solver settings, etc.
+Wp = palm_6turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+turbInputSet = controlSet_palm_6turb_adm_turbl(Wp); % Choose control set 
+modelOptions = solverSet_default(Wp); % Choose model solver options
+
+% Simulation length, display and visualization settings
 NN = floor(turbInputSet.t(end)/Wp.sim.h); % Number of timesteps in simulation
-
-% Model settings (recommended: leave default)
-modelOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
-modelOptions.Linearversion     = 1;        % Calculate linear system matrices of WFSim (bool).              Default: false.
-modelOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
-modelOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
-modelOptions.exportPressures   = ~modelOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
-
-% Convergence settings (recommended: leave default)
-modelOptions.printConvergence = 0;    % Print convergence values every timestep. Default: false.
-modelOptions.conv_eps         = 1e-6; % Convergence threshold. Default: 1e-6.
-modelOptions.max_it_dyn       = 1;    % Maximum number of iterations for k > 1. Default: 1.
-
-% Display and visualization settings
 scriptOptions.printProgress   = 1;    % Print progress in cmd window every timestep. Default: true.
 scriptOptions.Animate         = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 scriptOptions.plotMesh        = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
@@ -93,16 +86,10 @@ run('WFSim_addpaths.m');                    % Add essential paths to MATLABs env
 [Wp,sol,sys] = InitWFSim(Wp,modelOptions,scriptOptions.plotMesh); % Initialize WFSim model
 
 % Initialize variables and figure specific to this script
-sol_array = {}; % Create empty array to save 'sol' to at each time instant
 CPUTime   = []; % Create empty matrix to save CPU timings
 if scriptOptions.Animate > 0 % Create empty figure if Animation is on
-    hfig = figure('color',[0 166/255 214/255],'units','normalized','outerposition',...
-           [0 0 1 1],'ToolBar','none','visible', 'on');
-end
-if Wp.sim.startUniform==1
-    modelOptions.max_it = 1;               % Maximum n.o. of iterations for k == 1, when startUniform = 1.
-else
-    modelOptions.max_it = 50;              % Maximum n.o. of iterations for k == 1, when startUniform = 0.
+    hfig = figure('color',[0 166/255 214/255],'units','normalized',...
+        'outerposition',[0 0 1 1],'ToolBar','none','visible', 'on');
 end
 
 % Performing forward time propagations
@@ -122,7 +109,7 @@ while sol.k < NN
     CPUTime(sol.k) = toc;   % Stop stopwatch
     
     % Save sol to cell array
-    sol_array{sol.k} = sol; 
+    sol_array(sol.k) = sol; 
     
     % Print progress, if necessary
     if scriptOptions.printProgress
