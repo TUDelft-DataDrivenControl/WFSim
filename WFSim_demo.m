@@ -63,12 +63,12 @@ clear; clc; close all; %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Define script settings
-addpath('layoutDefinitions')
-Wp = palm_2turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
-turbInputSet = controlSet_palm_2turb_adm_turbl(Wp); % Choose control set 
-NN = 1000; % Number of timesteps
-
+%% Define simulation settings: layout, control inputs and simulation duration
+addpath('layoutDefinitions') % Folder with predefined wind farm layouts
+addpath('controlDefinitions') % Make use of a predefined timeseries of control inputs
+Wp = sowfa_9turb_apc_alm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+turbInputSet = controlSet_sowfa_9turb_apc_alm_turbl(Wp); % Choose control set 
+NN = floor(turbInputSet.t(end)/Wp.sim.h); % Number of timesteps in simulation
 
 % Model settings (recommended: leave default)
 modelOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
@@ -78,14 +78,14 @@ modelOptions.Derivatives       = 0;        % Compute derivatives, useful for pre
 modelOptions.exportPressures   = ~modelOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
 
 % Convergence settings (recommended: leave default)
-modelOptions.conv_eps          = 1e-6;     % Convergence threshold. Default: 1e-6.
-modelOptions.max_it_dyn        = 1;        % Maximum number of iterations for k > 1. Default: 1.
+modelOptions.printConvergence = 0;    % Print convergence values every timestep. Default: false.
+modelOptions.conv_eps         = 1e-6; % Convergence threshold. Default: 1e-6.
+modelOptions.max_it_dyn       = 1;    % Maximum number of iterations for k > 1. Default: 1.
 
 % Display and visualization settings
-scriptOptions.printProgress     = 1;    % Print progress in cmd window every timestep. Default: true.
-modelOptions.printConvergence  = 0;    % Print convergence values every timestep.     Default: false.
-scriptOptions.Animate           = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
-scriptOptions.plotMesh          = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
+scriptOptions.printProgress   = 1;    % Print progress in cmd window every timestep. Default: true.
+scriptOptions.Animate         = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+scriptOptions.plotMesh        = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
 %% Script core functions
@@ -110,7 +110,7 @@ disp(['Performing ' num2str(NN) ' forward simulations..']);
 while sol.k < NN
     tic;                    % Start stopwatch
     
-    % Determine control setting at current time
+    % Determine control setting at current time by interpolation of time series
     turbInput = struct('t',sol.time);
     for i = 1:Wp.turbine.N
         turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);
@@ -128,13 +128,13 @@ while sol.k < NN
     if scriptOptions.printProgress
         disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ...
               ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
-    end;
+    end
     
     % Plot animations, if necessary
     if scriptOptions.Animate > 0
         if ~rem(sol.k,scriptOptions.Animate)
             hfig = WFSim_animation(Wp,sol,hfig); 
-        end; 
-    end; 
-end;
+        end
+    end
+end
 disp(['Completed ' num2str(Wp.sim.NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
