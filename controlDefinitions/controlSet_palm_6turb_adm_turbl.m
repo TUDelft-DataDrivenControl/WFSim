@@ -1,8 +1,8 @@
-function turbInputSet = controlSet_palm_2turb_adm_turbl(Wp)
+function turbInputSet = controlSet_palm_6turb_adm_turbl(Wp)
     turbInputSet = struct();
     
     addpath([fileparts(which(mfilename)) '/LES_database']); % Add LES database
-    loadedDB = load('DB_palm_2turb_adm_turbl.mat');
+    loadedDB = load('DB_palm_6turb_adm_turbl.mat');
     
     turbInputSet.t = [loadedDB.turbInput.t];
     turbInputSet.phi = [loadedDB.turbInput.phi];
