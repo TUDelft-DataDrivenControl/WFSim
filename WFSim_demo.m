@@ -68,26 +68,26 @@ clear; clc; close all; %
 
 %% Define simulation settings: layout, control inputs and simulation duration
 addpath('layoutDefinitions') % Folder with predefined wind farm layouts
-addpath('controlDefinitions') % Make use of a predefined timeseries of control inputs
-addpath('solverDefinitions'); % Folder with model options, solver settings, etc.
 Wp = layoutSet_palm_6turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+addpath('controlDefinitions') % Make use of a predefined timeseries of control inputs
 turbInputSet = controlSet_palm_6turb_adm_turbl(Wp); % Choose control set 
+addpath('solverDefinitions'); % Folder with model options, solver settings, etc.
 modelOptions = solverSet_default(Wp); % Choose model solver options
 
 % Simulation length, display and visualization settings
 NN = floor(turbInputSet.t(end)/Wp.sim.h); % Number of timesteps in simulation
-scriptOptions.printProgress   = 1;    % Print progress in cmd window every timestep. Default: true.
-scriptOptions.Animate         = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
-scriptOptions.plotMesh        = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
+verboseOptions.printProgress = 1;    % Print progress in cmd window every timestep. Default: true.
+verboseOptions.Animate       = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+verboseOptions.plotMesh      = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
 %% Script core functions
 run('WFSim_addpaths.m');                    % Add essential paths to MATLABs environment
-[Wp,sol,sys] = InitWFSim(Wp,modelOptions,scriptOptions.plotMesh); % Initialize WFSim model
+[Wp,sol,sys] = InitWFSim(Wp,modelOptions,verboseOptions.plotMesh); % Initialize WFSim model
 
 % Initialize variables and figure specific to this script
 CPUTime   = []; % Create empty matrix to save CPU timings
-if scriptOptions.Animate > 0 % Create empty figure if Animation is on
+if verboseOptions.Animate > 0 % Create empty figure if Animation is on
     hfig = figure('color',[0 166/255 214/255],'units','normalized',...
         'outerposition',[0 0 1 1],'ToolBar','none','visible', 'on');
 end
@@ -112,14 +112,14 @@ while sol.k < NN
     sol_array(sol.k) = sol; 
     
     % Print progress, if necessary
-    if scriptOptions.printProgress
+    if verboseOptions.printProgress
         disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ...
               ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.']);
     end
     
     % Plot animations, if necessary
-    if scriptOptions.Animate > 0
-        if ~rem(sol.k,scriptOptions.Animate)
+    if verboseOptions.Animate > 0
+        if ~rem(sol.k,verboseOptions.Animate)
             hfig = WFSim_animation(Wp,sol,hfig); 
         end
     end

@@ -1,4 +1,4 @@
-function [Wp] = sowfa_2turb_alm_turbl()
+function [Wp] = layoutSet_sowfa_2turb_alm_turbl()
 
 Wp = struct('description','2 NREL 5MW turbines case, turbulent inflow, based on a SOWFA ALM simulation');
 

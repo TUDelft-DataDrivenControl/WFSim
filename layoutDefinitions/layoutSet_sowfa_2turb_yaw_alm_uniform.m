@@ -1,4 +1,4 @@
-function [Wp] = sowfa_2turb_yaw_alm_uniform()
+function [Wp] = layoutSet_sowfa_2turb_yaw_alm_uniform()
 error('This case has not yet been tuned/validated. Remove this message manually to continue.');
 
 Wp = struct('description','2 NREL 5MW turbines case, uniform inflow, based on a SOWFA ALM simulation where turbine 1 is yawed');

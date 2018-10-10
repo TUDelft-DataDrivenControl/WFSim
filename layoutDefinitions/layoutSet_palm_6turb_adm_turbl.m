@@ -1,4 +1,4 @@
-function [Wp] = palm_6turb_adm_turbl()
+function [Wp] = layoutSet_palm_6turb_adm_turbl()
 
 Wp = struct('description','6 NREL 5MW turbines case, turbulent inflow, based on a PALM ADM simulation');
 

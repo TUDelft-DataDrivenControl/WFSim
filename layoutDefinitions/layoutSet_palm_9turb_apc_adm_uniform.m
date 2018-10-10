@@ -1,4 +1,4 @@
-function [Wp] = palm_9turb_apc_adm_uniform()
+function [Wp] = layoutSet_palm_9turb_apc_adm_uniform()
 
 Wp = struct('description','9 NREL 5MW turbines case, uniform inflow, based on a PALM ADM simulation');
 

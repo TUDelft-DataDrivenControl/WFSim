@@ -1,4 +1,4 @@
-function [Wp] = clwindcon_windTunnel()
+function [Wp] = layoutSet_clwindcon_windTunnel()
 Wp = struct('description','2 TUM G1 turbines for the CL-Windcon project');
 
 Wp.sim = struct(...

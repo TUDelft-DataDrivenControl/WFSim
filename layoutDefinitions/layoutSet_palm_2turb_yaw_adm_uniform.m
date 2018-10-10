@@ -1,4 +1,4 @@
-function [Wp] = palm_2turb_yaw_adm_uniform()
+function [Wp] = layoutSet_palm_2turb_yaw_adm_uniform()
 
 Wp = struct('description','2 NREL 5MW turbines case, uniform inflow, based on a PALM ADM simulation in which turbine 1 is yawed');
 

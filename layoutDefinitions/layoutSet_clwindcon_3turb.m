@@ -1,4 +1,4 @@
-function [Wp] = clwindcon_3turb()
+function [Wp] = layoutSet_clwindcon_3turb()
 Wp = struct('description','3 DTU 10MW turbines case for the CL-Windcon project');
 
 Wp.sim = struct(...

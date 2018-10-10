@@ -1,4 +1,4 @@
-function [Wp] = sowfa_9turb_apc_alm_turbl()
+function [Wp] = layoutSet_sowfa_9turb_apc_alm_turbl()
 
 Wp = struct('description','9 NREL 5MW turbines case, based on a SOWFA ALM simulation');
 

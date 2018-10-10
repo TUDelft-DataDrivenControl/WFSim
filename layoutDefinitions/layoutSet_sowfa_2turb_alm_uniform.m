@@ -1,4 +1,4 @@
-function [Wp] = sowfa_2turb_alm_uniform()
+function [Wp] = layoutSet_sowfa_2turb_alm_uniform()
 
 Wp = struct('description','2 NREL 5MW turbines case, uniform inflow, based on a SOWFA ALM simulation');
 
