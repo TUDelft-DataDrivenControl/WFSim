@@ -1,2 +1,4 @@
 # Ignore all MATLAB working files
 *.asv
+
+data_LES/*
