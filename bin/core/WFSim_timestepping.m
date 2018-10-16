@@ -51,7 +51,7 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, turbInput
         [sol_out,sys_out] = Make_Ax_b(Wp,sys_out,sol_out,modelOptions); 
         
         % Compute solution sol.x for sys.A*sol.x = sys.b.
-        [sol_out,sys_out] = Computesol(Wp,sys_out,sol_out,it,modelOptions); 
+        [sol_out,sys_out] = Computesol(sys_out,sol_out,it,modelOptions); 
         
         % Map solution sol.x to the flow field sol.u, sol.v, sol.p.
         [sol_out,eps] = MapSolution(Wp,sol_out,it,modelOptions); 

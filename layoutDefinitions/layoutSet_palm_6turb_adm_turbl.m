@@ -33,8 +33,4 @@ Wp.mesh = struct(...
     'Ny',40 ... % Number of cells in y-direction
     );
 
-%         d_lower  = 73.3;  % Turbulence model gridding property (WES: d')
-%         d_upper  = 601.9; % Turbulence model gridding property (WES: d)
-%         lm_slope = 0.068; % Turbulence model gridding property (WES: l_s)
-        % Ranges: lmu= xxx, f = xxx, m = xxx, n = xxx  
 end

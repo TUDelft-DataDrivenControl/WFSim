@@ -1,4 +1,4 @@
-function [sol,sys] = Computesol(Wp,sys,sol,it,options)
+function [sol,sys] = Computesol(sys,sol,it,options)
 % COMPUTESOL  This function solves A*x=b for x to obtain the flow fields.
 
     % Import variables

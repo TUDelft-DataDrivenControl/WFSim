@@ -1,5 +1,5 @@
 function [ Wp ] = meshing( Wp, plotMesh, PrintGridMismatch )
-%MESHING Meshing and settings function for the WFSim code
+% Meshing and settings function for the WFSim code
 % This code calculates the meshing and prepares the Wp struct of a
 % specific wind farm case for WFSim simulations
 
@@ -46,7 +46,7 @@ for i = 1:length(Wp.turbine.Crx)
     
     yline{i}  = L_prim:1: R_prim; % turbine cells for primary grid
     % ylinev{i} = L_sec :1: R_sec ; % turbine cells for secondary grid
-    ylinev{i} = L_prim:1: R_prim+1; % JWs code -- Bart: I feel like this needs fixing
+    ylinev{i} = L_prim:1: R_prim+1; 
     
     if PrintGridMismatch
         % Calculate turbine-grid mismatch

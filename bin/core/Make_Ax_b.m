@@ -23,11 +23,6 @@ Ax    = MakingSparseMatrix(Nx,Ny,StrucDiscretization.ax,3,2,1);
 
 sys.A = [blkdiag(Ax,Ay) [sys.B1;sys.B2]; [sys.B1;2*sys.B2]' sparse((Nx-2)*(Ny-2),(Nx-2)*(Ny-2))];       
 
-sys.M = blkdiag(...
-    spdiags(StrucDynamical.ccx,0,Wp.Nu,Wp.Nu),...
-    spdiags(StrucDynamical.ccy,0,Wp.Nv,Wp.Nv),...
-    spdiags(zeros(Wp.Np,1),0,Wp.Np,Wp.Np));
-
 % If necessary, project away the continuity equation in A*x = b            
 if  options.Projection
     sys.Ct = blkdiag(spdiags(StrucDynamical.ccx,0,Wp.Nu,Wp.Nu),spdiags(StrucDynamical.ccy,0,Wp.Nv,Wp.Nv));
@@ -50,7 +45,6 @@ if  options.Projection
         sys.Atl = sys.Qsp'*sys.Atl(1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3),1:(Nx-3)*(Ny-2)+(Nx-2)*(Ny-3))*sys.Qsp;
         sys.Etl = sys.Et;
         sys.Btl = sys.Qsp'*[StrucActuator.Sm.dxx;StrucActuator.Sm.dyy];
-        % Model = dss(Atl,Btl,Qsp,0,Etl,1);
     end
     
 else
@@ -58,9 +52,7 @@ else
     sys.b    = [StrucBCs.bx+StrucDynamical.cx+vec(StrucActuator.Sm.x');
                 StrucBCs.by+StrucDynamical.cy+vec(StrucActuator.Sm.y');
                 sys.bc];
-    sys.m    = [StrucBCs.bx+vec(StrucActuator.Sm.x');
-                StrucBCs.by+vec(StrucActuator.Sm.y');
-                sys.bc];
+
     
     if options.Linearversion
         % Linear version
@@ -84,16 +76,11 @@ else
     
     sys.A(size(Ax,1)+size(Ay,1)+size(sys.B1',1)-(Ny-2)+1,:) = [];
     sys.b(size(Ax,1)+size(Ay,1)+size(sys.B1',1)-(Ny-2)+1,:) = [];
-    sys.m(size(Ax,1)+size(Ay,1)+size(sys.B1',1)-(Ny-2)+1,:) = [];
     sys.A(:,size(Ax,1)+size(Ay,1)+size(sys.B1',1)-(Ny-2)+1) = [];
-    sys.A(:,end) = [];sys.A(end,:) = [];sys.b(end)=[];sys.m(end)=[];
+    sys.A(:,end) = [];sys.A(end,:) = [];sys.b(end)=[];
     
     if sol.k==1
         sys.pRCM = symrcm(sys.A);
     end;
     
-end
-
-if (options.Linearversion>0 && options.Derivatives>0)
-    sys.derivatives = ComputeDerivatives(sys.A,sys.Al,StrucActuator.dSm,StrucDynamical,StrucBCs,Wp) ;
 end
