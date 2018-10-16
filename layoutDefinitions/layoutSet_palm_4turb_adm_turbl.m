@@ -4,7 +4,7 @@ Wp = struct('description','4 NREL 5MW turbines case, turbulent inflow, based on 
 
 Wp.sim = struct(...
     'h',1.0,... % timestep (s)
-    'startUniform',true ... % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
+    'startUniform',false ... % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
     );
 
 Wp.turbine = struct(...
