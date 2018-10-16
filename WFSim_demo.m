@@ -68,9 +68,9 @@ clear; clc; close all; %
 
 %% Define simulation settings: layout, control inputs and simulation duration
 addpath('layoutDefinitions') % Folder with predefined wind farm layouts
-Wp = layoutSet_palm_6turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+Wp = layoutSet_palm_4turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
 addpath('controlDefinitions') % Make use of a predefined timeseries of control inputs
-turbInputSet = controlSet_palm_6turb_adm_turbl(Wp); % Choose control set 
+turbInputSet = controlSet_palm_4turb_adm_turbl(Wp); % Choose control set 
 addpath('solverDefinitions'); % Folder with model options, solver settings, etc.
 modelOptions = solverSet_default(Wp); % Choose model solver options
 
