@@ -8,10 +8,6 @@ if nargin <= 0; error('Please specify a meshing case.'); end;
 if nargin <= 1; plotMesh = true;                         end;
 if nargin <= 2; PrintGridMismatch = true;                end;
 
-% construct grid
-ldx  = linspace(0,Wp.mesh.Lx,Wp.mesh.Nx);
-ldy  = linspace(0,Wp.mesh.Ly,Wp.mesh.Ny);
-
 % linear gridding
 ldx  = linspace(0,Wp.mesh.Lx,Wp.mesh.Nx);
 ldy  = linspace(0,Wp.mesh.Ly,Wp.mesh.Ny);
