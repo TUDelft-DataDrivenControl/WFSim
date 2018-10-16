@@ -100,15 +100,16 @@ while sol.k < NN
     % Determine control setting at current time by interpolation of time series
     turbInput = struct('t',sol.time);
     for i = 1:Wp.turbine.N
-        turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);        
+        
+        %turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);        
+        turbInput.CT_prime(i,1)  = 2.0;
         
         if i==1
-          phase_offset  = 0*pi/180;
-          Amsin1        = 1.5;
+          Amsin         = 1.5;
           fsin          = 0.25*Wp.site.u_Inf/Wp.turbine.Drotor;
           St            = fsin*Wp.turbine.Drotor/Wp.site.u_Inf;
           CTprime1      = (-4.0*sqrt( (1.0-0.89 )/4.0 ) + 2.0 )/( 0.5+sqrt( ( 1.0-0.89 )/4.0 ) )...
-                            + Amsin1 * sin( 2.0*pi*St*turbInput.t*Wp.site.u_Inf/Wp.turbine.Drotor );
+                            + Amsin * sin( 2.0*pi*St*turbInput.t*Wp.site.u_Inf/Wp.turbine.Drotor );
           
           turbInput.CT_prime(i,1) = 1.0 - 4.0*( CTprime1./( 4.0 + CTprime1 ) - 0.5 ).^2;
         end
@@ -139,3 +140,23 @@ while sol.k < NN
 end
 disp(' ')
 disp(['Completed ' num2str(NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
+
+%%
+if Wp.turbine.N==4
+    % plot apfelstrudel results
+    Powers_baseline =    1.0e+09*[1.577097785855361;
+        0.617718736174695;
+        0.568546027511288;
+        0.499863702806153];
+    for kk=1:NN
+        P(:,kk) =sol_array(kk).turbine.power;
+    end
+    Increase = (sum(sum(P,2))/sum(Powers_baseline)-1)*100;
+    
+    figure(2);clf
+    stem([1,2,3,4],sum(P,2)./Powers_baseline);grid
+    xlabel('Row','interpreter', 'latex')
+    ylabel('$P/P_{baseline}$','interpreter', 'latex')
+    set(gca,'xtick',0:5);xlim([0 5])
+    title(['Total power increase = ',num2str(Increase,2),' \%'],'interpreter','latex')
+end
