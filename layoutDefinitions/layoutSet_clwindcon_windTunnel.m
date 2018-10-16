@@ -28,7 +28,6 @@ Wp.site = struct(...
     );
 
 Wp.mesh = struct(...
-    'gridType','lin',... % Grid type ('lin' the only supported one currently)
     'Lx',10.0,... % Domain length in x-direction
     'Ly',5.0,... % Domain length in y-direction
     'Nx',40,... % Number of cells in x-direction

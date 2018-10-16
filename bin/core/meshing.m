@@ -12,21 +12,9 @@ if nargin <= 2; PrintGridMismatch = true;                end;
 ldx  = linspace(0,Wp.mesh.Lx,Wp.mesh.Nx);
 ldy  = linspace(0,Wp.mesh.Ly,Wp.mesh.Ny);
 
-if strcmp(lower(Wp.mesh.gridType),'lin')
-    % linear gridding
-    ldx  = linspace(0,Wp.mesh.Lx,Wp.mesh.Nx);
-    ldy  = linspace(0,Wp.mesh.Ly,Wp.mesh.Ny);
-elseif strcmp(Wp.mesh.lower(gridType),'exp')
-    error('Exponential gridding currently not supported.');
-%     % exponential gridding
-%     ldx  = expvec( Lx, cellSize(1), uniquetol(Crx,1e-2), R_con(1), N_con(1), dx_min(1) );
-%     ldy  = expvec( Ly, cellSize(2), uniquetol(Cry,1e-2), R_con(2), N_con(2), dx_min(2) );
-%     Nx   = length(ldx);
-%     Ny   = length(ldy);
-%    
-else
-    error('Wrong meshing type specified in "type".');
-end;
+% linear gridding
+ldx  = linspace(0,Wp.mesh.Lx,Wp.mesh.Nx);
+ldy  = linspace(0,Wp.mesh.Ly,Wp.mesh.Ny);
 
 ldxx = repmat(ldx',1,Wp.mesh.Ny);
 ldyy = repmat(ldy,Wp.mesh.Nx,1);

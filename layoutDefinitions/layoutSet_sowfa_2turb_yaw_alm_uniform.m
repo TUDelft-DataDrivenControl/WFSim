@@ -22,15 +22,14 @@ Wp.site = struct(...
     'p_init',0.0,... % Initial values for pressure terms (Pa)
     'turbul',true,... % Use mixing length turbulence model (true/false)
     'turbModel','WFSim3',...  % Turbulence model of choice
-    'lmu',1.0,... % Mixing length in x-direction (m)
-    'm',2,... % Turbulence model gridding property
-    'n',1,... % Turbulence model gridding property
+    'lm_slope',0.1,... % Mixing length in x-direction (m)
+    'd_lower',73.3,... % Turbulence model gridding property
+    'd_upper',601.9,... % Turbulence model gridding property
     'mu',0.0,... % Dynamic flow viscosity
     'Rho',1.20 ... % Air density
     );
 
 Wp.mesh = struct(...
-    'gridType','lin',... % Grid type ('lin' the only supported one currently)
     'Lx',2132.0,... % Domain length in x-direction
     'Ly',800.0,... % Domain length in y-direction
     'Nx',50,... % Number of cells in x-direction
