@@ -18,7 +18,6 @@ Wp.site = struct(...
     'u_Inf',5.7,... % Initial long. wind speed in m/s
     'v_Inf',0.0,... % Initial lat. wind speed in m/s
     'p_init',0.0,... % Initial values for pressure terms (Pa)
-    'turbul',true,... % Use mixing length turbulence model (true/false)
     'lm_slope',0.10,... % Mixing length in x-direction (m)
     'd_lower',0.1,... % Turbulence model gridding property
     'd_upper',3.0,... % Turbulence model gridding property

@@ -16,7 +16,6 @@ dxx2   = Wp.mesh.dxx2;
 dyy2   = Wp.mesh.dyy2;
 
 Rho    = Wp.site.Rho;
-Turb   = Wp.site.turbul;
 
 u      = sol.u;
 v      = sol.v;
@@ -182,9 +181,8 @@ if Linearversion
 end;
 
 %% Turbulence model
-if Turb==1    
-    Turbulence    
-end
+Turbulence    
+
 
 output.ax = ax;
 output.ay = ay;
