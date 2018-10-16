@@ -4,7 +4,6 @@ Drotor = Wp.turbine.Drotor;
 N      = Wp.turbine.N;
 
 % Determine mixing length distribution in the field
-
 mixing_length = ConstructLmu(Wp.mesh.ldxx2,Wp.mesh.ldyy,tan(Wp.site.v_Inf/Wp.site.u_Inf),...
     Wp.turbine.Crx,Wp.turbine.Cry,Wp.turbine.Drotor,...
     Wp.site.d_lower,Wp.site.d_upper,Wp.site.lm_slope);
