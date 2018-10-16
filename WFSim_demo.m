@@ -100,7 +100,19 @@ while sol.k < NN
     % Determine control setting at current time by interpolation of time series
     turbInput = struct('t',sol.time);
     for i = 1:Wp.turbine.N
-        turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);
+        turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);        
+        
+        if i==1
+          phase_offset  = 0*pi/180;
+          Amsin1        = 1.5;
+          fsin          = 0.25*Wp.site.u_Inf/Wp.turbine.Drotor;
+          St            = fsin*Wp.turbine.Drotor/Wp.site.u_Inf;
+          CTprime1      = (-4.0*sqrt( (1.0-0.89 )/4.0 ) + 2.0 )/( 0.5+sqrt( ( 1.0-0.89 )/4.0 ) )...
+                            + Amsin1 * sin( 2.0*pi*St*turbInput.t*Wp.site.u_Inf/Wp.turbine.Drotor );
+          
+          turbInput.CT_prime(i,1) = 1.0 - 4.0*( CTprime1./( 4.0 + CTprime1 ) - 0.5 ).^2;
+        end
+        
         turbInput.beta(i,1)     = 4*turbInput.CT_prime(i,1);
         turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
     end
