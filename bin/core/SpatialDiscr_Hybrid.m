@@ -45,13 +45,13 @@ dFex(1:Nx-1,1:Ny) = Rho*0.5*dyy2(1:Nx-1,1:Ny);
 Fex(1:Nx-1,1:Ny)  = dFex(1:Nx-1,1:Ny).*( u(2:Nx,1:Ny) + u(1:Nx-1,1:Ny) );
 % Few = c ( u_{i,J} + u_{i-1,J} )
 dFwx(2:Nx,1:Ny)   = Rho*0.5*dyy2(2:Nx,1:Ny);
-Fwx(2:Nx,1:Ny)    = dFwx(2:Nx,1:Ny).*( u(2:Nx,1:Ny) + u(1:Nx-1,1:Ny) ); %Zelfde als Fex?
+Fwx(2:Nx,1:Ny)    = dFwx(2:Nx,1:Ny).*( u(2:Nx,1:Ny) + u(1:Nx-1,1:Ny) ); 
 % Fnx = c ( v_{I-1,j+1} + v_{I,j+1} )
 dFnx(2:Nx,1:Ny-1) = Rho*0.5*dxx(2:Nx,1:Ny-1);
 Fnx(2:Nx,1:Ny-1)  = dFnx(2:Nx,1:Ny-1).*( v(2:Nx,2:Ny) + v(1:Nx-1,2:Ny) );
 % Fsx = c ( v_{I-1,j} + v_{I,j} )
 dFsx(2:Nx,1:Ny)   = Rho*0.5*dxx(2:Nx,1:Ny);
-Fsx(2:Nx,1:Ny)    = dFsx(2:Nx,1:Ny).*( v(2:Nx,1:Ny) + v(1:Nx-1,1:Ny)); % Waarom deze een andere size dan de andere drie?
+Fsx(2:Nx,1:Ny)    = dFsx(2:Nx,1:Ny).*( v(2:Nx,1:Ny) + v(1:Nx-1,1:Ny));
 
 ax.aE             = max(max(-Fex,Dxe-0.5*Fex),zeros(Nx,Ny));
 ax.aW             = max(max(Fwx,Dxw+0.5.*Fwx),zeros(Nx,Ny));
@@ -66,7 +66,7 @@ if Linearversion
     [day.SW,day.NW,day.SE,day.NE]           = deal(zeros(Nx,Ny));
     
     % daxe/du_(i,J) = daxe/du_(i+1,J)
-    dax.aE            = (-Fex>=(Dxe-Fex/2)).*(-Fex>zeros(Nx,Ny)).*-dFex + ((Dxe-Fex/2)>-Fex).*((Dxe-Fex/2)>zeros(Nx,Ny)).*-dFex/2; % Depends only on spacing
+    dax.aE            = (-Fex>=(Dxe-Fex/2)).*(-Fex>zeros(Nx,Ny)).*-dFex + ((Dxe-Fex/2)>-Fex).*((Dxe-Fex/2)>zeros(Nx,Ny)).*-dFex/2; 
     % daxw/du_(i,J) = daxe/du_(i-1,J)
     dax.aW            = (Fwx>=(Dxw+Fwx/2)).*(Fwx>zeros(Nx,Ny)).*dFwx + ((Dxw+Fwx/2)>Fwx).*((Dxw+Fwx/2)>zeros(Nx,Ny)).*dFwx/2;
     % daxn/dv_(I,j+1) = daxn/dv_(I-1,j+1)
@@ -80,10 +80,10 @@ if Linearversion
     dax.aPW           = dax.aW - dFwx;
     % daPx/dv_{I,j+1}
     dax.aPN           = dax.aN + dFnx;
-    % daPx/dv_{I,j}             % why not daPx/dv_{I,j-1}?
+    % daPx/dv_{I,j}             
     dax.aPS           = dax.aS - dFsx;
     % daPx/du_{i,J}
-    dax.aPP           = dax.aW + dax.aE - dFwx + dFex; % zit u_{i,j} wel in ax.aE?
+    dax.aPP           = dax.aW + dax.aE - dFwx + dFex; 
     
     % Define derivatives for linearized model with ax = -aPx u_{i,J} + aEx u_{i+1,J} + aWx u_{i-1,J} + aNx u_{i,J+1} + aSx u_{i,J-1}
     
@@ -93,10 +93,9 @@ if Linearversion
     % dax/du_(i,J-1) = aSx
     dax.S               = ax.aS;
     
-    % Not changed
     % dax/du_(i,J)   = -aPx + daWx/du_{i,J} u_{i-1,J} + daEx/du_{i,J} u_{i+1,J} - daPx/du_{i,J} u_{i,J}
     dax.P(2:Nx-1,1:Ny)  = ax.aP(2:Nx-1,1:Ny) - dax.aW(2:Nx-1,1:Ny).*u(1:Nx-2,1:Ny)-dax.aE(2:Nx-1,1:Ny).*u(3:Nx,1:Ny)...
-        + dax.aPP(2:Nx-1,1:Ny).*u(2:Nx-1,1:Ny); %% JW volgens mij is deze goed, echter moet je op de boundary condities letten
+        + dax.aPP(2:Nx-1,1:Ny).*u(2:Nx-1,1:Ny); 
     
     % dax/du_(i,J+1)   = aNx
     dax.N               = ax.aN;
@@ -105,14 +104,11 @@ if Linearversion
     dax.E(1:Nx-1,1:Ny)  = ax.aE(1:Nx-1,1:Ny)  + dax.aE(1:Nx-1,1:Ny).*u(2:Nx,1:Ny)  - dax.aPE(1:Nx-1,1:Ny).*u(1:Nx-1,1:Ny);
     
     % dax/dv_(I-1,j) = daSx/dv_{I-1,J} u_{i,J-1} - daPx/dv_{I-1,J} u_{i,J}
-    % [changed JW not consistent with document]
-    dax.SW(2:Nx,2:Ny)   = dax.aS(2:Nx,2:Ny).*u(2:Nx,1:Ny-1) - dax.aPS(2:Nx,2:Ny).*u(2:Nx,2:Ny); %JW
+    dax.SW(2:Nx,2:Ny)   = dax.aS(2:Nx,2:Ny).*u(2:Nx,1:Ny-1) - dax.aPS(2:Nx,2:Ny).*u(2:Nx,2:Ny); 
     
     % dax/dv_(I-1,j+1) = daNx/dv_{I-1,j+1} u_{i,J+1} - daPx/dv_{I-1,j+1} u_{i,J}
-    % dax.NW(1:Nx-1,1:Ny) = dax.aN(1:Nx-1,1:Ny).*u(2:Nx,1:Ny)  - dax.aPN(1:Nx-1,1:Ny).*u(1:Nx-1,1:Ny);
-    dax.NW(1:Nx-1,1:Ny-1) = dax.aN(1:Nx-1,1:Ny-1).*u(1:Nx-1,2:Ny)  - dax.aPN(1:Nx-1,1:Ny-1).*u(1:Nx-1,1:Ny-1); %JW
+    dax.NW(1:Nx-1,1:Ny-1) = dax.aN(1:Nx-1,1:Ny-1).*u(1:Nx-1,2:Ny)  - dax.aPN(1:Nx-1,1:Ny-1).*u(1:Nx-1,1:Ny-1);
     
-    % JW changed on line 144
     % dax/dv_(I,j)   = daSx/dv_{I,j} u_{I,j-1} - daPx/dv_{I,j} u_{i,J}
     dax.SE(1:Nx,2:Ny)   = dax.aS(1:Nx,2:Ny).*u(1:Nx,1:Ny-1)  - dax.aPS(1:Nx,2:Ny).*u(1:Nx,2:Ny);
     
@@ -184,27 +180,19 @@ if Linearversion
     % day/dv_(I-1,j) = aWy
     day.W              = ay.aW;
     
-    % Changed
     % day/dv_(I,j-1) = aSy + daSy/dv_{I,j-1} v_{I,j-1} - daPy/dv_{I,j-1} v_{I,j}
     day.S(1:Nx,2:Ny) = ay.aS(1:Nx,2:Ny) + day.aS(1:Nx,2:Ny).*v(1:Nx,1:Ny-1) - day.aPS(1:Nx,2:Ny).*v(1:Nx,2:Ny);
-    %day.S(1:Nx,1:Ny-1) = ay.aS(1:Nx,1:Ny-1) + day.aS(1:Nx,1:Ny-1).*v(1:Nx,1:Ny-1) - day.aPN(1:Nx,1:Ny-1).*v(1:Nx,1:Ny-1);
     
-    % Not changed
     % day/dv_(I,j) = daNy/dv_{I,j} v_{I,j+1} + daSy/dv_{I,j} v_{I,j-1} - daPy/dv_{I,j} v_{I,j} - aPy
     day.P(1:Nx,2:Ny-1) = -day.aN(1:Nx,2:Ny-1).*v(1:Nx,3:Ny) - day.aS(1:Nx,2:Ny-1).*v(1:Nx,1:Ny-2) + ...
         day.aPP(1:Nx,2:Ny-1).*v(1:Nx,2:Ny-1) + ay.aP(1:Nx,2:Ny-1);
-    %day.P(1:Nx,2:Ny-1) = day.aN(1:Nx,2:Ny-1).*v(1:Nx,3:Ny) + day.aS(1:Nx,2:Ny-1).*v(1:Nx,1:Ny-2) - ...
-    %    day.aPP(1:Nx,2:Ny-1).*v(1:Nx,2:Ny-1) - ay.aP(1:Nx,2:Ny-1);
+
     
-    % Changed
     % day/dv_(I,j+1) = daNy/dv_{I,j+1} v_{I,j+1} + aNy - daPy/dv_{I,j+1} v_{I,j}
     day.N(1:Nx,1:Ny-1)   = ay.aN(1:Nx,1:Ny-1)   + day.aN(1:Nx,1:Ny-1).*v(1:Nx,2:Ny) - day.aPN(1:Nx,1:Ny-1).*v(1:Nx,1:Ny-1);
-    %day.aN(1:Nx,2:Ny)  = ay.aN(1:Nx,2:Ny)   + day.aN(1:Nx,2:Ny).*v(1:Nx,2:Ny) - day.aPS(1:Nx,2:Ny).*v(1:Nx,2:Ny);
     
-    % Changed
     % day/dv_(I+1,j) = aEy
     day.E              = ay.aE;
-    %day.aE             = ay.aE;
 end;
 
 %% Turbulence model
