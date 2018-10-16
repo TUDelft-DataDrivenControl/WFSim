@@ -108,7 +108,4 @@ Wp.mesh.yline = yline;
 Wp.mesh.ylinev = ylinev;
 
 
-%% Construct mu if no turbulence
-if Wp.site.turbul==0; mu = ConstructMu(Wp); Wp.site(:).mu = mu; end
-
 end
