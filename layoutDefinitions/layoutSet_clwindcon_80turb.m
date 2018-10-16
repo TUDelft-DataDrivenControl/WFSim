@@ -66,7 +66,6 @@ Wp.site = struct(...
     'lm_slope',0.05,... % Mixing length in x-direction (m)
     'd_lower',50,... % Turbulence model gridding property
     'd_upper',700,... % Turbulence model gridding property
-    'mu',0.0,... % Dynamic flow viscosity
     'Rho',1.20 ... % Air density
     );
 

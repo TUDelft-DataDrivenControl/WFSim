@@ -16,7 +16,6 @@ dxx2   = Wp.mesh.dxx2;
 dyy2   = Wp.mesh.dyy2;
 
 Rho    = Wp.site.Rho;
-mu     = Wp.site.mu;
 Turb   = Wp.site.turbul;
 
 u      = sol.u;
@@ -33,11 +32,6 @@ v      = sol.v;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% x-direction
-% Define diffusion coefficients
-Dxe             = mu./[dxx2(2:end,:);dxx2(end,:)].*dyy2;
-Dxw             = mu./dxx2.*dyy2;
-Dxn             = mu./[dyy(:,2:end) dyy(:,end)].*dxx;
-Dxs             = mu./dyy.*dxx;
 
 % Define convection coefficients and its derivatives
 % Fex = c ( u_{i,J} + u_{i+1,J} )
@@ -53,10 +47,10 @@ Fnx(2:Nx,1:Ny-1)  = dFnx(2:Nx,1:Ny-1).*( v(2:Nx,2:Ny) + v(1:Nx-1,2:Ny) );
 dFsx(2:Nx,1:Ny)   = Rho*0.5*dxx(2:Nx,1:Ny);
 Fsx(2:Nx,1:Ny)    = dFsx(2:Nx,1:Ny).*( v(2:Nx,1:Ny) + v(1:Nx-1,1:Ny));
 
-ax.aE             = max(max(-Fex,Dxe-0.5*Fex),zeros(Nx,Ny));
-ax.aW             = max(max(Fwx,Dxw+0.5.*Fwx),zeros(Nx,Ny));
-ax.aN             = max(max(-Fnx,Dxn-0.5*Fnx),zeros(Nx,Ny));
-ax.aS             = max(max(Fsx,Dxs+0.5*Fsx),zeros(Nx,Ny));
+ax.aE             = max(max(-Fex,-0.5*Fex),zeros(Nx,Ny));
+ax.aW             = max(max(Fwx,0.5.*Fwx),zeros(Nx,Ny));
+ax.aN             = max(max(-Fnx,-0.5*Fnx),zeros(Nx,Ny));
+ax.aS             = max(max(Fsx,0.5*Fsx),zeros(Nx,Ny));
 ax.aP             = ax.aW + ax.aE + ax.aS + ax.aN + Fex - Fwx + Fnx - Fsx;
 
 if Linearversion
@@ -66,13 +60,13 @@ if Linearversion
     [day.SW,day.NW,day.SE,day.NE]           = deal(zeros(Nx,Ny));
     
     % daxe/du_(i,J) = daxe/du_(i+1,J)
-    dax.aE            = (-Fex>=(Dxe-Fex/2)).*(-Fex>zeros(Nx,Ny)).*-dFex + ((Dxe-Fex/2)>-Fex).*((Dxe-Fex/2)>zeros(Nx,Ny)).*-dFex/2; 
+    dax.aE            = (-Fex>=(-Fex/2)).*(-Fex>zeros(Nx,Ny)).*-dFex + ((-Fex/2)>-Fex).*((-Fex/2)>zeros(Nx,Ny)).*-dFex/2; 
     % daxw/du_(i,J) = daxe/du_(i-1,J)
-    dax.aW            = (Fwx>=(Dxw+Fwx/2)).*(Fwx>zeros(Nx,Ny)).*dFwx + ((Dxw+Fwx/2)>Fwx).*((Dxw+Fwx/2)>zeros(Nx,Ny)).*dFwx/2;
+    dax.aW            = (Fwx>=(Fwx/2)).*(Fwx>zeros(Nx,Ny)).*dFwx + ((Fwx/2)>Fwx).*((Fwx/2)>zeros(Nx,Ny)).*dFwx/2;
     % daxn/dv_(I,j+1) = daxn/dv_(I-1,j+1)
-    dax.aN            = (-Fnx>=(Dxn-Fnx/2)).*(-Fnx>zeros(Nx,Ny)).*-dFnx + ((Dxn-Fnx/2)>-Fnx).*((Dxn-Fnx/2)>zeros(Nx,Ny)).*-dFnx/2;
+    dax.aN            = (-Fnx>=(-Fnx/2)).*(-Fnx>zeros(Nx,Ny)).*-dFnx + ((-Fnx/2)>-Fnx).*((-Fnx/2)>zeros(Nx,Ny)).*-dFnx/2;
     % daxs/dv_(I,j) = daxs/dv_(I-1,j)
-    dax.aS            = (Fsx>=(Dxs+Fsx/2)).*(Fsx>zeros(Nx,Ny)).*dFsx + ((Dxs+Fsx/2)>Fsx).*((Dxs+Fsx/2)>zeros(Nx,Ny)).*dFsx/2;
+    dax.aS            = (Fsx>=(Fsx/2)).*(Fsx>zeros(Nx,Ny)).*dFsx + ((Fsx/2)>Fsx).*((Fsx/2)>zeros(Nx,Ny)).*dFsx/2;
     
     % daPx/du_{i+1,J}
     dax.aPE           = dax.aE + dFex;
@@ -118,13 +112,6 @@ end;
 
 %% y-direction
 
-% Define diffusion coefficients
-
-Dye             = mu./[dxx(2:end,:);dxx(end,:)].*dyy;
-Dyw             = mu./dxx.*dyy;
-Dyn             = mu./[dyy2(:,2:end) dyy2(:,end)].*dxx2;
-Dys             = mu./dyy2.*dxx2;
-
 % Define convection coefficients and its derivatives
 
 % Fey = c ( u_{i+1,J} + u_{i+1,J-1} )
@@ -140,17 +127,17 @@ Fny(1:Nx,1:Ny-1)  = dFny(1:Nx,1:Ny-1).*( v(1:Nx,1:Ny-1) + v(1:Nx,2:Ny) );
 dFsy(1:Nx,2:Ny)   = Rho*0.5*dxx2(1:Nx,2:Ny);
 Fsy(1:Nx,2:Ny)    = dFsy(1:Nx,2:Ny).*( v(1:Nx,1:Ny-1) + v(1:Nx,2:Ny) );
 
-ay.aE             = max(max(-Fey,Dye-0.5*Fey),zeros(Nx,Ny));
-ay.aW             = max(max(Fwy,Dyw+0.5.*Fwy),zeros(Nx,Ny));
-ay.aN             = max(max(-Fny,Dyn-0.5*Fny),zeros(Nx,Ny));
-ay.aS             = max(max(Fsy,Dys+0.5*Fsy),zeros(Nx,Ny));
+ay.aE             = max(max(-Fey,-0.5*Fey),zeros(Nx,Ny));
+ay.aW             = max(max(Fwy,0.5.*Fwy),zeros(Nx,Ny));
+ay.aN             = max(max(-Fny,-0.5*Fny),zeros(Nx,Ny));
+ay.aS             = max(max(Fsy,0.5*Fsy),zeros(Nx,Ny));
 ay.aP             = ay.aW + ay.aE + ay.aS + ay.aN + Fey - Fwy + Fny - Fsy;
 
 if Linearversion
-    day.aE            = (-Fey>=(Dye-Fey/2)).*(-Fey>zeros(Nx,Ny)).*-dFey + ((Dye-Fey/2)>-Fey).*((Dye-Fey/2)>zeros(Nx,Ny)).*-dFey/2;
-    day.aW            = (Fwy>=(Dyw+Fwy/2)).*(Fwy>zeros(Nx,Ny)).*dFwy + ((Dyw+Fwy/2)>Fwy).*((Dyw+Fwy/2)>zeros(Nx,Ny)).*dFwy/2;
-    day.aN            = (-Fny>=(Dyn-Fny/2)).*(-Fny>zeros(Nx,Ny)).*-dFny + ((Dyn-Fny/2)>-Fny).*((Dyn-Fny/2)>zeros(Nx,Ny)).*-dFny/2;
-    day.aS            = (Fsy>=(Dys+Fsy/2)).*(Fsy>zeros(Nx,Ny)).*dFsy + ((Dys+Fsy/2)>Fsy).*((Dys+Fsy/2)>zeros(Nx,Ny)).*dFsy/2;
+    day.aE            = (-Fey>=(-Fey/2)).*(-Fey>zeros(Nx,Ny)).*-dFey + ((-Fey/2)>-Fey).*((-Fey/2)>zeros(Nx,Ny)).*-dFey/2;
+    day.aW            = (Fwy>=(Fwy/2)).*(Fwy>zeros(Nx,Ny)).*dFwy + ((Fwy/2)>Fwy).*((Fwy/2)>zeros(Nx,Ny)).*dFwy/2;
+    day.aN            = (-Fny>=(-Fny/2)).*(-Fny>zeros(Nx,Ny)).*-dFny + ((-Fny/2)>-Fny).*((-Fny/2)>zeros(Nx,Ny)).*-dFny/2;
+    day.aS            = (Fsy>=(Fsy/2)).*(Fsy>zeros(Nx,Ny)).*dFsy + ((Fsy/2)>Fsy).*((Fsy/2)>zeros(Nx,Ny)).*dFsy/2;
     
     % daPy/du_(i+1,J-1)
     day.aPE          = day.aE + dFey;
