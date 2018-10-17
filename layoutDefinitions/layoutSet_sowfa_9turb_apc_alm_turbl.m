@@ -19,9 +19,9 @@ Wp.site = struct(...
     'u_Inf',12.0214,... % Initial long. wind speed in m/s
     'v_Inf',0.0,... % Initial lat. wind speed in m/s
     'p_init',0.0,... % Initial values for pressure terms (Pa)
-    'lm_slope',0.25,... % Mixing length in x-direction (m)
-    'd_lower',90.0,... % Turbulence model gridding property
-    'd_upper',640.0,... % Turbulence model gridding property
+    'lm_slope',0.25*ones(1,size(Wp.turbine.Crx,2)),... % Mixing length in x-direction (m)
+    'd_lower',90.0*ones(1,size(Wp.turbine.Crx,2)),... % Turbulence model gridding property
+    'd_upper',640.0*ones(1,size(Wp.turbine.Crx,2)),... % Turbulence model gridding property
     'Rho',1.20 ... % Air density
     );
 

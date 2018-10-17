@@ -16,7 +16,7 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
         y_WF  = reshape(xy_WF(:,2),size(y_IF,1),size(y_IF,2));
 
         % Determine turbine-added mixing length
-        lm = lm + Lmu_2D_WF(x_WF,y_WF,D,d_lower,d_upper,lm_slope);
+        lm = lm + Lmu_2D_WF(x_WF,y_WF,D,d_lower(iT),d_upper(iT),lm_slope(iT));
     end
     
     % % Plot results
