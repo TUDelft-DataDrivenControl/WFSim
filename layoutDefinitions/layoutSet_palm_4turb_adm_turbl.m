@@ -16,7 +16,7 @@ Wp.turbine = struct(...
     );
 
 Wp.site = struct(...
-    'u_Inf',7.8685,... % Initial long. wind speed in m/s
+    'u_Inf',8.0,... % Initial long. wind speed in m/s
     'v_Inf',0.0,... % Initial lat. wind speed in m/s
     'p_init',0.0,... % Initial values for pressure terms (Pa)
     'lm_slope',[.3 .1 .1 .1],... % Mixing length in x-direction (m)

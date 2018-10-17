@@ -106,8 +106,8 @@ while sol.k < NN
         
         if i==1
           Amsin         = 1.5;
-          fsin          = 0.25*Wp.site.u_Inf/Wp.turbine.Drotor;
-          St            = fsin*Wp.turbine.Drotor/Wp.site.u_Inf;
+          fsin          = 0.225*Wp.site.u_Inf/Wp.turbine.Drotor; % St*Uinf/D
+          St            = fsin*Wp.turbine.Drotor/Wp.site.u_Inf;  % St_opt=0.225    
           CTprime       = (-4.0*sqrt( (1.0-0.89 )/4.0 ) + 2.0 )/( 0.5+sqrt( ( 1.0-0.89 )/4.0 ) )...
                             + Amsin * sin( 2.0*pi*St*turbInput.t*Wp.site.u_Inf/Wp.turbine.Drotor );
           
