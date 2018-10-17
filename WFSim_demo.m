@@ -108,10 +108,10 @@ while sol.k < NN
           Amsin         = 1.5;
           fsin          = 0.25*Wp.site.u_Inf/Wp.turbine.Drotor;
           St            = fsin*Wp.turbine.Drotor/Wp.site.u_Inf;
-          CTprime1      = (-4.0*sqrt( (1.0-0.89 )/4.0 ) + 2.0 )/( 0.5+sqrt( ( 1.0-0.89 )/4.0 ) )...
+          CTprime       = (-4.0*sqrt( (1.0-0.89 )/4.0 ) + 2.0 )/( 0.5+sqrt( ( 1.0-0.89 )/4.0 ) )...
                             + Amsin * sin( 2.0*pi*St*turbInput.t*Wp.site.u_Inf/Wp.turbine.Drotor );
           
-          turbInput.CT_prime(i,1) = 1.0 - 4.0*( CTprime1./( 4.0 + CTprime1 ) - 0.5 ).^2;
+          turbInput.CT_prime(i,1) = 1.0 - 4.0*( CTprime ./( 4.0 + CTprime ) - 0.5 ).^2;
         end
         
         turbInput.beta(i,1)     = 4*turbInput.CT_prime(i,1);
@@ -144,10 +144,11 @@ disp(['Completed ' num2str(NN) ' forward simulations. Average CPU time: ' num2st
 %%
 if Wp.turbine.N==4
     % plot apfelstrudel results
-    Powers_baseline =    1.0e+09*[1.577097785855361;
-        0.617718736174695;
-        0.568546027511288;
-        0.499863702806153];
+    Powers_baseline =    1.0e+09*[
+   1.577097785855393
+   0.617718736241326
+   0.568546065420571
+   0.499913095972285];
     for kk=1:NN
         P(:,kk) =sol_array(kk).turbine.power;
     end
