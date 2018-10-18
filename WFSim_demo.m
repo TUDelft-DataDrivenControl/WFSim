@@ -101,7 +101,6 @@ while sol.k < NN
     turbInput = struct('t',sol.time);
     for i = 1:Wp.turbine.N
         turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);
-        turbInput.beta(i,1)     = 1/4*turbInput.CT_prime(i,1);
         turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
     end
     

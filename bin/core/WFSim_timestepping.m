@@ -11,10 +11,8 @@ function [ sol_out,sys_out ] = WFSim_timestepping( sol_in, sys_in, Wp, turbInput
     % Write control settings to the solution
     if sol_in.k == 0
         turbInput.dCT_prime = zeros(Wp.turbine.N,1);
-        turbInput.dbeta     = zeros(Wp.turbine.N,1);
     else
         turbInput.dCT_prime = turbInput.CT_prime - sol_in.turbInput.CT_prime;
-        turbInput.dbeta     = turbInput.beta - sol_in.turbInput.beta;
     end    
     sol_out.turbInput = turbInput;   
     

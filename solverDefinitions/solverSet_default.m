@@ -2,7 +2,7 @@ function [modelOptions] = solverSet_default(Wp)
 % This is the default solver set for open-loop simulations
 
 % Model settings (recommended: leave default)
-modelOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
+modelOptions.Projection        = 1;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
 modelOptions.Linearversion     = 0;        % Calculate linear system matrices of WFSim (bool).              Default: false.
 modelOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
 modelOptions.exportPressures   = ~modelOptions.Projection;   % Calculate pressure fields. Default: '~scriptOptions.Projection'
