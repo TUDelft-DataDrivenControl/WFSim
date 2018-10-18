@@ -114,7 +114,7 @@ while sol.k < NN
           turbInput.CT_prime(i,1) = 1.0 - 4.0*( CTprime ./( 4.0 + CTprime ) - 0.5 ).^2;
         end
         
-        turbInput.beta(i,1)     = 4*turbInput.CT_prime(i,1);
+        turbInput.beta(i,1)     = 1/4*turbInput.CT_prime(i,1);
         turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
     end
     
