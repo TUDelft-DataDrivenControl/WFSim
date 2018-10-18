@@ -68,16 +68,16 @@ clear; clc; close all; %
 
 %% Define simulation settings: layout, control inputs and simulation duration
 addpath('layoutDefinitions') % Folder with predefined wind farm layouts
-Wp = layoutSet_palm_4turb_adm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
+Wp = layoutSet_sowfa_9turb_apc_alm_turbl(); % Choose which scenario to simulate. See 'layoutDefinitions' folder for the full list.
 addpath('controlDefinitions') % Make use of a predefined timeseries of control inputs
-turbInputSet = controlSet_palm_4turb_adm_turbl(Wp); % Choose control set 
+turbInputSet = controlSet_sowfa_9turb_apc_alm_turbl(Wp); % Choose control set 
 addpath('solverDefinitions'); % Folder with model options, solver settings, etc.
 modelOptions = solverSet_default(Wp); % Choose model solver options
 
 % Simulation length, display and visualization settings
 NN = floor(turbInputSet.t(end)/Wp.sim.h); % Number of timesteps in simulation
 verboseOptions.printProgress = 1;    % Print progress in cmd window every timestep. Default: true.
-verboseOptions.Animate       = 10;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+verboseOptions.Animate       = 1;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 verboseOptions.plotMesh      = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
