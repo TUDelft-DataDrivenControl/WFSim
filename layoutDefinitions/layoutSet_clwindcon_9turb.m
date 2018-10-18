@@ -7,8 +7,8 @@ Wp.sim = struct(...
     );
 
 Wp.turbine = struct(...
-    'Crx',[1 1 1;  6 6 6;  11 11 11]*178.3,... % X-coordinates of turbines (m)
-    'Cry',[3 8 13; 3 8 13; 3 8 13]*178.3,... % Y-coordinates of turbines (m)
+    'Crx',[1 1 1 6 6 6 11 11 11]*178.3,... % X-coordinates of turbines (m)
+    'Cry',[3 8 13 3 8 13 3 8 13]*178.3,... % Y-coordinates of turbines (m)
     'Drotor',178.3,... % Rotor diameter (m), note that WFSim only supports a uniform Drotor for now
     'powerscale',0.95,... % Turbine power scaling
     'forcescale',1.50 ... % Turbine force scaling
