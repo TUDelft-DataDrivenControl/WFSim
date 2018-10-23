@@ -22,9 +22,7 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
     H     = diskfilter('disk',2);
     lm    = filter2(H,lm);
     
-    H     = fspecial('disk',2); 
-    lm    = filter2(H,lm);
-
+    
     % % Plot results
     % clf; surf(X,Y,lm);
     % axis equal tight
