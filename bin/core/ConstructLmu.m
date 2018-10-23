@@ -19,8 +19,8 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
         lm = lm + Lmu_2D_WF(x_WF,y_WF,D,d_lower,d_upper,lm_slope);
     end
  
-    H     = fspecial('disk',2); 
-    lm    = filter2(H,lm);
+    % H     = fspecial('disk',2); 
+    % lm    = filter2(H,lm);
     
     % % Plot results
     % clf; surf(X,Y,lm);
