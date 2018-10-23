@@ -77,7 +77,7 @@ modelOptions = solverSet_default(Wp); % Choose model solver options
 % Simulation length, display and visualization settings
 NN = floor(turbInputSet.t(end)/Wp.sim.h); % Number of timesteps in simulation
 verboseOptions.printProgress = 1;    % Print progress in cmd window every timestep. Default: true.
-verboseOptions.Animate       = 1;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+verboseOptions.Animate       = 0;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 verboseOptions.plotMesh      = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
@@ -143,11 +143,16 @@ disp(['Completed ' num2str(NN) ' forward simulations. Average CPU time: ' num2st
 %%
 if Wp.turbine.N==4
     % plot apfelstrudel results
+%     Powers_baseline =    1.0e+09*[
+%    1.577097785855393
+%    0.617718736241326
+%    0.568546065420571
+%    0.499913095972285];
     Powers_baseline =    1.0e+09*[
-   1.577097785855393
-   0.617718736241326
-   0.568546065420571
-   0.499913095972285];
+   1.659988378014872
+   0.569277441672924
+   0.562909939599069
+   0.496278092984221];
     for kk=1:NN
         P(:,kk) =sol_array(kk).turbine.power;
     end
