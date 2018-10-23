@@ -19,7 +19,7 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
         lm = lm + Lmu_2D_WF(x_WF,y_WF,D,d_lower(iT),d_upper(iT),lm_slope(iT));
     end
  
-    H     = diskfilter('disk',2);
+    H     = diskfilter('disk',1);
     lm    = filter2(H,lm);
     
     
