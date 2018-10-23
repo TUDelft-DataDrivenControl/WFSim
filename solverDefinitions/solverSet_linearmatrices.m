@@ -5,7 +5,6 @@ function [modelOptions] = solverSet_linearmatrices(Wp)
 modelOptions.Projection        = 0;        % Solve WFSim by projecting away the continuity equation (bool). Default: false.
 modelOptions.Linearversion     = 1;        % Calculate linear system matrices of WFSim (bool).              Default: false.
 modelOptions.exportLinearSol   = 0;        % Calculate linear solution of WFSim (bool).                     Default: false.
-modelOptions.Derivatives       = 0;        % Compute derivatives, useful for predictive control (bool).     Default: false.
 modelOptions.exportPressures   = 0;        % Calculate pressure fields. Default: 0
 
 % Convergence settings (recommended: leave default)

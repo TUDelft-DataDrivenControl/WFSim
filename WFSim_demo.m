@@ -100,7 +100,7 @@ while sol.k < NN
     % Determine control setting at current time by interpolation of time series
     turbInput = struct('t',sol.time);
     for i = 1:Wp.turbine.N
-        
+       
         %turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);        
         turbInput.CT_prime(i,1)  = 2.0;
         

@@ -18,6 +18,9 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
         % Determine turbine-added mixing length
         lm = lm + Lmu_2D_WF(x_WF,y_WF,D,d_lower(iT),d_upper(iT),lm_slope(iT));
     end
+ 
+    H     = diskfilter('disk',2);
+    lm    = filter2(H,lm);
     
     H     = fspecial('disk',2); 
     lm    = filter2(H,lm);
@@ -46,4 +49,8 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
 %         indx = ((x > d_lower) & (x < d_upper) & (abs(y) < sqrt(((x-d_lower).*lm_slope)/k_2)));
 %         lm(indx) = (x(indx)-d_lower)*lm_slope - (y(indx).^2)*k_2;
 %     end
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> master
