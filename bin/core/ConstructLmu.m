@@ -47,8 +47,4 @@ function lm=ConstructLmu(x_IF,y_IF,WD,xTurbs,yTurbs,D,d_lower,d_upper,lm_slope)
 %         indx = ((x > d_lower) & (x < d_upper) & (abs(y) < sqrt(((x-d_lower).*lm_slope)/k_2)));
 %         lm(indx) = (x(indx)-d_lower)*lm_slope - (y(indx).^2)*k_2;
 %     end
-<<<<<<< HEAD
 end
-=======
-end
->>>>>>> master
