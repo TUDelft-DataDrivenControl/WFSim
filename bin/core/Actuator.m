@@ -56,6 +56,10 @@ for kk=1:N
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';               % Input x-mom nonlinear                           
     Sm.y(x-1,y(2:end)-2)    = Fy(2:end)'.*dyy2(1,y(2:end))';  % Input y-mom nonlinear
     
+    % Apply the force to the trailing cells to achieve a higher (LES-like) wake deflection
+    Sm.y(x,y(2:end)-2)   = Fy(2:end)'.*dyy2(1,y(2:end))';  
+    Sm.y(x+1,y(2:end)-2) = Fy(2:end)'.*dyy2(1,y(2:end))';
+    
     % Matrices for linear version
     if Linearversion
         dCT(kk) = input.dCT_prime(kk); 
