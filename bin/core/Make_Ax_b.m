@@ -8,6 +8,7 @@ if sol.k == 1 && Wp.sim.startUniform == 0
     dt = Inf;
 else
     dt = Wp.sim.h;
+    dt = dt/2; % correction factor for difference with LES wake propagation
 end;
 
 % The following is really the core of WFSim: creating the system matrices
