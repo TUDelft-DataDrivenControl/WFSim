@@ -11,17 +11,17 @@ Wp.turbine = struct(...
     'Crx',[0.4048 0.4024 0.40 1.0368 1.0344 1.0320 1.6688 1.6663 1.6639]*1e3,... % X-coordinates of turbines (m)
     'Cry',[1.1584 0.7792 0.40 1.1543 0.7752 0.3960 1.1503 0.7711 0.3919]*1e3,... % Y-coordinates of turbines (m)
     'Drotor',126.4,... % Rotor diameter (m), note that WFSim only supports a uniform Drotor for now
-    'powerscale',0.97,... % Turbine power scaling
-    'forcescale',2.0 ... % Turbine force scaling
+    'powerscale',0.99,... % Turbine power scaling
+    'forcescale',1.9 ... % Turbine force scaling
     );
 
 Wp.site = struct(...
     'u_Inf',12.0214,... % Initial long. wind speed in m/s
     'v_Inf',0.0,... % Initial lat. wind speed in m/s
     'p_init',0.0,... % Initial values for pressure terms (Pa)
-    'lm_slope',0.25,... % Mixing length in x-direction (m)
-    'd_lower',90.0,... % Turbulence model gridding property
-    'd_upper',640.0,... % Turbulence model gridding property
+    'lm_slope',0.05,... % Mixing length in x-direction (m)
+    'd_lower',140.0,... % Turbulence model gridding property
+    'd_upper',1000.0,... % Turbulence model gridding property
     'Rho',1.20 ... % Air density
     );
 
@@ -34,4 +34,11 @@ Wp.mesh = struct(...
 
 % Tuning notes 'apc_9turb_alm_turb' (Sep 11th, 2017):
 % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.5, m = 1:8, n = 1:4
+
+% Tuning notes on Nov 5, 2018
+% Optimal out of:
+%     'forcescale', 1.5:0.1:2.5, ...
+%     'lm_slope', 0.005:0.005:0.10, ...
+%     'd_lower', 0.1:20:200.1,...
+%     'd_upper', 300:50:1000,...
 end

@@ -19,7 +19,7 @@ Wp.site = struct(...
     'u_Inf',7.997,... % Initial long. wind speed in m/s
     'v_Inf',0.0,... % Initial lat. wind speed in m/s
     'p_init',0.0,... % Initial values for pressure terms (Pa)
-    'lm_slope',0.1,... % Mixing length in x-direction (m)
+    'lm_slope',0.2,... % Mixing length in x-direction (m)
     'd_lower',73.3,... % Turbulence model gridding property
     'd_upper',601.9,... % Turbulence model gridding property
     'Rho',1.20 ... % Air density
@@ -34,4 +34,5 @@ Wp.mesh = struct(...
 
 % Tuning notes '2turb_alm_noturb' (Sep 5th, 2017):
 % Ranges: lmu= 0.1:0.1:2.0, f = 0.8:0.1:2.0, m = 1:8, n = 1:4
+% Retuned the turbulence model by hand on November 5th, 2018
 end

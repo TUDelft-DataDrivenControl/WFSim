@@ -4,7 +4,7 @@ Wp = struct('description','6 NREL 5MW turbines case, turbulent inflow, based on 
 
 Wp.sim = struct(...
     'h',1.0,... % timestep (s)
-    'startUniform',true ... % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
+    'startUniform',false ... % Start from a uniform flow field (T) or from a fully developed waked flow field (F).
     );
 
 Wp.turbine = struct(...
@@ -19,7 +19,7 @@ Wp.site = struct(...
     'u_Inf',7.705,... % Initial long. wind speed in m/s
     'v_Inf',0.0,... % Initial lat. wind speed in m/s
     'p_init',0.0,... % Initial values for pressure terms (Pa)
-    'lm_slope',0.1,... % Mixing length in x-direction (m)
+    'lm_slope',0.05,... % Mixing length in x-direction (m)
     'd_lower',73.3,... % Turbulence model gridding property
     'd_upper',601.9,... % Turbulence model gridding property
     'Rho',1.20 ... % Air density
