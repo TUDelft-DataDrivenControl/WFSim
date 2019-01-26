@@ -17,10 +17,10 @@ clear; clc; close all; %
 %        115-119.
 %     3. Setup the model solver settings in line 75. The default selection
 %        is 'solverSet_default(Wp)', as defined in 'solverDefintions'.
-%     3. Setup the simulation settings in lines 78-81.
-%     3. Press start.
+%     4. Setup the simulation settings in lines 78-81.
+%     5. Press start.
 %
-%%   Relevant input/output variables
+%%   Relevant input/output variables:
 %     - modelOptions: this struct contains simulation settings
 %     related to the wind farm itself (solution methodology, etc.)
 %     - scriptOptions: this struct contains simulation settings, not
@@ -63,6 +63,14 @@ clear; clc; close all; %
 %       on (printProgress, printConvergence, Animate, plotMesh).
 %     - If you cannot solve your problems, reach out on the Github.
 %
+%%   Nonlinear MPC provinding active power control:
+%     - In line 104 set if sol.k>=0 for open-loop (no control) 
+%       and sol.k<=0 for closed-loop (wind farm will track a power reference). 
+%     - When the simulation is finished, run MPC_animation.m to see the results
+%     - Note that to run the controller, installation of YALMIP and a solver 
+%       is required. Current controller settings belong to the sowfa_9turb_apc_alm_turbl
+%       case and CPLEX 12.8 solver.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -77,7 +85,7 @@ modelOptions = solverSet_default(Wp); % Choose model solver options
 % Simulation length, display and visualization settings
 NN = floor(turbInputSet.t(end)/Wp.sim.h); % Number of timesteps in simulation
 verboseOptions.printProgress = 1;    % Print progress in cmd window every timestep. Default: true.
-verboseOptions.Animate       = 1;   % Plot flow fields every [X] iterations (0: no plots). Default: 10.
+verboseOptions.Animate       = 1;    % Plot flow fields every [X] iterations (0: no plots). Default: 10.
 verboseOptions.plotMesh      = 0;    % Plot mesh, turbine locations, and print grid offset values. Default: false.
 
 
@@ -99,9 +107,13 @@ while sol.k < NN
     
     % Determine control setting at current time by interpolation of time series
     turbInput = struct('t',sol.time);
-    for i = 1:Wp.turbine.N
-        turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);
-        turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
+    if sol.k>=0 % set to >=0 for open-loop or <= for closed-loop
+        for i = 1:Wp.turbine.N
+            turbInput.CT_prime(i,1) = interp1(turbInputSet.t,turbInputSet.CT_prime(i,:),sol.time,turbInputSet.interpMethod);
+            turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
+        end
+    else
+        [turbInput.CT_prime(:,1),turbInput.phi(:,1),mpc] = MPCcontroller(sol,Wp,NN);
     end
     
     % Propagate the WFSim model
