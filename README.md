@@ -9,8 +9,12 @@ WindFarmSimulator (WFSim) is a medium-fidelity, control-oriented wind farm model
 and applications can be found online:
 https://www.wind-energ-sci.net/3/749/2018/
 https://www.sciencedirect.com/science/article/abs/pii/S0967066118306920
-The programmed controller is a nonlinear version of the controller presented in:
+The two programmed controller are 
+1) a nonlinear version of the controller presented in:
 https://www.sciencedirect.com/science/article/pii/S0960148118313508
+2) a stochastic controller presented in:
+https://www.researchgate.net/publication/329365115_Stochastic_Model_Predictive_Control_uncertainty_impact_on_wind_farm_power_tracking
+
 
 ## Quick use:
 Open WFSim.m with any recent version of MATLAB. Follow the instructions therein to perform simple simulations of various wind farm scenarios. Missing files will be downloaded automatically on first run, so make sure you are connected to the internet.
@@ -32,4 +36,4 @@ Open WFSim.m with any recent version of MATLAB. Follow the instructions therein 
 ## Debugging:
 For any serious issues, reach out to us on the Github page. 
 
-All credit goes to the Delft University of Technology. WFSim was written by dr. ir. Sjoerd Boersma and ir. Bart Doekemeijer and under the supervision of prof.dr.ir. Jan-Willem van Wingerden.             
+All credit goes to the Delft University of Technology. WFSim was written by dr.ir. Sjoerd Boersma and ir. Bart Doekemeijer and under the supervision of prof.dr.ir. Jan-Willem van Wingerden.             

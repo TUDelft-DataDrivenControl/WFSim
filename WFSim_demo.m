@@ -63,11 +63,12 @@ clear; clc; close all; %
 %       on (printProgress, printConvergence, Animate, plotMesh).
 %     - If you cannot solve your problems, reach out on the Github.
 %
-%%   Nonlinear MPC provinding active power control:
+%%   Nonlinear or stochastic MPC provinding active power control:
 %     - In line 104 set if sol.k>=0 for open-loop (no control) 
 %       and sol.k<=0 for closed-loop (wind farm will track a power reference). 
+%     - Call in line 117 NMPCcontroller.m or SMPCcontroller.m for the nonlinear or stochastic controller, respectively.  
 %     - When the simulation is finished, run MPC_animation.m to see the results
-%     - Note that to run the controller, installation of YALMIP and a solver 
+%     - Note that to run a controller, installation of YALMIP and a solver 
 %       is required. Current controller settings belong to the sowfa_9turb_apc_alm_turbl
 %       case and CPLEX 12.8 solver.
 %
@@ -113,7 +114,7 @@ while sol.k < NN
             turbInput.phi(i,1)      = interp1(turbInputSet.t,turbInputSet.phi(i,:),     sol.time,turbInputSet.interpMethod);
         end
     else
-        [turbInput.CT_prime(:,1),turbInput.phi(:,1),mpc] = MPCcontroller(sol,Wp,NN);
+        [turbInput.CT_prime(:,1),turbInput.phi(:,1),mpc] = NMPCcontroller(sol,Wp,NN);
     end
     
     % Propagate the WFSim model

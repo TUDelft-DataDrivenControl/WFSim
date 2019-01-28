@@ -1,4 +1,4 @@
-function [CT_prime,phi,mpc] = MPCcontroller(sol,Wp,NN)
+function [CT_prime,phi,mpc] = NMPCcontroller(sol,Wp,NN)
 
 % initialize controller
 mpc = MPCinit(sol,Wp,NN);
@@ -47,7 +47,7 @@ if sol.k>=1
     
     optimize(cons,cost,ops)
     
-    Uopt(:,ll) = value(U);
+    Uopt(:,ll) = value(U); %value(Y(mpc.MU))
     Popt       = value(P);
     
     temp       = ( repmat(Popt(:,ll),mpc.Nh,1)./(mpc.cp(1).*Uopt(:,ll))  ).^(1/3);   
