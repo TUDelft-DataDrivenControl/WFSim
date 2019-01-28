@@ -1,4 +1,4 @@
-clear; clc; close all; %
+clear; clc; close all; 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%      WIND FARM SIMULATOR (WFSIM) by S. Boersma and B. Doekemeijer
