@@ -9,6 +9,7 @@ WindFarmSimulator (WFSim) is a medium-fidelity, control-oriented wind farm model
 and two applications can be found online:
 
 https://www.wind-energ-sci.net/3/749/2018/
+
 https://www.sciencedirect.com/science/article/abs/pii/S0967066118306920
 
 The two programmed controllers are 
