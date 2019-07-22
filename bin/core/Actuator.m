@@ -40,20 +40,17 @@ for kk=1:N
     U{kk}         = sqrt(uu.^2+vv.^2);
     phi{kk}       = atan(sol.v(1,1)/sol.u(1,1));
     Ue{kk}        = cos(input.phi(kk)/180*pi).*U{kk};
-    Ur(kk)        = mean(Ue{kk});  
-    CT(kk)        = input.CT_prime(kk);                     % Import CT_prime from inputData
+    meanUe{kk}    = mean(Ue{kk});  
+    CT(kk)        = input.CT_prime(kk); % Import CT_prime from inputData
     Phi(kk)       = input.phi(kk);
     
-    %% Thrust force     
-    Fthrust         = F*1/2*Rho*Ue{kk}.^2*CT(kk);           % Using CT_prime
+    %% Thrust force       
+    Fthrust         = F*1/2*Rho*Ue{kk}.^2*CT(kk); % Using CT_prime
     Fx              = Fthrust.*cos(phi{kk}+Phi(kk)*pi/180);
     Fy              = Fthrust.*sin(phi{kk}+Phi(kk)*pi/180);
-    cf(kk)          = F*1/2*Rho.*mean(dyy2(1,y));
-    Force(kk)       = -mean(Fx.*dyy2(1,y));
     
     %% Power
-    cp(kk)          = powerscale*.5*Rho*Ar;
-    Power(kk)       = cp(kk)*CT(kk)*mean(Ue{kk}.^3);    
+    Power(kk)   = powerscale*.5*Rho*Ar*CT(kk)*mean(Ue{kk}.^3);    
     
     %% Input to Ax=b
     Sm.x(x-2,y-1)           = -Fx'.*dyy2(1,y)';               % Input x-mom nonlinear                           
@@ -112,19 +109,12 @@ for kk=1:N
         end
         
     end;
-  
-    
-    
+      
 end
 
 %% Write to outputs
-sol.turbine.cp(:,1)       = cp;
 sol.turbine.power(:,1)    = Power;
 sol.turbine.CT_prime(:,1) = CT;
-sol.turbine.Phi(:,1)      = Phi;
-sol.turbine.Ur(:,1)       = Ur;
-sol.turbine.cf(:,1)       = cf;
-sol.turbine.force(:,1)    = Force;
 
 output.Sm  = Sm;
 if Linearversion>0
