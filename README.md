@@ -29,6 +29,6 @@ For any serious issues, reach out to us on the Github page.
 
 ## Control in WFSim:
 
-Model Predictive Control applications in WFSim can be found in the NMPC branch. Questions and comments regading this branch can be send to: sjoerd.boersma@supergrid-institute.com.
+Model Predictive Control applications in WFSim can be found in the NMPC branch. Questions and comments regarding this branch can be send to: sjoerd.boersma@supergrid-institute.com.
 
 All credit goes to the Delft University of Technology. WFSim was written by dr.ir. Sjoerd Boersma and ir. Bart Doekemeijer and under the supervision of prof.dr.ir. Jan-Willem van Wingerden.             
